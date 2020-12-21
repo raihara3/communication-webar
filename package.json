@@ -1,0 +1,36 @@
+{
+  "name": "sample-web-application",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.3.6",
+    "@tailwindcss/postcss7-compat": "^2.0.2",
+    "apollo-datasource-rest": "^0.9.5",
+    "apollo-server-micro": "^2.19.0",
+    "autoprefixer": "^9.8.6",
+    "graphql-tag": "^2.11.0",
+    "graphql-tools": "^7.0.2",
+    "next": "10.0.3",
+    "next-auth": "^3.1.0",
+    "postcss": "^7.0.35",
+    "prop-types": "^15.7.2",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@storybook/addon-actions": "^6.1.11",
+    "@storybook/addon-essentials": "^6.1.11",
+    "@storybook/addon-links": "^6.1.11",
+    "@storybook/react": "^6.1.11",
+    "babel-loader": "^8.2.2"
+  }
+}
