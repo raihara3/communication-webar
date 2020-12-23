@@ -10,6 +10,11 @@
       "esnext",
       "dom"
     ],
+    "plugins": [
+      {
+        "name": "typescript-styled-plugin"
+      }
+    ],
     "outDir": "dist",
     "skipLibCheck": true,
     "esModuleInterop": true,
