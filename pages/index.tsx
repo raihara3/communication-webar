@@ -2,7 +2,6 @@ import Link from 'next/link'
 import styled from 'styled-components'
 
 const Button = styled.button`
-  padding: 20px;
   border: solid 1px black;
 
   &:hover {
@@ -16,18 +15,23 @@ const DisabledButton = styled(Button)`
   pointer-events: none;
 `
 
+const Atag = styled.a`
+  display: inline-block;
+  padding: 20px;
+`
+
 const Index = ()  => {
   return (
     <div>
       <h1>Pocket Space</h1>
       <DisabledButton>
         <Link href='/local'>
-          <a>local mode</a>
+          <Atag>local mode</Atag>
         </Link>
       </DisabledButton>
       <Button>
         <Link href='/remote'>
-          <a>remote mode</a>
+          <Atag>remote mode</Atag>
         </Link>
       </Button>
     </div>
