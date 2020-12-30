@@ -5,7 +5,7 @@ const Index = ()  => {
   return (
     <div>
       <h1>Pocket Space</h1>
-      <ButtonGroup color="primary" aria-label="outlined primary button group">
+      <ButtonGroup size="large" color="primary" aria-label="connect mode">
         <Button disabled>
           <Link href='/local'>LOCAL MODE</Link>
         </Button>
