@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import io from 'socket.io-client'
+import { Button } from '@material-ui/core';
 import * as THREE from 'three'
+import WebXR from '../utils/WebXR'
 
 const Remote = () => {
   const connectWebsocket = async() => {
@@ -33,15 +35,23 @@ const Remote = () => {
 
   const [ARRenderer, setARRenderer] = useState<THREE.WebGLRenderer>()
   const [ARScene, setARScene] = useState<THREE.Scene>()
+  const [isSupported, setIsSupported] = useState(false)
 
   useEffect(() => {
     connectWebsocket()
 
+    setIsSupported('xr' in navigator)
+
     const scene = new THREE.Scene()
     setARScene(scene)
 
+    const canvas = document.createElement('canvas')
+    canvas.id = 'ar-canvas'
+    console.log(canvas.getContext('webgl'))
+    document.getElementById('webAR')?.appendChild(canvas)
+
     const renderer = new THREE.WebGLRenderer({
-      canvas: document.getElementById('webAR') as HTMLCanvasElement,
+      canvas: canvas,
       antialias: true,
       alpha: true
     })
@@ -71,10 +81,31 @@ const Remote = () => {
     )
   }, [])
 
+  const setSession = async() => {
+    const webXR = new WebXR(ARRenderer, ARScene, {requiredFeatures: ['local', 'hit-test']})
+    const isSupported = await webXR.isSupported()
+    if(!isSupported) return
+
+    webXR.createSession()
+  }
+
   return (
     <>
       <div>remote</div>
-      <canvas id='webAR'></canvas>
+      {isSupported ? (
+        <Button
+          variant='outlined'
+          color='primary'
+          onClick={() => setSession()}
+        >
+          START AR
+        </Button>
+      ) : (
+        <a href='https://immersiveweb.dev/'>
+          WebXR not available
+        </a>
+      )}
+      <div id='webAR'></div>
     </>
   )
 }
