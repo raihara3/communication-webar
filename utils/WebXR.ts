@@ -10,8 +10,9 @@ class WebXR {
   xrRefSpace: THREE.XRReferenceSpace | null
   xrHitTestSource: THREE.XRHitTestSource | null
   reticle: Reticle
+  canvasContext: WebGLRenderingContext
 
-  constructor(renderer, scene, sessionInit) {
+  constructor(renderer, scene, sessionInit, canvasContext) {
     this.renderer = renderer
     this.scene = scene
     this.sessionInit = sessionInit
@@ -20,6 +21,7 @@ class WebXR {
     this.xrRefSpace = null
     this.xrHitTestSource = null
     this.reticle = new Reticle()
+    this.canvasContext = canvasContext
   }
 
   isSupported() {
@@ -49,10 +51,7 @@ class WebXR {
   }
 
   private async onSessionStarted() {
-    const canvas = document.getElementById('ar-canvas') as HTMLCanvasElement
-    const gl = canvas.getContext('webgl')
-    console.log(gl)
-    await gl?.makeXRCompatible()
+    await this.canvasContext.makeXRCompatible()
 
     if(!this.session) return
     this.session.addEventListener('end', this.onSessionEnded)
@@ -65,8 +64,6 @@ class WebXR {
   }
 
   private onSessionEnded() {
-    // const renderDom = document.getElementById('renderer')
-    // renderDom && renderDom.firstChild && renderDom.removeChild(renderDom.firstChild)
     if(!this.currentSession) return
     this.currentSession.removeEventListener('end', this.onSessionEnded)
     this.currentSession = null

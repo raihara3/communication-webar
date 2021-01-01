@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import io from 'socket.io-client'
 import { Button } from '@material-ui/core';
 import * as THREE from 'three'
@@ -36,6 +36,7 @@ const Remote = () => {
   const [ARRenderer, setARRenderer] = useState<THREE.WebGLRenderer>()
   const [ARScene, setARScene] = useState<THREE.Scene>()
   const [isSupported, setIsSupported] = useState(false)
+  const canvasContext = useRef<WebGLRenderingContext | null>()
 
   useEffect(() => {
     connectWebsocket()
@@ -45,10 +46,8 @@ const Remote = () => {
     const scene = new THREE.Scene()
     setARScene(scene)
 
-    const canvas = document.createElement('canvas')
-    canvas.id = 'ar-canvas'
-    console.log(canvas.getContext('webgl'))
-    document.getElementById('webAR')?.appendChild(canvas)
+    const canvas = document.getElementById('webAR') as HTMLCanvasElement
+    canvasContext.current = canvas.getContext('webgl')
 
     const renderer = new THREE.WebGLRenderer({
       canvas: canvas,
@@ -82,7 +81,7 @@ const Remote = () => {
   }, [])
 
   const setSession = async() => {
-    const webXR = new WebXR(ARRenderer, ARScene, {requiredFeatures: ['local', 'hit-test']})
+    const webXR = new WebXR(ARRenderer, ARScene, {requiredFeatures: ['local', 'hit-test']}, canvasContext.current)
     const isSupported = await webXR.isSupported()
     if(!isSupported) return
 
@@ -105,7 +104,7 @@ const Remote = () => {
           WebXR not available
         </a>
       )}
-      <div id='webAR'></div>
+      <canvas id='webAR'></canvas>
     </>
   )
 }
