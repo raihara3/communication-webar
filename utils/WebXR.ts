@@ -9,8 +9,9 @@ class WebXR {
   xrRefSpace: THREE.XRReferenceSpace | null
   xrHitTestSource: THREE.XRHitTestSource | null
   canvasContext: WebGLRenderingContext
+  socket: any
 
-  constructor(renderer, scene, sessionInit, canvasContext) {
+  constructor(renderer, scene, sessionInit, canvasContext, socket) {
     this.renderer = renderer
     this.scene = scene
     this.sessionInit = sessionInit
@@ -19,6 +20,7 @@ class WebXR {
     this.xrRefSpace = null
     this.xrHitTestSource = null
     this.canvasContext = canvasContext
+    this.socket = socket
   }
 
   isSupported() {
@@ -94,6 +96,7 @@ class WebXR {
       controller.position.z
     )
     this.scene.add(cube)
+    this.socket.handleSendData(cube)
 
     controller.userData.isSelecting = false
   }

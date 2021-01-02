@@ -1,45 +1,24 @@
 import { useEffect, useState, useRef } from "react"
-import io from 'socket.io-client'
 import { Button } from '@material-ui/core';
 import * as THREE from 'three'
 import WebXR from '../utils/WebXR'
+import SocketIO from '../utils/SocketIO'
 
 const Remote = () => {
-  const connectWebsocket = async() => {
-    await fetch('api/socketio')
-    const socket = io()
-
-    socket.on('connect', () => {
-      socket.emit('add user')
-      console.log(`join`)
-    })
-
-    socket.on('disconnect', () => {
-      console.log('disconnect')
-    })
-
-    socket.on('add user', data => {
-      console.log(`add user: ${data}`)
-    })
-
-    socket.on('get data', data => {
-      console.log('get data', data)
-    })
-
-    socket.emit('send data', ({
-      hoge: 'hoge',
-      fuga: 'fuga',
-      num: [1,2,3]
-    }))
-  }
-
   const [ARRenderer, setARRenderer] = useState<THREE.WebGLRenderer>()
   const [ARScene, setARScene] = useState<THREE.Scene>()
   const [isSupported, setIsSupported] = useState(false)
   const canvasContext = useRef<WebGLRenderingContext | null>()
+  const socket = useRef<SocketIO>()
+
+  const getSocketIO = async() => {
+    const socketIO = new SocketIO()
+    await socketIO.connect()
+    socket.current = socketIO
+  }
 
   useEffect(() => {
-    connectWebsocket()
+    getSocketIO()
 
     setIsSupported('xr' in navigator)
 
@@ -81,7 +60,7 @@ const Remote = () => {
   }, [])
 
   const setSession = async() => {
-    const webXR = new WebXR(ARRenderer, ARScene, {requiredFeatures: ['local', 'hit-test']}, canvasContext.current)
+    const webXR = new WebXR(ARRenderer, ARScene, {requiredFeatures: ['local', 'hit-test']}, canvasContext.current, socket.current)
     const isSupported = await webXR.isSupported()
     if(!isSupported) return
 

@@ -11,9 +11,9 @@ const ioHandler = (_, res) => {
         socket.broadcast.emit('add user', 'hoge')
       })
 
-      socket.on('send data', data => {
+      socket.on('send three mesh', data => {
         console.log(data)
-        socket.emit('get data', data)
+        socket.broadcast.emit('get three mesh', data)
       })
     })
 
