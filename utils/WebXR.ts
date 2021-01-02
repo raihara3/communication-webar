@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-// import Reticle from './Reticle'
 
 class WebXR {
   renderer: THREE.WebGLRenderer
@@ -9,7 +8,6 @@ class WebXR {
   session: THREE.XRSession | null
   xrRefSpace: THREE.XRReferenceSpace | null
   xrHitTestSource: THREE.XRHitTestSource | null
-  // reticle: Reticle
   canvasContext: WebGLRenderingContext
 
   constructor(renderer, scene, sessionInit, canvasContext) {
@@ -20,7 +18,6 @@ class WebXR {
     this.session = null
     this.xrRefSpace = null
     this.xrHitTestSource = null
-    // this.reticle = new Reticle()
     this.canvasContext = canvasContext
   }
 
@@ -58,9 +55,6 @@ class WebXR {
     this.renderer.xr.setReferenceSpaceType('local')
     this.renderer.xr.setSession(this.session)
     this.currentSession = this.session
-
-    // const reticle = this.reticle.create()
-    // this.scene.add(reticle)
   }
 
   private onSessionEnded() {
@@ -70,8 +64,6 @@ class WebXR {
   }
 
   private onXRFrame(_, frame: THREE.XRFrame) {
-    // if(!this.reticle.display) return
-
     this.session = frame.session
     let pose: THREE.XRViewerPose | undefined
     if(this.xrRefSpace) {
@@ -83,7 +75,6 @@ class WebXR {
       if(hitTestResults.length > 0) {
         let pose = hitTestResults[0].getPose(this.xrRefSpace)
         pose && this.handleController(pose.transform)
-        // pose && this.reticle.updateMatrix(pose)
       }
     }
 
@@ -105,7 +96,6 @@ class WebXR {
     this.scene.add(cube)
 
     controller.userData.isSelecting = false
-    // this.reticle.remove(this.scene)
   }
 }
 
