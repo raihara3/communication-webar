@@ -23,7 +23,7 @@ class WebXR {
     this.socket = socket
   }
 
-  isSupported() {
+  static isSupported() {
     try {
       navigator['xr'].isSessionSupported('immersive-ar')
       return true

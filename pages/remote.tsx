@@ -5,28 +5,22 @@ import WebXR from '../utils/WebXR'
 import SocketIO from '../utils/SocketIO'
 
 const Remote = () => {
-  const [ARRenderer, setARRenderer] = useState<THREE.WebGLRenderer>()
-  const [ARScene, setARScene] = useState<THREE.Scene>()
   const [isSupported, setIsSupported] = useState(false)
-  const canvasContext = useRef<WebGLRenderingContext | null>()
-  const socket = useRef<SocketIO>()
+  const webXR = useRef<WebXR>()
 
   const getSocketIO = async() => {
     const socketIO = new SocketIO()
     await socketIO.connect()
-    socket.current = socketIO
+    return socketIO
   }
 
   useEffect(() => {
-    getSocketIO()
-
     setIsSupported('xr' in navigator)
 
     const scene = new THREE.Scene()
-    setARScene(scene)
 
     const canvas = document.getElementById('webAR') as HTMLCanvasElement
-    canvasContext.current = canvas.getContext('webgl')
+    const canvasContext = canvas.getContext('webgl')
 
     const renderer = new THREE.WebGLRenderer({
       canvas: canvas,
@@ -36,7 +30,6 @@ const Remote = () => {
     renderer.setPixelRatio(window.devicePixelRatio)
     renderer.setSize(window.innerWidth, window.innerHeight)
     renderer.xr.enabled = true
-    setARRenderer(renderer)
 
     const fov = 70
     const near = 0.01
@@ -57,15 +50,11 @@ const Remote = () => {
     renderer.setAnimationLoop(() =>
       renderer.render(scene, camera)
     )
+
+    getSocketIO().then(socket => {
+      webXR.current = new WebXR(renderer, scene, {requiredFeatures: ['local', 'hit-test']}, canvasContext, socket)
+    })
   }, [])
-
-  const setSession = async() => {
-    const webXR = new WebXR(ARRenderer, ARScene, {requiredFeatures: ['local', 'hit-test']}, canvasContext.current, socket.current)
-    const isSupported = await webXR.isSupported()
-    if(!isSupported) return
-
-    webXR.createSession()
-  }
 
   return (
     <>
@@ -74,7 +63,7 @@ const Remote = () => {
         <Button
           variant='outlined'
           color='primary'
-          onClick={() => setSession()}
+          onClick={() => webXR.current?.createSession()}
         >
           START AR
         </Button>

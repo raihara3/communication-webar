@@ -25,17 +25,17 @@ class SocketIO {
     console.log('disconnect')
   }
 
+  private getData(data) {
+    console.log('get three mesh', data)
+  }
+
   handleAddUser() {
     console.log('join')
     this.socket.emit('add user')
   }
 
-  async handleSendData(data) {
+  handleSendData(data) {
     this.socket.emit('send three mesh', data)
-  }
-
-  getData(data) {
-    console.log('get three mesh', data)
   }
 }
 
