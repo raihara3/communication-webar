@@ -3,6 +3,7 @@ import { Button } from '@material-ui/core';
 import * as THREE from 'three'
 import WebXR from '../utils/WebXR'
 import SocketIO from '../utils/SocketIO'
+import { scene } from '../utils/ThreeObject'
 
 const Remote = () => {
   const [isSupported, setIsSupported] = useState(false)
@@ -16,8 +17,6 @@ const Remote = () => {
 
   useEffect(() => {
     setIsSupported('xr' in navigator)
-
-    const scene = new THREE.Scene()
 
     const canvas = document.getElementById('webAR') as HTMLCanvasElement
     const canvasContext = canvas.getContext('webgl')

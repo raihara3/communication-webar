@@ -1,4 +1,5 @@
 import io from 'socket.io-client'
+import { createObject } from './ThreeObject'
 
 class SocketIO {
   socket: any
@@ -27,6 +28,8 @@ class SocketIO {
 
   private getData(data) {
     console.log('get three mesh', data)
+    createObject(data)
+    console.log('ok')
   }
 
   handleAddUser() {

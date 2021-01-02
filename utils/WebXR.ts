@@ -96,7 +96,12 @@ class WebXR {
       controller.position.z
     )
     this.scene.add(cube)
-    this.socket.handleSendData(cube)
+
+    this.socket.handleSendData({
+      position: controller.position,
+      // geometry: geometry,
+      // material: material
+    })
 
     controller.userData.isSelecting = false
   }
