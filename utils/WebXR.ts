@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import Reticle from './Reticle'
+// import Reticle from './Reticle'
 
 class WebXR {
   renderer: THREE.WebGLRenderer
@@ -9,7 +9,7 @@ class WebXR {
   session: THREE.XRSession | null
   xrRefSpace: THREE.XRReferenceSpace | null
   xrHitTestSource: THREE.XRHitTestSource | null
-  reticle: Reticle
+  // reticle: Reticle
   canvasContext: WebGLRenderingContext
 
   constructor(renderer, scene, sessionInit, canvasContext) {
@@ -20,7 +20,7 @@ class WebXR {
     this.session = null
     this.xrRefSpace = null
     this.xrHitTestSource = null
-    this.reticle = new Reticle()
+    // this.reticle = new Reticle()
     this.canvasContext = canvasContext
   }
 
@@ -59,8 +59,8 @@ class WebXR {
     this.renderer.xr.setSession(this.session)
     this.currentSession = this.session
 
-    const reticle = this.reticle.create()
-    this.scene.add(reticle)
+    // const reticle = this.reticle.create()
+    // this.scene.add(reticle)
   }
 
   private onSessionEnded() {
@@ -70,7 +70,7 @@ class WebXR {
   }
 
   private onXRFrame(_, frame: THREE.XRFrame) {
-    if(!this.reticle.display) return
+    // if(!this.reticle.display) return
 
     this.session = frame.session
     let pose: THREE.XRViewerPose | undefined
@@ -82,9 +82,8 @@ class WebXR {
       let hitTestResults = frame.getHitTestResults(this.xrHitTestSource)
       if(hitTestResults.length > 0) {
         let pose = hitTestResults[0].getPose(this.xrRefSpace)
-        console.log(pose?.transform)
         pose && this.handleController(pose.transform)
-        pose && this.reticle.updateMatrix(pose)
+        // pose && this.reticle.updateMatrix(pose)
       }
     }
 
@@ -95,29 +94,18 @@ class WebXR {
     const controller = this.renderer.xr.getController(0)
     if(!controller.userData.isSelecting) return
 
-    // const light = new THREE.DirectionalLight(0xffffff)
-    // light.castShadow = true
-    // light.shadow.mapSize.width = 1024
-    // light.shadow.mapSize.height = 1024
-
-    // const gallery = new Gallery()
-    // const room = gallery.createRoom()
-    // room.rotateY(0.25 * Math.PI)
-
-    // const setMeshPosition = new SetMeshPosition(transform)
-    // new GLTFLoader().load('model/host.gltf', (gltf) => {
-    //   const model = gltf.scene
-    //   model.scale.set(0.025, 0.025, 0.025)
-
-    //   this.scene.add(
-    //     setMeshPosition.set(light, 0, {x:0, y:10, z:15}),
-    //     setMeshPosition.set(room, 0.25 * Math.PI),
-    //     setMeshPosition.set(model)
-    //   )
-    // })
+    const geometry = new THREE.BoxGeometry(0.01, 0.01, 0.01)
+    const material = new THREE.MeshBasicMaterial({color: 0x00ff00})
+    const cube = new THREE.Mesh(geometry, material)
+    cube.position.set(
+      controller.position.x,
+      controller.position.y,
+      controller.position.z
+    )
+    this.scene.add(cube)
 
     controller.userData.isSelecting = false
-    this.reticle.remove(this.scene)
+    // this.reticle.remove(this.scene)
   }
 }
 
