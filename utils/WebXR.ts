@@ -99,8 +99,8 @@ class WebXR {
 
     this.socket.handleSendData({
       position: controller.position,
-      // geometry: geometry,
-      // material: material
+      geometryJson: geometry.toJSON(),
+      materialJson: material.toJSON()
     })
 
     controller.userData.isSelecting = false
