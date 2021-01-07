@@ -9,9 +9,9 @@ class WebXR {
   xrRefSpace: THREE.XRReferenceSpace | null
   xrHitTestSource: THREE.XRHitTestSource | null
   canvasContext: WebGLRenderingContext
-  socket: any
+  socket: any | null
 
-  constructor(renderer, scene, sessionInit, canvasContext, socket) {
+  constructor(renderer, scene, sessionInit, canvasContext) {
     this.renderer = renderer
     this.scene = scene
     this.sessionInit = sessionInit
@@ -20,7 +20,7 @@ class WebXR {
     this.xrRefSpace = null
     this.xrHitTestSource = null
     this.canvasContext = canvasContext
-    this.socket = socket
+    this.socket = null
   }
 
   static isSupported() {
@@ -33,7 +33,8 @@ class WebXR {
     }
   }
 
-  async createSession() {
+  async createSession(socket) {
+    this.socket = socket
     if(this.currentSession) {
       this.currentSession.end()
       return

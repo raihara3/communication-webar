@@ -8,7 +8,8 @@ const ioHandler = (_, res) => {
     io.on('connection', socket => {
 
       socket.on('add user', () => {
-        socket.broadcast.emit('add user', 'hoge')
+        socket.broadcast.emit('add user', socket.id)
+        socket.emit('join', socket.id)
       })
 
       socket.on('send three mesh', data => {

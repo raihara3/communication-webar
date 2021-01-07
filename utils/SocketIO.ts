@@ -16,10 +16,11 @@ class SocketIO {
     this.socket.on('add user', this.addUser)
     this.socket.on('disconnect', this.disconnect)
     this.socket.on('get three mesh', this.getData)
+    this.socket.on('join', this.join)
   }
 
-  private addUser(data) {
-    console.log(`add user: ${data}`)
+  private addUser(id: string) {
+    console.log(`add user: ${id}`)
   }
 
   private disconnect() {
@@ -32,8 +33,11 @@ class SocketIO {
     console.log('ok')
   }
 
+  private join(id: string) {
+    console.log(`my id: ${id}`)
+  }
+
   handleAddUser() {
-    console.log('join')
     this.socket.emit('add user')
   }
 

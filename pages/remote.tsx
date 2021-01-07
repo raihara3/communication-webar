@@ -50,9 +50,7 @@ const Remote = () => {
       renderer.render(scene, camera)
     )
 
-    getSocketIO().then(socket => {
-      webXR.current = new WebXR(renderer, scene, {requiredFeatures: ['local', 'hit-test']}, canvasContext, socket)
-    })
+    webXR.current = new WebXR(renderer, scene, {requiredFeatures: ['local', 'hit-test']}, canvasContext)
   }, [])
 
   return (
@@ -62,7 +60,11 @@ const Remote = () => {
         <Button
           variant='outlined'
           color='primary'
-          onClick={() => webXR.current?.createSession()}
+          onClick={() => {
+            getSocketIO().then(socket => {
+              webXR.current?.createSession(socket)
+            })
+          }}
         >
           START AR
         </Button>
