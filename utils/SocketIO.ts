@@ -1,5 +1,7 @@
 import io from 'socket.io-client'
-import { createObject } from './ThreeObject'
+import { scene, createObject } from './ThreeObject'
+
+let socket:any = null
 
 class SocketIO {
   socket: any
@@ -10,17 +12,19 @@ class SocketIO {
 
   async connect() {
     await fetch('api/socketio')
-    this.socket = io()
+    socket = io()
 
-    this.socket.on('connect', () => this.handleAddUser())
-    this.socket.on('add user', this.addUser)
-    this.socket.on('disconnect', this.disconnect)
-    this.socket.on('get three mesh', this.getData)
-    this.socket.on('join', this.join)
+    socket.on('connect', () => this.handleAddUser())
+    socket.on('add user', this.joinUser)
+    socket.on('disconnect', this.disconnect)
+    socket.on('get three mesh', this.getData)
+    socket.on('join', this.join)
+    socket.on('copy scene', this.copyScene)
+    socket.on('get scene', this.getScene)
   }
 
-  private addUser(id: string) {
-    console.log(`add user: ${id}`)
+  private joinUser(id: string) {
+    console.log(`joinUserId: ${id}`)
   }
 
   private disconnect() {
@@ -34,15 +38,27 @@ class SocketIO {
   }
 
   private join(id: string) {
-    console.log(`my id: ${id}`)
+    console.log(`myId: ${id}`)
+  }
+
+  private copyScene(targetId: string) {
+    console.log('owner')
+    socket.emit('send scene', {
+      targetId: targetId,
+      sceneJson: scene.toJSON()
+    })
+  }
+
+  private getScene(sceneJson) {
+    console.log('scene', sceneJson)
   }
 
   handleAddUser() {
-    this.socket.emit('add user')
+    socket.emit('add user')
   }
 
   handleSendData(data) {
-    this.socket.emit('send three mesh', data)
+    socket.emit('send three mesh', data)
   }
 }
 
