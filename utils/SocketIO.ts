@@ -1,5 +1,5 @@
 import io from 'socket.io-client'
-import { scene, createObject } from './ThreeObject'
+import { scene, createObject, generageScene } from './ThreeObject'
 
 let socket:any = null
 
@@ -32,9 +32,7 @@ class SocketIO {
   }
 
   private getData(data) {
-    console.log('get three mesh', data)
     createObject(data)
-    console.log('ok')
   }
 
   private join(id: string) {
@@ -50,7 +48,7 @@ class SocketIO {
   }
 
   private getScene(sceneJson) {
-    console.log('scene', sceneJson)
+    generageScene(sceneJson)
   }
 
   handleAddUser() {

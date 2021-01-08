@@ -21,7 +21,6 @@ const ioHandler = (_, res) => {
       })
 
       socket.on('send three mesh', data => {
-        console.log(data)
         socket.broadcast.emit('get three mesh', data)
       })
 
