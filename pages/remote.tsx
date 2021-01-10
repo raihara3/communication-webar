@@ -2,18 +2,12 @@ import { useEffect, useState, useRef } from "react"
 import { Button } from '@material-ui/core';
 import * as THREE from 'three'
 import WebXR from '../utils/WebXR'
-import SocketIO from '../utils/SocketIO'
+import { socketConnect, socket } from '../utils/SocketIO'
 import { scene } from '../utils/ThreeObject'
 
 const Remote = () => {
   const [isSupported, setIsSupported] = useState(false)
   const webXR = useRef<WebXR>()
-
-  const getSocketIO = async() => {
-    const socketIO = new SocketIO()
-    await socketIO.connect()
-    return socketIO
-  }
 
   useEffect(() => {
     setIsSupported('xr' in navigator)
@@ -60,10 +54,9 @@ const Remote = () => {
         <Button
           variant='outlined'
           color='primary'
-          onClick={() => {
-            getSocketIO().then(socket => {
-              webXR.current?.createSession(socket)
-            })
+          onClick={async() => {
+            await socketConnect()
+            webXR.current?.createSession()
           }}
         >
           START AR

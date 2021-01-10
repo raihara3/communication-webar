@@ -1,63 +1,53 @@
 import io from 'socket.io-client'
 import { scene, createObject, generageScene } from './ThreeObject'
 
-let socket:any = null
+export let socket:any = null
 
-class SocketIO {
-  socket: any
+export const socketConnect = async() => {
+  await fetch('api/socketio')
+  socket = io()
 
-  constructor() {
-    this.socket = null
-  }
-
-  async connect() {
-    await fetch('api/socketio')
-    socket = io()
-
-    socket.on('connect', () => this.handleAddUser())
-    socket.on('add user', this.joinUser)
-    socket.on('disconnect', this.disconnect)
-    socket.on('get three mesh', this.getData)
-    socket.on('join', this.join)
-    socket.on('copy scene', this.copyScene)
-    socket.on('get scene', this.getScene)
-  }
-
-  private joinUser(id: string) {
-    console.log(`joinUserId: ${id}`)
-  }
-
-  private disconnect() {
-    console.log('disconnect')
-  }
-
-  private getData(data) {
-    createObject(data)
-  }
-
-  private join(id: string) {
-    console.log(`myId: ${id}`)
-  }
-
-  private copyScene(targetId: string) {
-    console.log('owner')
-    socket.emit('send scene', {
-      targetId: targetId,
-      sceneJson: scene.toJSON()
-    })
-  }
-
-  private getScene(sceneJson) {
-    generageScene(sceneJson)
-  }
-
-  handleAddUser() {
-    socket.emit('add user')
-  }
-
-  handleSendData(data) {
-    socket.emit('send three mesh', data)
-  }
+  socket.on('connect', () => handleAddUser())
+  socket.on('add user', joinUser)
+  socket.on('disconnect', disconnect)
+  socket.on('get three mesh', getMeshData)
+  socket.on('join', join)
+  socket.on('copy scene', handleCopyScene)
+  socket.on('get scene', getScene)
 }
 
-export default SocketIO
+const handleAddUser = () => {
+  socket.emit('add user')
+}
+
+const handleCopyScene = (targetId: string) => {
+  console.log('owner')
+  socket.emit('send scene', {
+    targetId: targetId,
+    sceneJson: scene.toJSON()
+  })
+}
+
+export const handleSendMeshData = (data: any) => {
+  socket.emit('send three mesh', data)
+}
+
+const disconnect = () => {
+  console.log('disconnect')
+}
+
+const joinUser = (id: string) => {
+  console.log(`join user id: ${id}`)
+}
+
+const getMeshData = (data: any) => {
+  createObject(data)
+}
+
+const join = (id: string) => {
+  console.log(`my id: ${id}`)
+}
+
+const getScene = (sceneJson: any) => {
+  generageScene(sceneJson)
+}

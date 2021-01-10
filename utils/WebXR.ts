@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { handleSendMeshData } from '../utils/SocketIO'
 
 class WebXR {
   renderer: THREE.WebGLRenderer
@@ -8,8 +9,7 @@ class WebXR {
   session: THREE.XRSession | null
   xrRefSpace: THREE.XRReferenceSpace | null
   xrHitTestSource: THREE.XRHitTestSource | null
-  canvasContext: WebGLRenderingContext
-  socket: any | null
+  canvasContext: any
 
   constructor(renderer, scene, sessionInit, canvasContext) {
     this.renderer = renderer
@@ -20,7 +20,6 @@ class WebXR {
     this.xrRefSpace = null
     this.xrHitTestSource = null
     this.canvasContext = canvasContext
-    this.socket = null
   }
 
   static isSupported() {
@@ -33,8 +32,7 @@ class WebXR {
     }
   }
 
-  async createSession(socket) {
-    this.socket = socket
+  async createSession() {
     if(this.currentSession) {
       this.currentSession.end()
       return
@@ -98,7 +96,7 @@ class WebXR {
     )
     this.scene.add(cube)
 
-    this.socket.handleSendData({
+    handleSendMeshData({
       position: controller.position,
       geometryJson: geometry.toJSON(),
       materialJson: material.toJSON()
