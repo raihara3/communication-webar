@@ -1,0 +1,19 @@
+version: "3.6"
+
+x-common-props: &common-props
+  ports:
+    - "3000:3000"
+  build:
+    context: ./
+    dockerfile: Dockerfile
+  volumes:
+    - /build/node_modules
+    - /build/.next
+
+services:
+  dev:
+    <<: *common-props
+    command: npm run dev
+  production:
+    <<: *common-props
+    command: npm run start
