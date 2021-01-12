@@ -7,8 +7,7 @@ x-common-props: &common-props
     context: ./
     dockerfile: Dockerfile
   volumes:
-    - /build/node_modules
-    - /build/.next
+    - ./:/build
 
 services:
   dev:
