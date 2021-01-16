@@ -1,18 +1,9 @@
 version: "3.6"
 
-x-common-props: &common-props
-  ports:
-    - "3000:3000"
-  build:
-    context: ./
-    dockerfile: Dockerfile
-  volumes:
-    - ./:/build
-
 services:
-  dev:
-    <<: *common-props
-    command: npm run dev
-  production:
-    <<: *common-props
-    command: npm run start
+  redis:
+    ports:
+      - "6379:6379"
+    image: ghcr.io/raihara3/redis:6.0.10
+    volumes:
+      - /redis-data:/data

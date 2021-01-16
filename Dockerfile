@@ -15,7 +15,7 @@ COPY utils/ utils/
 COPY apollo/ apollo/
 
 RUN npm run build
-VOLUME [ "/node_modules", ".next" ]
 
 EXPOSE 3000
-CMD [ "npm", "start" ]
+ENTRYPOINT [ "npm", "run" ]
+CMD [ "start" ]

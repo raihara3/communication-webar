@@ -6,6 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "p-dev": "run-p dev docker",
+    "docker": "docker-compose up",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "lint": "yarn run eslint .eslintrc"
@@ -27,6 +29,7 @@
     "graphql-tools": "^7.0.2",
     "next": "10.0.3",
     "next-auth": "^3.1.0",
+    "npm-run-all": "^4.1.5",
     "postcss": "^7.0.35",
     "prop-types": "^15.7.2",
     "react": "17.0.1",
