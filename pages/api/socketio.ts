@@ -1,26 +1,34 @@
 import { Server } from 'socket.io'
-import redisHandler, { handleAddUser, handleRemoveUser } from './redis'
+import {
+  redisHandler,
+  onAddUser,
+  onRemoveUser,
+  onAddMesh,
+  onRemoveAllMesh
+} from './redis'
 
 // TODO: change to the RoomID
 const roomID = 'testRoom'
 
 const ioHandler = (_, res) => {
-  redisHandler()
   if (!res.socket.server.io) {
     console.log('*First use, starting socket.io')
 
+    redisHandler()
+
     const io = new Server(res.socket.server)
-    io.on('connection', socket => {
+    io.on('connection', async socket => {
 
       socket.join(roomID)
+
+      const rooms = await io.allSockets()
 
       socket.on('add user', async () => {
         socket.broadcast.emit('add user', socket.id)
         socket.emit('join', socket.id)
 
-        handleAddUser(roomID, socket.id)
+        onAddUser(roomID, socket.id)
 
-        const rooms = await io.allSockets()
         const ownerId = rooms.values().next().value
         if(ownerId !== socket.id) {
           io.to(ownerId).emit('copy scene', socket.id)
@@ -29,6 +37,8 @@ const ioHandler = (_, res) => {
 
       socket.on('send three mesh', data => {
         socket.broadcast.emit('get three mesh', data)
+        console.log(JSON.stringify(data))
+        onAddMesh(roomID, JSON.stringify(data))
       })
 
       socket.on('send scene', ({targetId, sceneJson}) => {
@@ -36,7 +46,10 @@ const ioHandler = (_, res) => {
       })
 
       socket.on('disconnect', () => {
-        handleRemoveUser(roomID, socket.id)
+        onRemoveUser(roomID, socket.id)
+        if(!socket.adapter.rooms.has(roomID)) {
+          onRemoveAllMesh(roomID)
+        }
       })
     })
 

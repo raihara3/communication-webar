@@ -2,7 +2,7 @@ import redis from 'redis'
 
 const client:any = redis.createClient()
 
-const redisHandler = () => {
+export const redisHandler = () => {
   client.on('connect', ()=> {
     console.log('redis!!!')
   })
@@ -16,12 +16,21 @@ const redisHandler = () => {
   })
 }
 
-export const handleAddUser = (roomID: string, userID: string) => {
-  client.rpush(roomID, userID)
+const membersKey = (roomID: string) => `${roomID}_members`
+const meshsKey = (roomID: string) => `${roomID}_meshs`
+
+export const onAddUser = (roomID: string, userID: string) => {
+  client.rpush(membersKey(roomID), userID)
 }
 
-export const handleRemoveUser = (roomID: string, userID: string) => {
-  client.lrem(roomID, 0, userID)
+export const onRemoveUser = (roomID: string, userID: string) => {
+  client.lrem(membersKey(roomID), 0, userID)
 }
 
-export default redisHandler
+export const onAddMesh = (roomID: string, mesh: any) => {
+  client.rpush(meshsKey(roomID), mesh)
+}
+
+export const onRemoveAllMesh = (roomID: string) => {
+  client.del(meshsKey(roomID))
+}
