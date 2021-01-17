@@ -1,17 +1,24 @@
 import { Server } from 'socket.io'
+import redisHandler, { handleAddUser, handleRemoveUser } from './redis'
+
+// TODO: change to the RoomID
+const roomID = 'testRoom'
 
 const ioHandler = (_, res) => {
+  redisHandler()
   if (!res.socket.server.io) {
     console.log('*First use, starting socket.io')
 
     const io = new Server(res.socket.server)
     io.on('connection', socket => {
 
-      // console.log(socket.handshake.headers.referer)
+      socket.join(roomID)
 
       socket.on('add user', async () => {
         socket.broadcast.emit('add user', socket.id)
         socket.emit('join', socket.id)
+
+        handleAddUser(roomID, socket.id)
 
         const rooms = await io.allSockets()
         const ownerId = rooms.values().next().value
@@ -26,6 +33,10 @@ const ioHandler = (_, res) => {
 
       socket.on('send scene', ({targetId, sceneJson}) => {
         io.to(targetId).emit('get scene', sceneJson)
+      })
+
+      socket.on('disconnect', () => {
+        handleRemoveUser(roomID, socket.id)
       })
     })
 
