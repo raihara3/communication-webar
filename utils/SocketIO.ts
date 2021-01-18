@@ -1,5 +1,5 @@
 import io from 'socket.io-client'
-import { scene, createObject, generageScene } from './ThreeObject'
+import { scene, createObject } from './ThreeObject'
 
 export let socket:any = null
 
@@ -48,6 +48,6 @@ const join = (id: string) => {
   console.log(`my id: ${id}`)
 }
 
-const getScene = (sceneJson: any) => {
-  generageScene(sceneJson)
+const getScene = (scene: any) => {
+  scene.map(mesh => createObject(mesh))
 }

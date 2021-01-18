@@ -4,7 +4,8 @@ import {
   onAddUser,
   onRemoveUser,
   onAddMesh,
-  onRemoveAllMesh
+  onRemoveAllMesh,
+  onGetScene
 } from './redis'
 
 // TODO: change to the RoomID
@@ -27,6 +28,9 @@ const ioHandler = (_, res) => {
         socket.broadcast.emit('add user', socket.id)
         socket.emit('join', socket.id)
 
+        const scene: Array<string> = await onGetScene(roomID)
+        socket.emit('get scene', scene.map(mesh => JSON.parse(mesh)))
+
         onAddUser(roomID, socket.id)
 
         const ownerId = rooms.values().next().value
@@ -37,12 +41,7 @@ const ioHandler = (_, res) => {
 
       socket.on('send three mesh', data => {
         socket.broadcast.emit('get three mesh', data)
-        console.log(JSON.stringify(data))
         onAddMesh(roomID, JSON.stringify(data))
-      })
-
-      socket.on('send scene', ({targetId, sceneJson}) => {
-        io.to(targetId).emit('get scene', sceneJson)
       })
 
       socket.on('disconnect', () => {

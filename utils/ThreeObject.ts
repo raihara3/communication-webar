@@ -13,21 +13,3 @@ export const createObject = ({position, geometryJson, materialJson}) => {
   )
   scene.add(mesh)
 }
-
-export const generageScene = async(sceneJson) => {
-  if(!sceneJson.geometries) return
-
-  const children = sceneJson.object.children
-  const geometriesJson = sceneJson.geometries
-  const materialsJson = sceneJson.materials
-  const group = new THREE.Group()
-  await children.map((child, index) => {
-    const geometry = new THREE[geometriesJson[index].type](geometriesJson[index].width, geometriesJson[index].height, geometriesJson[index].depth)
-    const material = new THREE[materialsJson[index].type]({color: materialsJson[index].color})
-    const mesh = new THREE.Mesh(geometry, material)
-    mesh.matrix.fromArray(child.matrix)
-    mesh.matrixAutoUpdate = false
-    group.add(mesh)
-  })
-  scene.add(group)
-}
