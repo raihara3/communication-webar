@@ -13,7 +13,6 @@ export const socketConnect = async() => {
   socket.on('get three mesh', getMeshData)
   socket.on('join', join)
   socket.on('copy scene', handleCopyScene)
-  socket.on('get scene', getScene)
 }
 
 const handleAddUser = () => {
@@ -40,14 +39,10 @@ const joinUser = (id: string) => {
   console.log(`join user id: ${id}`)
 }
 
-const getMeshData = (data: any) => {
+const getMeshData = (data: Array<any>) => {
   createObject(data)
 }
 
 const join = (id: string) => {
   console.log(`my id: ${id}`)
-}
-
-const getScene = (scene: any) => {
-  scene.map(mesh => createObject(mesh))
 }

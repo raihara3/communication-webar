@@ -29,7 +29,7 @@ const ioHandler = (_, res) => {
         socket.emit('join', socket.id)
 
         const scene: Array<string> = await onGetScene(roomID)
-        socket.emit('get scene', scene.map(mesh => JSON.parse(mesh)))
+        socket.emit('get three mesh', scene.map(mesh => JSON.parse(mesh)))
 
         onAddUser(roomID, socket.id)
 
@@ -40,7 +40,7 @@ const ioHandler = (_, res) => {
       })
 
       socket.on('send three mesh', data => {
-        socket.broadcast.emit('get three mesh', data)
+        socket.broadcast.emit('get three mesh', [data])
         onAddMesh(roomID, JSON.stringify(data))
       })
 
