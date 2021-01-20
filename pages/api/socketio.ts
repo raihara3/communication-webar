@@ -1,12 +1,5 @@
 import { Server } from 'socket.io'
-import {
-  redisHandler,
-  onAddUser,
-  onRemoveUser,
-  onAddMesh,
-  onRemoveAllMesh,
-  onGetScene
-} from './redis'
+import Redis from './redis'
 
 // TODO: change to the RoomID
 const roomID = 'testRoom'
@@ -15,7 +8,7 @@ const ioHandler = (_, res) => {
   if (!res.socket.server.io) {
     console.log('*First use, starting socket.io')
 
-    redisHandler()
+    const redis = new Redis()
 
     const io = new Server(res.socket.server)
     io.on('connection', async socket => {
@@ -28,10 +21,10 @@ const ioHandler = (_, res) => {
         socket.broadcast.emit('addUser', socket.id)
         socket.emit('join', socket.id)
 
-        const scene: Array<string> = await onGetScene(roomID)
-        socket.emit('getMeshData', scene.map(mesh => JSON.parse(mesh)))
+        const meshs: Array<string> = await redis.getMeshs(roomID)
+        socket.emit('getMeshData', meshs.map(mesh => JSON.parse(mesh)))
 
-        onAddUser(roomID, socket.id)
+        redis.addUser(roomID, socket.id)
 
         const ownerId = rooms.values().next().value
         if(ownerId !== socket.id) {
@@ -40,14 +33,14 @@ const ioHandler = (_, res) => {
       })
 
       socket.on('sendMesh', data => {
-        onAddMesh(roomID, JSON.stringify(data))
+        redis.addMesh(roomID, JSON.stringify(data))
         socket.broadcast.emit('getMeshData', [data])
       })
 
       socket.on('disconnect', () => {
-        onRemoveUser(roomID, socket.id)
+        redis.removeUser(roomID, socket.id)
         if(!socket.adapter.rooms.has(roomID)) {
-          onRemoveAllMesh(roomID)
+          redis.removeAllMesh(roomID)
         }
       })
     })
