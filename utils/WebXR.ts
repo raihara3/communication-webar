@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { handleSendMeshData } from '../utils/SocketIO'
+import SocketIO from '../utils/SocketIO'
 
 class WebXR {
   renderer: THREE.WebGLRenderer
@@ -96,7 +96,8 @@ class WebXR {
     )
     this.scene.add(cube)
 
-    handleSendMeshData({
+    const socketIO = new SocketIO()
+    socketIO.sendMeshData({
       position: controller.position,
       geometryJson: geometry.toJSON(),
       materialJson: material.toJSON()
