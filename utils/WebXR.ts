@@ -10,6 +10,7 @@ class WebXR {
   xrRefSpace: THREE.XRReferenceSpace | null
   xrHitTestSource: THREE.XRHitTestSource | null
   canvasContext: any
+  socketIO: SocketIO | null
 
   constructor(renderer, scene, sessionInit, canvasContext) {
     this.renderer = renderer
@@ -20,6 +21,7 @@ class WebXR {
     this.xrRefSpace = null
     this.xrHitTestSource = null
     this.canvasContext = canvasContext
+    this.socketIO = null
   }
 
   static isSupported() {
@@ -33,6 +35,8 @@ class WebXR {
   }
 
   async createSession() {
+    this.socketIO = await new SocketIO()
+
     if(this.currentSession) {
       this.currentSession.end()
       return
@@ -96,8 +100,7 @@ class WebXR {
     )
     this.scene.add(cube)
 
-    const socketIO = new SocketIO()
-    socketIO.sendMeshData({
+    this.socketIO?.sendMeshData({
       position: controller.position,
       geometryJson: geometry.toJSON(),
       materialJson: material.toJSON()

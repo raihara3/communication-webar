@@ -40,8 +40,8 @@ const ioHandler = (_, res) => {
       })
 
       socket.on('sendMesh', data => {
-        socket.broadcast.emit('getMeshData', [data])
         onAddMesh(roomID, JSON.stringify(data))
+        socket.broadcast.emit('getMeshData', [data])
       })
 
       socket.on('disconnect', () => {

@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from "react"
 import { Button } from '@material-ui/core';
 import * as THREE from 'three'
 import WebXR from '../utils/WebXR'
-import { socketConnect, socket } from '../utils/SocketIO'
 import { scene } from '../utils/ThreeObject'
 
 const Remote = () => {
@@ -54,10 +53,7 @@ const Remote = () => {
         <Button
           variant='outlined'
           color='primary'
-          onClick={async() => {
-            await socketConnect()
-            webXR.current?.createSession()
-          }}
+          onClick={() => webXR.current?.createSession()}
         >
           START AR
         </Button>

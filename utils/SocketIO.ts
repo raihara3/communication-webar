@@ -1,5 +1,5 @@
 import io from 'socket.io-client'
-import { createObject } from './ThreeObject'
+import ThreeObject from './ThreeObject'
 
 interface Mesh {
   geometryJson: any
@@ -9,21 +9,23 @@ interface Mesh {
 
 class SocketIO {
   socket: SocketIOClient.Socket | null
+  threeObject: ThreeObject
 
   constructor() {
     this.socket = null
+    this.threeObject = new ThreeObject()
     this.connectSocket()
   }
 
   private async connectSocket() {
     await fetch('api/socketio')
-    this.socket = io()
+    this.socket = await io()
 
-    this.socket.on('connect', this.connect)
-    this.socket.on('addUser', this.addUser)
-    this.socket.on('disconnect', this.disconnect)
-    this.socket.on('getMeshData', this.getMeshData)
-    this.socket.on('join', this.join)
+    this.socket.on('connect', () => this.connect())
+    this.socket.on('addUser', (id: string) => this.addUser(id))
+    this.socket.on('disconnect', () => this.disconnect())
+    this.socket.on('getMeshData', (data: Array<Mesh>) => this.getMeshData(data))
+    this.socket.on('join', (id: string) => this.join(id))
   }
 
   private connect() {
@@ -40,7 +42,7 @@ class SocketIO {
   }
 
   private getMeshData(data: Array<Mesh>) {
-    createObject(data)
+    this.threeObject.createMesh(data)
   }
 
   private join(id: string) {
