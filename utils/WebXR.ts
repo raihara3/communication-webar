@@ -1,26 +1,23 @@
 import * as THREE from 'three'
 import SocketIO from '../utils/SocketIO'
+import ThreeJS from './ThreeJS'
 
 class WebXR {
-  renderer: THREE.WebGLRenderer
-  scene: THREE.Scene
+  threeJS: ThreeJS
   sessionInit: any
   currentSession: THREE.XRSession | null
   session: THREE.XRSession | null
   xrRefSpace: THREE.XRReferenceSpace | null
   xrHitTestSource: THREE.XRHitTestSource | null
-  canvasContext: any
   socketIO: SocketIO | null
 
-  constructor(renderer, scene, sessionInit, canvasContext) {
-    this.renderer = renderer
-    this.scene = scene
+  constructor(threeJS: ThreeJS, sessionInit) {
+    this.threeJS = threeJS
     this.sessionInit = sessionInit
     this.currentSession = null
     this.session = null
     this.xrRefSpace = null
     this.xrHitTestSource = null
-    this.canvasContext = canvasContext
     this.socketIO = null
   }
 
@@ -35,7 +32,7 @@ class WebXR {
   }
 
   async createSession() {
-    this.socketIO = await new SocketIO()
+    this.socketIO = await new SocketIO(this.threeJS)
 
     if(this.currentSession) {
       this.currentSession.end()
@@ -53,12 +50,13 @@ class WebXR {
   }
 
   private async onSessionStarted() {
-    await this.canvasContext.makeXRCompatible()
+    const context: any = this.threeJS.context
+    await context.makeXRCompatible()
 
-    if(!this.session) return
+    if(!this.session || !this.threeJS.renderer) return
     this.session.addEventListener('end', this.onSessionEnded)
-    this.renderer.xr.setReferenceSpaceType('local')
-    this.renderer.xr.setSession(this.session)
+    this.threeJS.renderer.xr.setReferenceSpaceType('local')
+    this.threeJS.renderer.xr.setSession(this.session)
     this.currentSession = this.session
   }
 
@@ -87,18 +85,24 @@ class WebXR {
   }
 
   private handleController(_: THREE.XRRigidTransform) {
-    const controller = this.renderer.xr.getController(0)
+    if(!this.threeJS.renderer) return
+
+    const controller = this.threeJS.renderer.xr.getController(0)
     if(!controller.userData.isSelecting) return
 
-    const geometry = new THREE.BoxGeometry(0.01, 0.01, 0.01)
-    const material = new THREE.MeshBasicMaterial({color: 0x00ff00})
-    const cube = new THREE.Mesh(geometry, material)
-    cube.position.set(
-      controller.position.x,
-      controller.position.y,
-      controller.position.z
-    )
-    this.scene.add(cube)
+    const geometryInfo = {
+      type: 'BoxGeometry',
+      width: 0.01,
+      height: 0.01,
+      depth: 0.01
+    }
+    const materialInfo = {
+      type: 'MeshBasicMaterial',
+      color: 0x00ff00
+    }
+    const { geometry, material, mesh } = this.threeJS.buildMesh(geometryInfo, materialInfo, controller.position)
+
+    this.threeJS.scene.add(mesh)
 
     this.socketIO?.sendMeshData({
       position: controller.position,

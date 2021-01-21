@@ -1,5 +1,5 @@
 import io from 'socket.io-client'
-import ThreeObject from './ThreeObject'
+import ThreeJS from './ThreeJS'
 
 interface Mesh {
   geometryJson: any
@@ -8,12 +8,12 @@ interface Mesh {
 }
 
 class SocketIO {
+  threeJS: ThreeJS
   socket: SocketIOClient.Socket | null
-  threeObject: ThreeObject
 
-  constructor() {
+  constructor(threeJS: ThreeJS) {
+    this.threeJS = threeJS
     this.socket = null
-    this.threeObject = new ThreeObject()
     this.connectSocket()
   }
 
@@ -42,7 +42,7 @@ class SocketIO {
   }
 
   private getMeshData(data: Array<Mesh>) {
-    this.threeObject.createMesh(data)
+    this.threeJS.createMesh(data)
   }
 
   private join(id: string) {

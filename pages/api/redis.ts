@@ -17,7 +17,6 @@ class Redis {
   }
 
   private createHandler() {
-    console.log(this.client)
     this.client.on('connect', ()=> {
       console.log('redis!!!')
     })
