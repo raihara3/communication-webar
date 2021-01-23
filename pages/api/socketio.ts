@@ -4,49 +4,57 @@ import Redis from './redis'
 // TODO: change to the RoomID
 const roomID = 'testRoom'
 
-const ioHandler = (_, res) => {
-  if (!res.socket.server.io) {
+class WebSocket {
+  redis: Redis
+  socket: any
+
+  constructor(socket) {
+    this.redis = new Redis()
+    this.socket = socket
+    this.connection()
+  }
+
+  connection() {
+    this.socket.join(roomID)
+
+    this.socket.on('addUser', () => this.addUser())
+    this.socket.on('sendMesh', data => this.sendMesh(data))
+    this.socket.on('disconnect', () => this.disconnect())
+  }
+
+  private async addUser() {
+    this.socket.broadcast.emit('addUser', this.socket.id)
+    this.socket.emit('join', this.socket.id)
+
+    const meshs: Array<string> = await this.redis.getMeshs(roomID)
+    this.socket.emit('getMeshData', meshs.map(mesh => JSON.parse(mesh)))
+
+    this.redis.addUser(roomID, this.socket.id)
+  }
+
+  private sendMesh(data) {
+    this.redis.addMesh(roomID, JSON.stringify(data))
+    this.socket.broadcast.emit('getMeshData', [data])
+  }
+
+  private disconnect() {
+    console.log(`disconnect: ${this.socket.id}`)
+    this.redis.removeUser(roomID, this.socket.id)
+    if(!this.socket.adapter.rooms.has(roomID)) {
+      this.redis.removeAllMesh(roomID)
+    }
+  }
+}
+
+const webSocketHandler = (_, res) => {
+  if(!res.socket.server.io) {
     console.log('*First use, starting socket.io')
-
-    const redis = new Redis()
-
     const io = new Server(res.socket.server)
-    io.on('connection', async socket => {
-
-      socket.join(roomID)
-
-      const rooms = await io.allSockets()
-
-      socket.on('addUser', async () => {
-        socket.broadcast.emit('addUser', socket.id)
-        socket.emit('join', socket.id)
-
-        const meshs: Array<string> = await redis.getMeshs(roomID)
-        socket.emit('getMeshData', meshs.map(mesh => JSON.parse(mesh)))
-
-        redis.addUser(roomID, socket.id)
-
-        const ownerId = rooms.values().next().value
-        if(ownerId !== socket.id) {
-          io.to(ownerId).emit('copy scene', socket.id)
-        }
-      })
-
-      socket.on('sendMesh', data => {
-        redis.addMesh(roomID, JSON.stringify(data))
-        socket.broadcast.emit('getMeshData', [data])
-      })
-
-      socket.on('disconnect', () => {
-        redis.removeUser(roomID, socket.id)
-        if(!socket.adapter.rooms.has(roomID)) {
-          redis.removeAllMesh(roomID)
-        }
-      })
+    io.on('connect', socket => {
+      new WebSocket(socket)
     })
-
     res.socket.server.io = io
-  } else {
+  }else {
     console.log('socket.io already running')
   }
   res.end()
@@ -58,4 +66,4 @@ export const config = {
   }
 }
 
-export default ioHandler
+export default webSocketHandler
