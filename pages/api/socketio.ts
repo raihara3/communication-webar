@@ -1,22 +1,22 @@
 import { Server } from 'socket.io'
-import Redis from './redis'
+import redis from 'redis'
+import UserRepository from './repository/user/redis'
+import MeshRepository from './repository/mesh/redis'
 
 // TODO: change to the RoomID
 const roomID = 'testRoom'
 
-class WebSocket {
-  redis: Redis
+class RoomHandler {
   socket: any
+  userRepository: UserRepository
+  meshRepository: MeshRepository
 
-  constructor(socket) {
-    this.redis = new Redis()
+  constructor(socket, userRepository, meshRepository) {
     this.socket = socket
-    this.connection()
-  }
+    this.userRepository = userRepository
+    this.meshRepository = meshRepository
 
-  connection() {
     this.socket.join(roomID)
-
     this.socket.on('addUser', () => this.addUser())
     this.socket.on('sendMesh', data => this.sendMesh(data))
     this.socket.on('disconnect', () => this.disconnect())
@@ -26,32 +26,37 @@ class WebSocket {
     this.socket.broadcast.emit('addUser', this.socket.id)
     this.socket.emit('join', this.socket.id)
 
-    const meshs: Array<string> = await this.redis.getMeshs(roomID)
-    this.socket.emit('getMeshData', meshs.map(mesh => JSON.parse(mesh)))
+    const meshList: Array<string> = await this.meshRepository.get(roomID)
+    this.socket.emit('getMeshData', meshList.map(mesh => JSON.parse(mesh)))
 
-    this.redis.addUser(roomID, this.socket.id)
+    this.userRepository.add(roomID, this.socket.id)
   }
 
   private sendMesh(data) {
-    this.redis.addMesh(roomID, JSON.stringify(data))
+    this.meshRepository.add(roomID, JSON.stringify(data))
     this.socket.broadcast.emit('getMeshData', [data])
   }
 
   private disconnect() {
     console.log(`disconnect: ${this.socket.id}`)
-    this.redis.removeUser(roomID, this.socket.id)
+    this.userRepository.remove(roomID, this.socket.id)
     if(!this.socket.adapter.rooms.has(roomID)) {
-      this.redis.removeAllMesh(roomID)
+      this.meshRepository.delete(roomID)
     }
   }
 }
 
-const webSocketHandler = (_, res) => {
+const roomHandler = (_, res) => {
   if(!res.socket.server.io) {
     console.log('*First use, starting socket.io')
     const io = new Server(res.socket.server)
+    const client = redis.createClient()
     io.on('connect', socket => {
-      new WebSocket(socket)
+      new RoomHandler(
+        socket,
+        new UserRepository(client),
+        new MeshRepository(client)
+      )
     })
     res.socket.server.io = io
   }else {
@@ -66,4 +71,4 @@ export const config = {
   }
 }
 
-export default webSocketHandler
+export default roomHandler
