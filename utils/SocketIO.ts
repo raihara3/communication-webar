@@ -18,7 +18,7 @@ class SocketIO {
   }
 
   private async connectSocket() {
-    await fetch('api/socketio')
+    await fetch('api/room')
     this.socket = await io()
 
     this.socket.on('connect', () => this.connect())

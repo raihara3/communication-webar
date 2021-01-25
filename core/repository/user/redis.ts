@@ -12,7 +12,6 @@ class UserRepository {
   }
 
   add(roomID: string, userID: string) {
-    console.log(this.key(roomID))
     this.inner.rpush(this.key(roomID), userID)
   }
 

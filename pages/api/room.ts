@@ -29,6 +29,7 @@ const roomHandler = (_, res) => {
 
       socket.on('sendMesh', data => {
         meshRepository.add(roomID, JSON.stringify(data))
+        socket.broadcast.emit('getMeshData', [data])
       })
 
       socket.on('disconnect', () => {
