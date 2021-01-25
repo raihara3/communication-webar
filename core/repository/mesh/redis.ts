@@ -2,11 +2,13 @@ import redis from 'redis'
 
 class MeshRepository {
   inner: redis.RedisClient
-  key: (id: string) => string
 
   constructor(inner) {
     this.inner = inner
-    this.key = (id: string) => `${id}_mesh`
+  }
+
+  private key(id: string) {
+    return `${id}_mesh`
   }
 
   add(roomID: string, data: any) {

@@ -2,11 +2,13 @@ import redis from 'redis'
 
 class UserRepository {
   inner: redis.RedisClient
-  key: (id: string) => string
 
   constructor(inner) {
     this.inner = inner
-    this.key = (id: string) => `${id}_users`
+  }
+
+  private key(id: string) {
+    return `${id}_users`
   }
 
   add(roomID: string, userID: string) {

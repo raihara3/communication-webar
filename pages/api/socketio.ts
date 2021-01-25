@@ -1,7 +1,7 @@
 import { Server } from 'socket.io'
 import redis from 'redis'
-import UserRepository from './repository/user/redis'
-import MeshRepository from './repository/mesh/redis'
+import UserRepository from '../../core/repository/user/redis'
+import MeshRepository from '../../core/repository/mesh/redis'
 
 // TODO: change to the RoomID
 const roomID = 'testRoom'
@@ -31,6 +31,8 @@ class RoomHandler {
 
     this.userRepository.add(roomID, this.socket.id)
   }
+
+  // TODO: create getMeshData function
 
   private sendMesh(data) {
     this.meshRepository.add(roomID, JSON.stringify(data))
