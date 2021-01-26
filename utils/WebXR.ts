@@ -1,5 +1,6 @@
+import io from 'socket.io-client'
 import * as THREE from 'three'
-import SocketIO from '../utils/SocketIO'
+import { messageHandler, sendMesh } from '../core/service/messaging'
 import ThreeJS from './ThreeJS'
 
 class WebXR {
@@ -9,7 +10,7 @@ class WebXR {
   session: THREE.XRSession | null
   xrRefSpace: THREE.XRReferenceSpace | null
   xrHitTestSource: THREE.XRHitTestSource | null
-  socketIO: SocketIO | null
+  socket: SocketIOClient.Socket | null
 
   constructor(threeJS: ThreeJS, sessionInit) {
     this.threeJS = threeJS
@@ -18,7 +19,7 @@ class WebXR {
     this.session = null
     this.xrRefSpace = null
     this.xrHitTestSource = null
-    this.socketIO = null
+    this.socket = null
   }
 
   static isSupported() {
@@ -32,7 +33,9 @@ class WebXR {
   }
 
   async createSession() {
-    this.socketIO = await new SocketIO(this.threeJS)
+    await fetch('api/room')
+    this.socket = await io()
+    messageHandler(this.socket)
 
     if(this.currentSession) {
       this.currentSession.end()
@@ -88,7 +91,7 @@ class WebXR {
     if(!this.threeJS.renderer) return
 
     const controller = this.threeJS.renderer.xr.getController(0)
-    if(!controller.userData.isSelecting) return
+    if(!controller.userData.isSelecting || !this.socket) return
 
     const geometryInfo = {
       type: 'BoxGeometry',
@@ -104,11 +107,14 @@ class WebXR {
 
     this.threeJS.scene.add(mesh)
 
-    this.socketIO?.sendMeshData({
-      position: controller.position,
-      geometryJson: geometry.toJSON(),
-      materialJson: material.toJSON()
-    })
+    sendMesh(
+      this.socket,
+      {
+        position: controller.position,
+        geometryJson: geometry.toJSON(),
+        materialJson: material.toJSON()
+      }
+    )
 
     controller.userData.isSelecting = false
   }

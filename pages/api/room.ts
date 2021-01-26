@@ -24,12 +24,12 @@ const roomHandler = (_, res) => {
         userRepository.add(roomID, socket.id)
 
         const meshList: Array<string> = await meshRepository.get(roomID)
-        socket.emit('getMeshData', meshList.map(mesh => JSON.parse(mesh)))
+        socket.emit('getMesh', meshList.map(mesh => JSON.parse(mesh)))
       })
 
       socket.on('sendMesh', data => {
         meshRepository.add(roomID, JSON.stringify(data))
-        socket.broadcast.emit('getMeshData', [data])
+        socket.broadcast.emit('getMesh', [data])
       })
 
       socket.on('disconnect', () => {

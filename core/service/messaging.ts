@@ -1,6 +1,6 @@
 import ThreeJS from '../../utils/ThreeJS'
 
-export const messageHandler = async(socket) => {
+export const messageHandler = async(socket: SocketIOClient.Socket) => {
   socket.on('connect', () => {
     socket.emit('addUser')
   })
