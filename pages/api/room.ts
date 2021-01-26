@@ -20,7 +20,7 @@ const roomHandler = (_, res) => {
       socket.join(roomID)
       socket.on('addUser', async() => {
         socket.broadcast.emit('addUser', socket.id)
-        socket.emit('join', socket.id)
+        socket.emit('addUser', socket.id)
         userRepository.add(roomID, socket.id)
 
         const meshList: Array<string> = await meshRepository.get(roomID)

@@ -25,7 +25,6 @@ class SocketIO {
     this.socket.on('addUser', (id: string) => this.addUser(id))
     this.socket.on('disconnect', () => this.disconnect())
     this.socket.on('getMeshData', (data: Array<Mesh>) => this.getMeshData(data))
-    this.socket.on('join', (id: string) => this.join(id))
   }
 
   private connect() {
@@ -43,10 +42,6 @@ class SocketIO {
 
   private getMeshData(data: Array<Mesh>) {
     this.threeJS.createMesh(data)
-  }
-
-  private join(id: string) {
-    console.log(`my id: ${id}`)
   }
 
   sendMeshData(data: Mesh) {
