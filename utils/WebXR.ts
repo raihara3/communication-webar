@@ -35,7 +35,7 @@ class WebXR {
   async createSession() {
     await fetch('api/room')
     this.socket = await io()
-    messageHandler(this.socket)
+    messageHandler(this.socket, this.threeJS)
 
     if(this.currentSession) {
       this.currentSession.end()

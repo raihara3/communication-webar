@@ -1,6 +1,6 @@
 import ThreeJS from '../../utils/ThreeJS'
 
-export const messageHandler = async(socket: SocketIOClient.Socket) => {
+export const messageHandler = async(socket: SocketIOClient.Socket, threeJS: ThreeJS) => {
   socket.on('connect', () => {
     socket.emit('addUser')
   })
@@ -11,7 +11,6 @@ export const messageHandler = async(socket: SocketIOClient.Socket) => {
 
   socket.on('getMesh', (data: any) => {
     console.log(data)
-    const threeJS = new ThreeJS('webAR')
     threeJS.createMesh(data)
   })
 
