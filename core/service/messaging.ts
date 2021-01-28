@@ -1,6 +1,6 @@
-import ThreeJS from '../../utils/ThreeJS'
+import { createGroup } from '../service/mesh'
 
-export const messageHandler = async(socket: SocketIOClient.Socket, threeJS: ThreeJS) => {
+export const messageHandler = async(socket: SocketIOClient.Socket, scene: THREE.Scene) => {
   socket.on('connect', () => {
     socket.emit('addUser')
   })
@@ -11,7 +11,7 @@ export const messageHandler = async(socket: SocketIOClient.Socket, threeJS: Thre
 
   socket.on('getMesh', (data: any) => {
     console.log(data)
-    threeJS.createMesh(data)
+    createGroup(scene, data)
   })
 
   socket.on('disconnect', () => {

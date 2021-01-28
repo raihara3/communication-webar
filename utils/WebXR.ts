@@ -1,11 +1,11 @@
 import io from 'socket.io-client'
 import * as THREE from 'three'
 import { messageHandler, sendMesh } from '../core/service/messaging'
-import ThreeJS from './ThreeJS'
+import WebGL from '../core/service/WebGL'
 import { createMesh } from '../core/service/mesh'
 
 class WebXR {
-  threeJS: ThreeJS
+  webGL: WebGL
   sessionInit: any
   currentSession: THREE.XRSession | null
   session: THREE.XRSession | null
@@ -13,8 +13,8 @@ class WebXR {
   xrHitTestSource: THREE.XRHitTestSource | null
   socket: SocketIOClient.Socket | null
 
-  constructor(threeJS: ThreeJS, sessionInit) {
-    this.threeJS = threeJS
+  constructor(webGL: WebGL, sessionInit) {
+    this.webGL = webGL
     this.sessionInit = sessionInit
     this.currentSession = null
     this.session = null
@@ -36,7 +36,7 @@ class WebXR {
   async createSession() {
     await fetch('api/room')
     this.socket = await io()
-    messageHandler(this.socket, this.threeJS)
+    messageHandler(this.socket, this.webGL.scene)
 
     if(this.currentSession) {
       this.currentSession.end()
@@ -54,13 +54,13 @@ class WebXR {
   }
 
   private async onSessionStarted() {
-    const context: any = this.threeJS.context
+    const context: any = this.webGL.context
     await context.makeXRCompatible()
 
-    if(!this.session || !this.threeJS.renderer) return
+    if(!this.session || !this.webGL.renderer) return
     this.session.addEventListener('end', this.onSessionEnded)
-    this.threeJS.renderer.xr.setReferenceSpaceType('local')
-    this.threeJS.renderer.xr.setSession(this.session)
+    this.webGL.renderer.xr.setReferenceSpaceType('local')
+    this.webGL.renderer.xr.setSession(this.session)
     this.currentSession = this.session
   }
 
@@ -89,13 +89,13 @@ class WebXR {
   }
 
   private handleController(_: THREE.XRRigidTransform) {
-    if(!this.threeJS.renderer) return
+    if(!this.webGL.renderer) return
 
-    const controller = this.threeJS.renderer.xr.getController(0)
+    const controller = this.webGL.renderer.xr.getController(0)
     if(!controller.userData.isSelecting || !this.socket) return
 
     const mesh = createMesh(controller.position)
-    this.threeJS.scene.add(mesh)
+    this.webGL.scene.add(mesh)
 
     sendMesh(
       this.socket,

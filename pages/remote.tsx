@@ -1,19 +1,19 @@
 import { useEffect, useState, useCallback } from "react"
 import { Button } from '@material-ui/core';
 import WebXR from '../utils/WebXR'
-import ThreeJS from '../utils/ThreeJS'
+import WebGL from '../core/service/WebGL'
 
 const Remote = () => {
   const [isSupported, setIsSupported] = useState(false)
-  const threeJS = new ThreeJS('webAR')
 
   const onCreateSession = useCallback(() => {
-    new WebXR(threeJS, {requiredFeatures: ['local', 'hit-test']}).createSession()
+    const canvas = document.getElementById('webAR') as HTMLCanvasElement
+    const webGL = new WebGL(canvas)
+    new WebXR(webGL, {requiredFeatures: ['local', 'hit-test']}).createSession()
   }, [])
 
   useEffect(() => {
     setIsSupported('xr' in navigator)
-    threeJS.init()
   }, [])
 
   return (

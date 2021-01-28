@@ -30,3 +30,11 @@ export const parseMesh = ({ json, position }): THREE.Mesh => {
   )
   return mesh
 }
+
+export const createGroup = async(scene: THREE.Scene, list: Array<any>) => {
+  const group = new THREE.Group()
+  await list.forEach(json => {
+    group.add(parseMesh(json))
+  })
+  scene.add(group)
+}
