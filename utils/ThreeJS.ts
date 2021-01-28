@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { parseMesh } from '../core/service/mesh'
 
 interface Mesh {
   geometryJson: Geometry
@@ -74,13 +75,12 @@ class ThreeJS {
     })
   }
 
-  async createMesh(meshs: Array<Mesh>) {
-    if(meshs.length === 0) return
+  async createMesh(jsonList: Array<any>) {
+    if(jsonList.length === 0) return
 
     const group = new THREE.Group()
-    await meshs.map(({geometryJson, materialJson, position}) => {
-      const { mesh } = this.buildMesh(geometryJson, materialJson, position)
-      group.add(mesh)
+    await jsonList.forEach(json => {
+      group.add(parseMesh(json))
     })
     this.scene.add(group)
   }

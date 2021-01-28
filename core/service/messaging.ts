@@ -19,6 +19,6 @@ export const messageHandler = async(socket: SocketIOClient.Socket, threeJS: Thre
   })
 }
 
-export const sendMesh = (socket: SocketIOClient.Socket, data: any) => {
+export const sendMesh = (socket: SocketIOClient.Socket, data: {json: any, position: any}) => {
   socket.emit('sendMesh', data)
 }

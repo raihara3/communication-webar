@@ -2,6 +2,7 @@ import io from 'socket.io-client'
 import * as THREE from 'three'
 import { messageHandler, sendMesh } from '../core/service/messaging'
 import ThreeJS from './ThreeJS'
+import { createMesh } from '../core/service/mesh'
 
 class WebXR {
   threeJS: ThreeJS
@@ -93,27 +94,15 @@ class WebXR {
     const controller = this.threeJS.renderer.xr.getController(0)
     if(!controller.userData.isSelecting || !this.socket) return
 
-    const geometryInfo = {
-      type: 'BoxGeometry',
-      width: 0.01,
-      height: 0.01,
-      depth: 0.01
-    }
-    const materialInfo = {
-      type: 'MeshBasicMaterial',
-      color: 0x00ff00
-    }
-    const { geometry, material, mesh } = this.threeJS.buildMesh(geometryInfo, materialInfo, controller.position)
-
+    const mesh = createMesh(controller.position)
     this.threeJS.scene.add(mesh)
 
     sendMesh(
       this.socket,
       {
-        position: controller.position,
-        geometryJson: geometry.toJSON(),
-        materialJson: material.toJSON()
-      }
+        json: mesh.toJSON(),
+        position: controller.position
+      },
     )
 
     controller.userData.isSelecting = false
