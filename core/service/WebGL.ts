@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 
 class WebGL {
-  context: WebGL2RenderingContext
+  context: WebGLRenderingContext
   scene: THREE.Scene
   renderer: THREE.WebGLRenderer
 
@@ -28,11 +28,6 @@ class WebGL {
       camera.updateProjectionMatrix()
       this.renderer.setSize(window.innerWidth, window.innerHeight)
     }, false)
-
-    const controller = this.renderer.xr.getController(0)
-    controller.addEventListener('selectend', () => {
-      controller.userData.isSelecting = true
-    })
   }
 }
 

@@ -1,16 +1,38 @@
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState } from "react"
+import io from 'socket.io-client'
 import { Button } from '@material-ui/core';
-import WebXR from '../utils/WebXR'
 import WebGL from '../core/service/WebGL'
+import { messageHandler, sendMesh } from '../core/service/messaging'
+import { createMesh } from '../core/service/mesh'
 
 const Remote = () => {
   const [isSupported, setIsSupported] = useState(false)
 
-  const onCreateSession = useCallback(() => {
+  const onStartWebAR = async() => {
     const canvas = document.getElementById('webAR') as HTMLCanvasElement
     const webGL = new WebGL(canvas)
-    new WebXR(webGL, {requiredFeatures: ['local', 'hit-test']}).createSession()
-  }, [])
+
+    await fetch('api/room')
+    const socket = await io()
+    messageHandler(socket, webGL.scene)
+
+    const session = await navigator['xr'].requestSession('immersive-ar', {
+      requiredFeatures: ['local', 'hit-test']
+    })
+    await webGL.context.makeXRCompatible()
+    webGL.renderer.xr.setReferenceSpaceType('local')
+    webGL.renderer.xr.setSession(session)
+
+    const controller = webGL.renderer.xr.getController(0)
+    controller.addEventListener('selectend', () => {
+      const mesh = createMesh(controller.position)
+      webGL.scene.add(mesh)
+      sendMesh(socket, {
+        json: mesh.toJSON(),
+        position: controller.position
+      })
+    })
+  }
 
   useEffect(() => {
     setIsSupported('xr' in navigator)
@@ -23,7 +45,7 @@ const Remote = () => {
         <Button
           variant='outlined'
           color='primary'
-          onClick={() => onCreateSession()}
+          onClick={() => onStartWebAR()}
         >
           START AR
         </Button>
