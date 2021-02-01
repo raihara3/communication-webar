@@ -25,8 +25,11 @@ describe('UserService test', () => {
     userService.remove('testRoom', 'testUser2', false)
   })
 
-  test('Bad request', async() => {
-    const meshList = await userService.add('', '')
-    expect(meshList).toEqual([])
+  test('Bad add request', async() => {
+    await expect(() => userService.add('', '')).rejects.toThrowError(/incorrect/)
+  })
+
+  test('Bad remove request', () => {
+    expect(() => userService.remove('', '', true)).toThrowError(/incorrect/)
   })
 })
