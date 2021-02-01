@@ -2,7 +2,13 @@ import { Server } from 'socket.io'
 import redis from 'redis'
 import UserRepository from '../../core/repository/user/redis'
 import MeshRepository from '../../core/repository/mesh/redis'
-import UserService from '../../core/service/UserService'
+import UserService from '../../core/service/AddUserService'
+
+// in testcode
+// const mockUserRepsository = new sinon().Expect('add').Count(1)
+// const mockMeshRepsository = new sinon().Expect('add').Count(1)
+// new AddUserService(mockUserRepsository, mockMeshRepsository).Execute(doSomeThing)
+//
 
 const roomHandler = (_, res) => {
   // TODO: change to the RoomID
