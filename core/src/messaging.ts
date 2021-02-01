@@ -1,4 +1,4 @@
-import { createGroup } from '../service/mesh'
+import { createGroup } from './mesh'
 
 export const messageHandler = async(socket: SocketIOClient.Socket, scene: THREE.Scene) => {
   socket.on('connect', () => {

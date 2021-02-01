@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
 import io from 'socket.io-client'
 import { Button } from '@material-ui/core';
-import WebGL from '../core/service/WebGL'
-import { messageHandler, sendMesh } from '../core/service/messaging'
-import { createMesh } from '../core/service/mesh'
+import WebGL from '../core/src/WebGL'
+import { messageHandler, sendMesh } from '../core/src/messaging'
+import { createMesh } from '../core/src/mesh'
 
 const Remote = () => {
   const [isSupported, setIsSupported] = useState(false)

@@ -15,7 +15,7 @@ class MeshRepository {
     this.inner.rpush(this.key(roomID), data)
   }
 
-  get(roomID: string): any {
+  list(roomID: string): any {
     return new Promise((resolve, reject) => {
       this.inner.lrange(this.key(roomID), 0, -1, (error, reply) => {
         if(error) {

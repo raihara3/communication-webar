@@ -2,6 +2,7 @@ import { Server } from 'socket.io'
 import redis from 'redis'
 import UserRepository from '../../core/repository/user/redis'
 import MeshRepository from '../../core/repository/mesh/redis'
+import UserService from '../../core/service/UserService'
 
 const roomHandler = (_, res) => {
   // TODO: change to the RoomID
@@ -14,6 +15,7 @@ const roomHandler = (_, res) => {
     const client = redis.createClient()
     const userRepository = new UserRepository(client)
     const meshRepository = new MeshRepository(client)
+    const userService = new UserService(userRepository, meshRepository)
     const io = new Server(res.socket.server)
 
     io.on('connect', socket => {
@@ -21,10 +23,8 @@ const roomHandler = (_, res) => {
       socket.on('addUser', async() => {
         socket.broadcast.emit('addUser', socket.id)
         socket.emit('addUser', socket.id)
-        userRepository.add(roomID, socket.id)
-
-        const meshList: Array<string> = await meshRepository.get(roomID)
-        socket.emit('getMesh', meshList.map(mesh => JSON.parse(mesh)))
+        const ret = await userService.add(roomID, socket.id)
+        socket.emit('getMesh', ret)
       })
 
       socket.on('sendMesh', data => {
@@ -34,10 +34,8 @@ const roomHandler = (_, res) => {
 
       socket.on('disconnect', () => {
         console.log(`disconnect: ${socket.id}`)
-        userRepository.remove(roomID, socket.id)
-        if(!socket.adapter.rooms.has(roomID)) {
-          meshRepository.delete(roomID)
-        }
+        const hasActiveMember = socket.adapter.rooms.has(roomID)
+        userService.remove(roomID, socket.id, hasActiveMember)
       })
     })
     res.socket.server.io = io
