@@ -3,6 +3,7 @@ import redis from 'redis'
 import UserRepository from '../../core/repository/user/redis'
 import MeshRepository from '../../core/repository/mesh/redis'
 import UserService from '../../core/service/UserService'
+import AddUserService from '../../core/service/AddUserService'
 
 const roomHandler = (_, res) => {
   // TODO: change to the RoomID
@@ -20,11 +21,8 @@ const roomHandler = (_, res) => {
 
     io.on('connect', socket => {
       socket.join(roomID)
-      socket.on('addUser', async() => {
-        socket.broadcast.emit('addUser', socket.id)
-        socket.emit('addUser', socket.id)
-        const ret = await userService.add(roomID, socket.id)
-        socket.emit('getMesh', ret)
+      socket.on('addUser', () => {
+        new AddUserService(userRepository, meshRepository).execute(socket, roomID)
       })
 
       socket.on('sendMesh', data => {
