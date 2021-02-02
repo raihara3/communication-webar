@@ -1,17 +1,14 @@
 import { BroadCast } from '../src/BroadCaster'
-import UserMessagingRepository from '../repository/user/UserMessagingRepository'
 import UserRepository from '../repository/user/redis'
 import MeshRepository from '../repository/mesh/redis'
 
 class LeaveUserService {
   userRepository: UserRepository
   meshRepository: MeshRepository
-  userMessagingRepository: UserMessagingRepository
 
-  constructor(ur, mr, listener: BroadCast, broadcast: BroadCast) {
+  constructor(ur, mr) {
     this.userRepository = ur
     this.meshRepository = mr
-    this.userMessagingRepository = new UserMessagingRepository(listener, broadcast)
   }
 
   execute(listener: BroadCast, roomID: string) {

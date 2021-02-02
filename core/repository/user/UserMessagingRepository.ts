@@ -16,7 +16,7 @@ class UserMessagingRepository {
   }
 
   toMyself(eventName, data) {
-    this.broadcaster.toMyself(eventName, data)
+    this.broadcaster.toSender(eventName, data)
   }
 }
 

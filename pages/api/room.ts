@@ -4,6 +4,7 @@ import UserRepository from '../../core/repository/user/redis'
 import MeshRepository from '../../core/repository/mesh/redis'
 import AddUserService from '../../core/service/AddUserService'
 import LeaveUserService from '../../core/service/LeaveUserService'
+import SendMeshService from '../../core/service/SendMeshService'
 
 const roomHandler = (_, res) => {
   // TODO: change to the RoomID
@@ -25,12 +26,11 @@ const roomHandler = (_, res) => {
       })
 
       socket.on('sendMesh', data => {
-        meshRepository.add(roomID, JSON.stringify(data))
-        socket.broadcast.emit('getMesh', [data])
+        new SendMeshService(userRepository, meshRepository, socket, socket.broadcast).execute(roomID, data)
       })
 
       socket.on('disconnect', () => {
-        new LeaveUserService(userRepository, meshRepository, socket, socket.broadcast).execute(socket, roomID)
+        new LeaveUserService(userRepository, meshRepository).execute(socket, roomID)
       })
     })
     res.socket.server.io = io

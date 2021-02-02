@@ -26,7 +26,7 @@ class BroadCaster {
     this.broadcaster.emit(eventName, data)
   }
 
-  toMyself(eventName, data) {
+  toSender(eventName, data) {
     this.myself.emit(eventName, data)
   }
 }
