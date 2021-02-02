@@ -1,7 +1,8 @@
 import { Server } from 'socket.io'
 import redis from 'redis'
-import UserRepository from '../../core/repository/user/redis'
+import UserRepository from '../../core/repository/user/UserRepository'
 import MeshRepository from '../../core/repository/mesh/redis'
+import UserMessagingRepository from '../../core/repository/user/UserMessagingRepository'
 import AddUserService from '../../core/service/AddUserService'
 import LeaveUserService from '../../core/service/LeaveUserService'
 import SendMeshService from '../../core/service/SendMeshService'
@@ -17,20 +18,24 @@ const roomHandler = (_, res) => {
     const client = redis.createClient()
     const userRepository = new UserRepository(client)
     const meshRepository = new MeshRepository(client)
+
     const io = new Server(res.socket.server)
 
     io.on('connect', socket => {
+      const userMessagingRepository = new UserMessagingRepository(socket, socket.broadcast)
+
       socket.join(roomID)
+
       socket.on('addUser', () => {
-        new AddUserService(userRepository, meshRepository, socket, socket.broadcast).execute(roomID, socket.id)
+        new AddUserService(userRepository, meshRepository, userMessagingRepository).execute(roomID, socket.id)
       })
 
       socket.on('sendMesh', data => {
-        new SendMeshService(userRepository, meshRepository, socket, socket.broadcast).execute(roomID, data)
+        new SendMeshService(userRepository, meshRepository, userMessagingRepository).execute(roomID, data)
       })
 
       socket.on('disconnect', () => {
-        new LeaveUserService(userRepository, meshRepository, socket).execute(roomID)
+        new LeaveUserService(userRepository, meshRepository).execute(roomID, socket)
       })
     })
     res.socket.server.io = io

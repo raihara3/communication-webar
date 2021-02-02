@@ -1,6 +1,5 @@
-import { BroadCast } from '../src/BroadCaster'
 import UserMessagingRepository from '../repository/user/UserMessagingRepository'
-import UserRepository from '../repository/user/redis'
+import UserRepository from '../repository/user/UserRepository'
 import MeshRepository from '../repository/mesh/redis'
 
 class SendMeshService {
@@ -8,10 +7,10 @@ class SendMeshService {
   meshRepository: MeshRepository
   userMessagingRepository: UserMessagingRepository
 
-  constructor(ur, mr, listener: BroadCast, broadcast: BroadCast) {
+  constructor(ur, mr, userMessagingRepository) {
     this.userRepository = ur
     this.meshRepository = mr
-    this.userMessagingRepository = new UserMessagingRepository(listener, broadcast)
+    this.userMessagingRepository = userMessagingRepository
   }
 
   execute(roomID: string, data: any) {

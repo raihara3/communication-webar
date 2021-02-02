@@ -1,25 +1,23 @@
 import { BroadCast } from '../src/BroadCaster'
-import UserRepository from '../repository/user/redis'
+import UserRepository from '../repository/user/UserRepository'
 import MeshRepository from '../repository/mesh/redis'
 
 class LeaveUserService {
   userRepository: UserRepository
   meshRepository: MeshRepository
-  listener: BroadCast
 
-  constructor(ur, mr, listener: BroadCast) {
+  constructor(ur, mr) {
     this.userRepository = ur
     this.meshRepository = mr
-    this.listener = listener
   }
 
-  execute(roomID: string) {
+  execute(roomID: string, listener: BroadCast) {
     if(!roomID) {
       throw new Error('The roomID or socketID is incorrect')
     }
-    console.log(`disconnect: ${this.listener.id}`)
-    this.userRepository.remove(roomID, this.listener.id)
-    if(!this.listener.adapter.rooms.has(roomID)) {
+    console.log(`disconnect: ${listener.id}`)
+    this.userRepository.remove(roomID, listener.id)
+    if(!listener.adapter.rooms.has(roomID)) {
       this.meshRepository.delete(roomID)
     }
   }
