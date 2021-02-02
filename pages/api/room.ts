@@ -2,8 +2,8 @@ import { Server } from 'socket.io'
 import redis from 'redis'
 import UserRepository from '../../core/repository/user/redis'
 import MeshRepository from '../../core/repository/mesh/redis'
-import UserService from '../../core/service/UserService'
 import AddUserService from '../../core/service/AddUserService'
+import LeaveUserService from '../../core/service/LeaveUserService'
 
 const roomHandler = (_, res) => {
   // TODO: change to the RoomID
@@ -30,9 +30,7 @@ const roomHandler = (_, res) => {
       })
 
       socket.on('disconnect', () => {
-        console.log(`disconnect: ${socket.id}`)
-        const hasActiveMember = socket.adapter.rooms.has(roomID)
-        userService.remove(roomID, socket.id, hasActiveMember)
+        new LeaveUserService(userRepository, meshRepository, socket, socket.broadcast).execute(socket, roomID)
       })
     })
     res.socket.server.io = io
