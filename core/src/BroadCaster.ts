@@ -1,5 +1,11 @@
-interface BroadCast {
+export interface BroadCast {
+  id: string
   emit: (eventName, data) => void
+  adapter: {
+    rooms: {
+      has: (id: string) => boolean
+    }
+  }
 }
 
 class BroadCaster {

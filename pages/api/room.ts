@@ -16,13 +16,12 @@ const roomHandler = (_, res) => {
     const client = redis.createClient()
     const userRepository = new UserRepository(client)
     const meshRepository = new MeshRepository(client)
-    const userService = new UserService(userRepository, meshRepository)
     const io = new Server(res.socket.server)
 
     io.on('connect', socket => {
       socket.join(roomID)
       socket.on('addUser', () => {
-        new AddUserService(userRepository, meshRepository).execute(socket, roomID)
+        new AddUserService(userRepository, meshRepository, socket, socket.broadcast).execute(socket, roomID)
       })
 
       socket.on('sendMesh', data => {

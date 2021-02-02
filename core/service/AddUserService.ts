@@ -1,33 +1,28 @@
+import { BroadCast } from '../src/BroadCaster'
 import UserMessagingRepository from '../repository/user/UserMessagingRepository'
 import UserRepository from '../../core/repository/user/redis'
 import MeshRepository from '../../core/repository/mesh/redis'
 
-interface Listener {
-  id: string
-  broadcast: {
-    emit: (eventName, data) => void
-  }
-}
-
 class AddUserService {
   userRepository: UserRepository
   meshRepository: MeshRepository
+  userMessagingRepository: UserMessagingRepository
 
-  constructor(ur, mr) {
+  constructor(ur, mr, listener: BroadCast, broadcast: BroadCast) {
     this.userRepository = ur
     this.meshRepository = mr
+    this.userMessagingRepository = new UserMessagingRepository(listener, broadcast)
   }
 
-  async execute(listener: Listener, roomID: string) {
-    const userMessagingRepository = new UserMessagingRepository(listener, listener.broadcast)
-    userMessagingRepository.toAll('addUseer', listener.id)
+  async execute(listener: BroadCast, roomID: string) {
+    this.userMessagingRepository.toAll('addUseer', listener.id)
 
     if(!roomID) {
       throw new Error('The roomID or socketID is incorrect')
     }
     this.userRepository.add(roomID, listener.id)
     const meshList: Array<string> = await this.meshRepository.list(roomID)
-    userMessagingRepository.toMyself('getMesh', meshList.map(mesh => JSON.parse(mesh)))
+    this.userMessagingRepository.toMyself('getMesh', meshList.map(mesh => JSON.parse(mesh)))
   }
 }
 
