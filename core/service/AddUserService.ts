@@ -14,13 +14,13 @@ class AddUserService {
     this.userMessagingRepository = new UserMessagingRepository(listener, broadcast)
   }
 
-  async execute(listener: BroadCast, roomID: string) {
-    this.userMessagingRepository.toAll('addUseer', listener.id)
+  async execute(roomID: string, userID: string) {
+    this.userMessagingRepository.toAll('addUseer', userID)
 
     if(!roomID) {
       throw new Error('The roomID or socketID is incorrect')
     }
-    this.userRepository.add(roomID, listener.id)
+    this.userRepository.add(roomID, userID)
     const meshList: Array<string> = await this.meshRepository.list(roomID)
     this.userMessagingRepository.toMyself('getMesh', meshList.map(mesh => JSON.parse(mesh)))
   }

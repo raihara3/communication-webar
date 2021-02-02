@@ -22,7 +22,7 @@ const roomHandler = (_, res) => {
     io.on('connect', socket => {
       socket.join(roomID)
       socket.on('addUser', () => {
-        new AddUserService(userRepository, meshRepository, socket, socket.broadcast).execute(socket, roomID)
+        new AddUserService(userRepository, meshRepository, socket, socket.broadcast).execute(roomID, socket.id)
       })
 
       socket.on('sendMesh', data => {
@@ -30,7 +30,7 @@ const roomHandler = (_, res) => {
       })
 
       socket.on('disconnect', () => {
-        new LeaveUserService(userRepository, meshRepository).execute(socket, roomID)
+        new LeaveUserService(userRepository, meshRepository, socket).execute(roomID)
       })
     })
     res.socket.server.io = io
