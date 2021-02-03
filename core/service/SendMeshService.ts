@@ -1,6 +1,7 @@
 import UserMessagingRepository from '../repository/user/UserMessagingRepository'
 import UserRepository from '../repository/user/UserRepository'
 import MeshRepository from '../repository/mesh/redis'
+import { RoomIDException } from '../src/Error'
 
 class SendMeshService {
   userRepository: UserRepository
@@ -14,9 +15,8 @@ class SendMeshService {
   }
 
   execute(roomID: string, data: any) {
-    if(!roomID) {
-      throw new Error('The roomID or socketID is incorrect')
-    }
+    if(!roomID) throw RoomIDException()
+
     this.meshRepository.add(roomID, JSON.stringify(data))
     this.userMessagingRepository.toOther('getMesh', [data])
   }

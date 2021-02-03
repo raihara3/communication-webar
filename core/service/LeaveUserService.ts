@@ -1,6 +1,7 @@
 import { BroadCast } from '../src/BroadCaster'
 import UserRepository from '../repository/user/UserRepository'
 import MeshRepository from '../repository/mesh/redis'
+import { RoomIDException } from '../src/Error'
 
 class LeaveUserService {
   userRepository: UserRepository
@@ -12,9 +13,8 @@ class LeaveUserService {
   }
 
   execute(roomID: string, listener: BroadCast) {
-    if(!roomID) {
-      throw new Error('The roomID or socketID is incorrect')
-    }
+    if(!roomID) throw RoomIDException()
+
     console.log(`disconnect: ${listener.id}`)
     this.userRepository.remove(roomID, listener.id)
     if(!listener.adapter.rooms.has(roomID)) {
