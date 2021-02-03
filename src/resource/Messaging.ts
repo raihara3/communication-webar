@@ -1,12 +1,7 @@
 import { createGroup } from '../Mesh'
 
 export const receiveMessagingHandler = async(socket: SocketIOClient.Socket, scene: THREE.Scene) => {
-  socket.on('connect', () => {
-    socket.emit('addUser')
-  })
-
   socket.on('addUser', (id: string) => {
-    console.log('addUser!!!')
     console.log(`join: ${id}`)
   })
 

@@ -23,12 +23,9 @@ const roomHandler = (_, res) => {
 
     io.on('connect', socket => {
       const userMessagingRepository = new UserMessagingRepository(socket)
+      new AddUserService(userRepository, meshRepository, userMessagingRepository).execute(roomID, socket.id)
 
       socket.join(roomID)
-
-      socket.on('addUser', () => {
-        new AddUserService(userRepository, meshRepository, userMessagingRepository).execute(roomID, socket.id)
-      })
 
       socket.on('sendMesh', data => {
         new SendMeshService(userRepository, meshRepository, userMessagingRepository).execute(roomID, data)
