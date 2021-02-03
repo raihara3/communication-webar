@@ -22,7 +22,7 @@ const roomHandler = (_, res) => {
     const io = new Server(res.socket.server)
 
     io.on('connect', socket => {
-      const userMessagingRepository = new UserMessagingRepository(socket, socket.broadcast)
+      const userMessagingRepository = new UserMessagingRepository(socket)
 
       socket.join(roomID)
 

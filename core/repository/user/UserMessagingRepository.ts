@@ -1,22 +1,31 @@
-import BroadCaster from '../../entity/BroadCaster'
+export interface Listener {
+  id: string
+  emit: (eventName, data) => void
+  adapter: {
+    rooms: {
+      has: (id: string) => boolean
+    }
+  }
+}
 
 class UserMessagingRepository {
-  broadcaster: BroadCaster
+  listener: any
 
-  constructor(me, broadcast) {
-    this.broadcaster = new BroadCaster(me, broadcast)
+  constructor(listener: Listener) {
+    this.listener = listener
   }
 
   toAll(eventName, data) {
-    this.broadcaster.toAll(eventName, data)
+    this.listener.emit(eventName, data)
+    this.listener.broadcast.emit(eventName, data)
   }
 
   toOther(eventName, data) {
-    this.broadcaster.toOther(eventName, data)
+    this.listener.broadcast.emit(eventName, data)
   }
 
   toSender(eventName, data) {
-    this.broadcaster.toSender(eventName, data)
+    this.listener.emit(eventName, data)
   }
 }
 

@@ -1,4 +1,4 @@
-import { BroadCast } from '../entity/BroadCaster'
+import { Listener } from '../repository/user/UserMessagingRepository'
 import UserRepository from '../repository/user/UserRepository'
 import MeshRepository from '../repository/mesh/redis'
 import { RoomIDException } from '../exception/Exception'
@@ -12,7 +12,7 @@ class LeaveUserService {
     this.meshRepository = mr
   }
 
-  execute(roomID: string, listener: BroadCast) {
+  execute(roomID: string, listener: Listener) {
     if(!roomID) throw RoomIDException()
 
     console.log(`disconnect: ${listener.id}`)
