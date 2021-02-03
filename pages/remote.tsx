@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
 import io from 'socket.io-client'
 import { Button } from '@material-ui/core';
-import WebGL from '../core/src/WebGL'
-import { messageHandler, sendMesh } from '../core/src/messaging'
-import { createMesh } from '../core/src/mesh'
+import WebGL from '../src/WebGL'
+import { receiveMessagingHandler, sendMeshHandler } from '../src/resource/Messaging'
+import { createMesh } from '../src/Mesh'
 
 const Remote = () => {
   const [isSupported, setIsSupported] = useState(false)
@@ -14,7 +14,7 @@ const Remote = () => {
 
     await fetch('api/room')
     const socket = await io()
-    messageHandler(socket, webGL.scene)
+    receiveMessagingHandler(socket, webGL.scene)
 
     const session = await navigator['xr'].requestSession('immersive-ar', {
       requiredFeatures: ['local', 'hit-test']
@@ -27,7 +27,7 @@ const Remote = () => {
     controller.addEventListener('selectend', () => {
       const mesh = createMesh(controller.position)
       webGL.scene.add(mesh)
-      sendMesh(socket, {
+      sendMeshHandler(socket, {
         json: mesh.toJSON(),
         position: controller.position
       })

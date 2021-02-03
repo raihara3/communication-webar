@@ -1,7 +1,7 @@
-import { BroadCast } from '../src/BroadCaster'
+import { BroadCast } from '../entity/BroadCaster'
 import UserRepository from '../repository/user/UserRepository'
 import MeshRepository from '../repository/mesh/redis'
-import { RoomIDException } from '../src/Error'
+import { RoomIDException } from '../exception/Exception'
 
 class LeaveUserService {
   userRepository: UserRepository

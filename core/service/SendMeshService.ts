@@ -1,7 +1,7 @@
 import UserMessagingRepository from '../repository/user/UserMessagingRepository'
 import UserRepository from '../repository/user/UserRepository'
 import MeshRepository from '../repository/mesh/redis'
-import { RoomIDException } from '../src/Error'
+import { RoomIDException } from '../exception/Exception'
 
 class SendMeshService {
   userRepository: UserRepository

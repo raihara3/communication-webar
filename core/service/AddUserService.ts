@@ -1,7 +1,7 @@
 import UserMessagingRepository from '../repository/user/UserMessagingRepository'
 import UserRepository from '../repository/user/UserRepository'
 import MeshRepository from '../repository/mesh/redis'
-import { RoomIDException } from '../src/Error'
+import { RoomIDException } from '../exception/Exception'
 
 class AddUserService {
   userRepository: UserRepository
@@ -15,13 +15,13 @@ class AddUserService {
   }
 
   async execute(roomID: string, userID: string) {
-    this.userMessagingRepository.toAll('addUseer', userID)
+    this.userMessagingRepository.toAll('addUser', userID)
 
     if(!roomID) throw RoomIDException()
 
     this.userRepository.add(roomID, userID)
     const meshList: Array<string> = await this.meshRepository.list(roomID)
-    this.userMessagingRepository.toMyself('getMesh', meshList.map(mesh => JSON.parse(mesh)))
+    this.userMessagingRepository.toSender('getMesh', meshList.map(mesh => JSON.parse(mesh)))
   }
 }
 

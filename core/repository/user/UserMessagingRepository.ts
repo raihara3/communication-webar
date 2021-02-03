@@ -1,4 +1,4 @@
-import BroadCaster from '../../src/BroadCaster'
+import BroadCaster from '../../entity/BroadCaster'
 
 class UserMessagingRepository {
   broadcaster: BroadCaster
@@ -15,7 +15,7 @@ class UserMessagingRepository {
     this.broadcaster.toOther(eventName, data)
   }
 
-  toMyself(eventName, data) {
+  toSender(eventName, data) {
     this.broadcaster.toSender(eventName, data)
   }
 }

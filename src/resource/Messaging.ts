@@ -1,11 +1,12 @@
-import { createGroup } from './mesh'
+import { createGroup } from '../Mesh'
 
-export const messageHandler = async(socket: SocketIOClient.Socket, scene: THREE.Scene) => {
+export const receiveMessagingHandler = async(socket: SocketIOClient.Socket, scene: THREE.Scene) => {
   socket.on('connect', () => {
     socket.emit('addUser')
   })
 
   socket.on('addUser', (id: string) => {
+    console.log('addUser!!!')
     console.log(`join: ${id}`)
   })
 
@@ -19,6 +20,6 @@ export const messageHandler = async(socket: SocketIOClient.Socket, scene: THREE.
   })
 }
 
-export const sendMesh = (socket: SocketIOClient.Socket, data: {json: any, position: any}) => {
+export const sendMeshHandler = (socket: SocketIOClient.Socket, data: {json: any, position: any}) => {
   socket.emit('sendMesh', data)
 }
