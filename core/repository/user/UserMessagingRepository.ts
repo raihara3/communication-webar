@@ -1,4 +1,4 @@
-export interface Listener {
+export interface Sender {
   id: string
   emit: (eventName, data) => void
   adapter: {
@@ -8,20 +8,25 @@ export interface Listener {
   }
 }
 
+// EXAMPLE
+new UserMessagingRepository(socket, socket.boradcast)
+
 class UserMessagingRepository {
-  listener: any
+  listener: Sender
+  broadcaster: Sender
 
   constructor(listener: Listener) {
     this.listener = listener
+    this.broadcaster = broadcaster
   }
 
   toAll(eventName, data) {
     this.listener.emit(eventName, data)
-    this.listener.broadcast.emit(eventName, data)
+    this.broadcaster.emit(eventName, data)
   }
 
   toOther(eventName, data) {
-    this.listener.broadcast.emit(eventName, data)
+    this.broadcaster.emit(eventName, data)
   }
 
   toSender(eventName, data) {
