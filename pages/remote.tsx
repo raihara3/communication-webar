@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import io from 'socket.io-client'
 import { Button } from '@material-ui/core';
 import WebGL from '../src/WebGL'
-import { receiveMessagingHandler, sendMeshHandler } from '../src/resource/Messaging'
+import { receiveMessagingHandler, sendMeshHandler } from '../src/emitter/Messaging'
 import { createMesh } from '../src/Mesh'
 
 const Remote = () => {
