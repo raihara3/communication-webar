@@ -34,7 +34,7 @@ const roomHandler = (_, res) => {
       })
 
       socket.on('disconnect', () => {
-        new LeaveUserService(userRepository, meshRepository).execute(roomID, socket)
+        new LeaveUserService(userRepository, meshRepository).execute(roomID, socket.id, socket.adapter.rooms.has(roomID))
       })
     })
     res.socket.server.io = io

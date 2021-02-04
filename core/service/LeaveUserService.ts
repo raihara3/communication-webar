@@ -1,4 +1,3 @@
-import { Listener } from '../repository/user/UserMessagingRepository'
 import UserRepository from '../repository/user/UserRepository'
 import MeshRepository from '../repository/mesh/redis'
 import { RoomIDException } from '../exception/Exception'
@@ -12,12 +11,12 @@ class LeaveUserService {
     this.meshRepository = mr
   }
 
-  execute(roomID: string, listener: Listener) {
+  execute(roomID: string, userID: string, hasMember: boolean) {
     if(!roomID) throw RoomIDException()
 
-    console.log(`disconnect: ${listener.id}`)
-    this.userRepository.remove(roomID, listener.id)
-    if(!listener.adapter.rooms.has(roomID)) {
+    console.log(`disconnect: ${userID}`)
+    this.userRepository.remove(roomID, userID)
+    if(!hasMember) {
       this.meshRepository.delete(roomID)
     }
   }
