@@ -22,7 +22,9 @@ const roomHandler = (_, res) => {
     const io = new Server(res.socket.server)
 
     io.on('connect', socket => {
-      const userMessagingRepository = new UserMessagingRepository(socket)
+      const sender = (eventName, data) => socket.emit(eventName, data)
+      const broadcast = (eventName, data) => socket.broadcast.emit(eventName, data)
+      const userMessagingRepository = new UserMessagingRepository(sender, broadcast)
       new AddUserService(userRepository, meshRepository, userMessagingRepository).execute(roomID, socket.id)
 
       socket.join(roomID)

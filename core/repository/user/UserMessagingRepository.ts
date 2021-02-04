@@ -1,31 +1,27 @@
-export interface Listener {
-  id: string
-  emit: (eventName, data) => void
-  adapter: {
-    rooms: {
-      has: (id: string) => boolean
-    }
-  }
+export interface Sender {
+  (eventName: string, data: any): any
 }
 
 class UserMessagingRepository {
-  listener: any
+  sender: Sender
+  broadcaster: Sender
 
-  constructor(listener: Listener) {
-    this.listener = listener
+  constructor(sender: Sender, broadcaster: Sender) {
+    this.sender = sender
+    this.broadcaster = broadcaster
   }
 
   toAll(eventName, data) {
-    this.listener.emit(eventName, data)
-    this.listener.broadcast.emit(eventName, data)
+    this.sender(eventName, data)
+    this.broadcaster(eventName, data)
   }
 
   toOther(eventName, data) {
-    this.listener.broadcast.emit(eventName, data)
+    this.broadcaster(eventName, data)
   }
 
   toSender(eventName, data) {
-    this.listener.emit(eventName, data)
+    this.sender(eventName, data)
   }
 }
 
