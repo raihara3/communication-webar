@@ -1,6 +1,6 @@
 import UserMessagingRepository from '../repository/user/UserMessagingRepository'
 import UserRepository from '../repository/user/UserRepository'
-import MeshRepository from '../repository/mesh/redis'
+import MeshRepository from '../repository/mesh/MeshRepository'
 import { RoomIDException } from '../exception/Exception'
 
 class AddUserService {

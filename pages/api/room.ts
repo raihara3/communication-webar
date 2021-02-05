@@ -1,7 +1,7 @@
 import { Server } from 'socket.io'
 import redis from 'redis'
 import UserRepository from '../../core/repository/user/UserRepository'
-import MeshRepository from '../../core/repository/mesh/redis'
+import MeshRepository from '../../core/repository/mesh/MeshRepository'
 import UserMessagingRepository from '../../core/repository/user/UserMessagingRepository'
 import AddUserService from '../../core/service/AddUserService'
 import LeaveUserService from '../../core/service/LeaveUserService'
