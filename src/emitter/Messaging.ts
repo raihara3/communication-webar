@@ -18,6 +18,10 @@ export const receiveMessagingHandler = async(socket: SocketIOClient.Socket, scen
   socket.on('disconnect', () => {
     console.log('disconnect!!')
   })
+
+  socket.on('connectionFaild', (message: string) => {
+    console.error('Connection faild.', message)
+  })
 }
 
 export const sendMeshHandler = (socket: SocketIOClient.Socket, data: Data) => {

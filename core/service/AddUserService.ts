@@ -17,7 +17,10 @@ class AddUserService {
   async execute(roomID: string, userID: string) {
     this.userMessagingRepository.toAll('addUser', userID)
 
-    if(!roomID) throw RoomIDException()
+    if(!roomID) {
+      this.userMessagingRepository.toSender('connectionFaild', 'Could not connect to Room')
+      throw RoomIDException()
+    }
 
     this.userRepository.add(roomID, userID)
     const meshList: Array<string> = await this.meshRepository.list(roomID)
