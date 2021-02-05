@@ -10,6 +10,6 @@ describe('SendMeshService test', () => {
   const sendMeshService = new SendMeshService(userRepositoryMock, meshRepositoryMock, userMessagingRepositoryMock)
 
   test('roomID is incorrect', () => {
-    expect(() => sendMeshService.execute('', {})).toThrowError(/roomID/)
+    expect(sendMeshService.execute('', {})).rejects.toThrowError(/roomID/)
   })
 })

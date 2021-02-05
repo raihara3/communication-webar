@@ -22,21 +22,25 @@ const roomHandler = (_, res) => {
     const io = new Server(res.socket.server)
 
     io.on('connect', socket => {
+      const logger = (e) => {
+        console.log(e)
+        console.log(`roomID: ${roomID}, userID: ${socket.id}`)
+      }
+
       const sender = (eventName, data) => socket.emit(eventName, data)
       const broadcast = (eventName, data) => socket.broadcast.emit(eventName, data)
       const userMessagingRepository = new UserMessagingRepository(sender, broadcast)
-      new AddUserService(userRepository, meshRepository, userMessagingRepository).execute(roomID, socket.id)
-        .catch(e => console.log(e))
+      new AddUserService(userRepository, meshRepository, userMessagingRepository).execute(roomID, socket.id).catch(e => logger(e))
 
       socket.join(roomID)
 
-      socket.on('sendMesh', data => {
-        new SendMeshService(userRepository, meshRepository, userMessagingRepository).execute(roomID, data)
-      })
+      socket.on('sendMesh', data =>
+        new SendMeshService(userRepository, meshRepository, userMessagingRepository).execute(roomID, data).catch(e => logger(e))
+      )
 
-      socket.on('disconnect', () => {
-        new LeaveUserService(userRepository, meshRepository).execute(roomID, socket.id, socket.adapter.rooms.has(roomID))
-      })
+      socket.on('disconnect', () =>
+        new LeaveUserService(userRepository, meshRepository).execute(roomID, socket.id, socket.adapter.rooms.has(roomID)).catch(e => logger(e))
+      )
     })
     res.socket.server.io = io
   }

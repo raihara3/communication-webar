@@ -14,7 +14,7 @@ class SendMeshService {
     this.userMessagingRepository = userMessagingRepository
   }
 
-  execute(roomID: string, data: any) {
+  async execute(roomID: string, data: any) {
     if(!roomID) throw RoomIDException()
 
     this.meshRepository.add(roomID, JSON.stringify(data))

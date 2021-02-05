@@ -10,6 +10,6 @@ describe('AddUserService test', () => {
   const addUserService = new AddUserService(userRepositoryMock, meshRepositoryMock, userMessagingRepositoryMock)
 
   test('roomID is incorrect', () => {
-    expect(addUserService.execute('', '')).rejects.toThrowError(/roomID/)
+    expect(addUserService.execute('', 'testUser')).rejects.toThrowError(/roomID/)
   })
 })

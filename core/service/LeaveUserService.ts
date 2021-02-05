@@ -11,7 +11,7 @@ class LeaveUserService {
     this.meshRepository = mr
   }
 
-  execute(roomID: string, userID: string, hasMember: boolean) {
+  async execute(roomID: string, userID: string, hasMember: boolean) {
     if(!roomID) throw RoomIDException()
 
     console.log(`disconnect: ${userID}`)
