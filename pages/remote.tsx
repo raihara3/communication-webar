@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import io from 'socket.io-client'
-import { Button } from '@material-ui/core';
+import { Button } from '@material-ui/core'
 import WebGL from '../src/WebGL'
 import { receiveMessagingHandler, sendMeshHandler } from '../src/emitter/Messaging'
 import { createMesh } from '../src/Mesh'
@@ -9,6 +9,19 @@ const Remote = () => {
   const [isSupported, setIsSupported] = useState(false)
 
   const onStartWebAR = async() => {
+    const stream = await window.navigator.mediaDevices.getUserMedia(
+      {
+        video: false,
+        audio: true,
+      }
+    )
+    const audioTracks = stream.getAudioTracks()
+    if(!audioTracks[0].enabled) return
+
+    const peerConnection = new RTCPeerConnection()
+    const peerOffer = await peerConnection.createOffer()
+    await peerConnection.setLocalDescription(peerOffer)
+
     const canvas = document.getElementById('webAR') as HTMLCanvasElement
     const webGL = new WebGL(canvas)
 

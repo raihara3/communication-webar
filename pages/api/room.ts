@@ -30,7 +30,7 @@ const roomHandler = (_, res) => {
       const sender = (eventName, data) => socket.emit(eventName, data)
       const broadcast = (eventName, data) => socket.broadcast.emit(eventName, data)
       const userMessagingRepository = new UserMessagingRepository(sender, broadcast)
-      new AddUserService(userRepository, meshRepository, userMessagingRepository).execute('', socket.id).catch(e => connectionFaild(e))
+      new AddUserService(userRepository, meshRepository, userMessagingRepository).execute(roomID, socket.id).catch(e => connectionFaild(e))
 
       socket.join(roomID)
 
