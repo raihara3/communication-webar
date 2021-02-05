@@ -1,6 +1,17 @@
 import * as THREE from 'three'
 
-export const createMesh = (position: any): THREE.Mesh => {
+export interface Position {
+  x: number
+  y: number
+  z: number
+}
+
+export interface Data {
+  json: any
+  position: Position
+}
+
+export const createMesh = (position: Position): THREE.Mesh => {
   const geometry = new THREE.BoxGeometry(0.01, 0.01, 0.01)
   const material = new THREE.MeshBasicMaterial({color: 0x00ff00})
   const mesh = new THREE.Mesh(geometry, material)
@@ -12,7 +23,10 @@ export const createMesh = (position: any): THREE.Mesh => {
   return mesh
 }
 
-export const parseMesh = ({ json, position }): THREE.Mesh => {
+export const parseMesh = ({ json, position }: Data): THREE.Mesh => {
+  if(!json.geometries || !json.materials) {
+    throw new Error('parse error. prease pass Mesh.toJSON()')
+  }
   const geometryParams = json.geometries[0]
   const materialParams = json.materials[0]
 
@@ -31,11 +45,11 @@ export const parseMesh = ({ json, position }): THREE.Mesh => {
   return mesh
 }
 
-export const createGroup = async(scene: THREE.Scene, list: Array<any>) => {
-  if(list.length === 0) return
+export const createMeshGroup = async(scene: THREE.Scene, dataList: Array<Data>) => {
+  if(dataList.length === 0) return
   const group = new THREE.Group()
-  await list.forEach(json => {
-    group.add(parseMesh(json))
+  await dataList.forEach(data => {
+    group.add(parseMesh(data))
   })
   scene.add(group)
 }

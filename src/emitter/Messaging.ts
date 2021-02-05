@@ -7,7 +7,12 @@ export const receiveMessagingHandler = async(socket: SocketIOClient.Socket, scen
 
   socket.on('getMesh', (data: Array<Data>) => {
     console.log(data)
-    createMeshGroup(scene, data)
+    try {
+      createMeshGroup(scene, data)
+    } catch (e) {
+      console.error('Faild to synchronize scene')
+      console.error(e)
+    }
   })
 
   socket.on('disconnect', () => {
