@@ -13,6 +13,19 @@
     "build-storybook": "build-storybook",
     "lint": "yarn run eslint"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.ts?(x)": [
+      "eslint --fix"
+    ],
+    "**/__tests__/**.ts?(x)": [
+      "yarn test"
+    ]
+  },
   "dependencies": {
     "@apollo/client": "^3.3.6",
     "@material-ui/core": "^4.11.2",
@@ -25,8 +38,11 @@
     "apollo-datasource-rest": "^0.9.5",
     "apollo-server-micro": "^2.19.0",
     "autoprefixer": "^9.8.6",
+    "eslint-config-airbnb": "^18.2.1",
     "graphql-tag": "^2.11.0",
     "graphql-tools": "^7.0.2",
+    "husky": "^4.3.8",
+    "lint-staged": "^10.5.3",
     "next": "10.0.3",
     "next-auth": "^3.1.0",
     "npm-run-all": "^4.1.5",
