@@ -1,5 +1,5 @@
 export interface Sender {
-  (eventName: string, data: any): any
+  (eventName: string, data: any, targetID?: string): any
 }
 
 class UserMessagingRepository {
@@ -22,6 +22,10 @@ class UserMessagingRepository {
 
   toSender(eventName, data) {
     this.sender(eventName, data)
+  }
+
+  to(eventName, data, targetID) {
+    this.sender(eventName, data, targetID)
   }
 }
 
