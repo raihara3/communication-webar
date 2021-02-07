@@ -1,6 +1,6 @@
 import UserMessagingRepository from '../repository/user/UserMessagingRepository'
 
-class SendPeerOfferService {
+class SendPeerAnswerService {
   userMessagingRepository: UserMessagingRepository
 
   constructor(userMessagingRepository) {
@@ -8,8 +8,8 @@ class SendPeerOfferService {
   }
 
   async execute(data: {targetID: string, senderID: string, data: any}) {
-    this.userMessagingRepository.to('getOffer', data, data.targetID)
+    this.userMessagingRepository.to('getAnswer', data, data.targetID)
   }
 }
 
-export default SendPeerOfferService
+export default SendPeerAnswerService

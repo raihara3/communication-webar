@@ -7,6 +7,7 @@ import AddUserService from '../../core/service/AddUserService'
 import LeaveUserService from '../../core/service/LeaveUserService'
 import SendMeshService from '../../core/service/SendMeshService'
 import SendPeerOfferService from '../../core/service/SendPeerOfferService'
+import SendPeerAnswerService from '../../core/service/SendPeerAnswerService'
 
 const roomHandler = (_, res) => {
   // TODO: change to the RoomID
@@ -43,6 +44,10 @@ const roomHandler = (_, res) => {
 
       socket.on('sendPeerOffer', data => {
         new SendPeerOfferService(userMessagingRepository).execute(data)
+      })
+
+      socket.on('sendPeerAnswer', data => {
+        new SendPeerAnswerService(userMessagingRepository).execute(data)
       })
 
       socket.on('disconnect', () =>
