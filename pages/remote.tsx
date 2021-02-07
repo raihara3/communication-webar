@@ -18,10 +18,6 @@ const Remote = () => {
     const audioTracks = stream.getAudioTracks()
     if(!audioTracks[0].enabled) return
 
-    const peerConnection = new RTCPeerConnection()
-    const peerOffer = await peerConnection.createOffer()
-    await peerConnection.setLocalDescription(peerOffer)
-
     const canvas = document.getElementById('webAR') as HTMLCanvasElement
     const webGL = new WebGL(canvas)
 
@@ -68,6 +64,7 @@ const Remote = () => {
         </a>
       )}
       <canvas id='webAR'></canvas>
+      <video id='voice' autoPlay></video>
     </>
   )
 }

@@ -15,7 +15,7 @@ class AddUserService {
   }
 
   async execute(roomID: string, userID: string) {
-    this.userMessagingRepository.toAll('addUser', userID)
+    this.userMessagingRepository.toOther('addUser', userID)
 
     if(!roomID) {
       this.userMessagingRepository.toSender('connectionFaild', 'Could not connect to Room')
