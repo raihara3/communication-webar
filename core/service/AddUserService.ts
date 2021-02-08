@@ -15,6 +15,7 @@ class AddUserService {
   }
 
   async execute(roomID: string, userID: string) {
+    this.userMessagingRepository.toSender('join', userID)
     this.userMessagingRepository.toOther('addUser', userID)
 
     if(!roomID) {

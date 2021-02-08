@@ -8,6 +8,10 @@ export const receiveMessagingHandler = async(socket: SocketIOClient.Socket, scen
     sendPeerOfferHandler(socket, newEntryID, offer)
   })
 
+  socket.on('join', (myID) => {
+    console.log(`myID: ${myID}`)
+  })
+
   socket.on('getMesh', (data: Array<Data>) => {
     try {
       createMeshGroup(scene, data)
