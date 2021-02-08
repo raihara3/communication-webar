@@ -8,7 +8,10 @@ class SendPeerOfferService {
   }
 
   async execute(data: {targetID: string, senderID: string, sdp: any}) {
-    this.userMessagingRepository.to('getOffer', data, data.targetID)
+    this.userMessagingRepository.to('getOffer', {
+      senderID: data.senderID,
+      sdp: data.sdp
+    }, data.targetID)
   }
 }
 

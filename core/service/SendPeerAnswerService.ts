@@ -7,8 +7,11 @@ class SendPeerAnswerService {
     this.userMessagingRepository = userMessagingRepository
   }
 
-  async execute(data: {targetID: string, senderID: string, data: any}) {
-    this.userMessagingRepository.to('getAnswer', data, data.targetID)
+  async execute(data: {targetID: string, senderID: string, sdp: any}) {
+    this.userMessagingRepository.to('getAnswer', {
+      senderID: data.senderID,
+      sdp: data.sdp
+    }, data.targetID)
   }
 }
 

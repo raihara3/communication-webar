@@ -18,32 +18,13 @@ export const receiveMessagingHandler = async(socket: SocketIOClient.Socket, scen
     }
   })
 
-  socket.on('getOffer', async ({targetID, senderID, sdp}) => {
+  socket.on('getOffer', async ({senderID, sdp}) => {
     const answer = await createPeerAnswer(senderID, sdp)
-
-    // Code that needs to be improved ---->
-    const stream = await window.navigator.mediaDevices.getUserMedia({
-      audio: true,
-      echoCancellationType: 'system'
-    })
-    const video = document.getElementById('voice') as HTMLVideoElement
-    video.srcObject = stream
-    // <---- Code that needs to be improved
-
-    sendPeerAnswerHandler(socket, targetID, answer)
+    sendPeerAnswerHandler(socket, senderID, answer)
   })
 
-  socket.on('getAnswer', async (data: {targetID: string, senderID: string, sdp: any}) => {
-    setPeerAnswer(data.targetID, data.sdp)
-
-    // Code that needs to be improved ---->
-    const stream = await window.navigator.mediaDevices.getUserMedia({
-      audio: true,
-      echoCancellationType: 'system'
-    })
-    const video = document.getElementById('voice') as HTMLVideoElement
-    video.srcObject = stream
-    // <---- Code that needs to be improved
+  socket.on('getAnswer', async ({senderID, sdp}) => {
+    setPeerAnswer(senderID, sdp)
   })
 
   socket.on('disconnect', () => {
