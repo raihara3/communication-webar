@@ -61,3 +61,7 @@ export const setIceCandidate = async(targetID, ice) => {
   const peerConnection: RTCPeerConnection = peerStore(targetID).get()
   await peerConnection?.addIceCandidate(new RTCIceCandidate(ice))
 }
+
+export const leavePeerConnection = (id: string) => {
+  peerStore(id).del()
+}
