@@ -9,12 +9,10 @@ const Remote = () => {
   const [isSupported, setIsSupported] = useState(false)
 
   const onStartWebAR = async() => {
-    const stream = await window.navigator.mediaDevices.getUserMedia({
+    await window.navigator.mediaDevices.getUserMedia({
       audio: true,
       echoCancellationType: 'system'
     })
-    const video = document.getElementById('voice') as HTMLVideoElement
-    video.srcObject = stream
     // const audioTracks = stream.getAudioTracks()
     // if(!audioTracks[0].enabled) return
 

@@ -8,6 +8,7 @@ import LeaveUserService from '../../core/service/LeaveUserService'
 import SendMeshService from '../../core/service/SendMeshService'
 import SendPeerOfferService from '../../core/service/SendPeerOfferService'
 import SendPeerAnswerService from '../../core/service/SendPeerAnswerService'
+import SendIceCandidateService from '../../core/service/SendIceCandidateService'
 
 const roomHandler = (_, res) => {
   // TODO: change to the RoomID
@@ -48,6 +49,10 @@ const roomHandler = (_, res) => {
 
       socket.on('sendPeerAnswer', data => {
         new SendPeerAnswerService(userMessagingRepository).execute(data)
+      })
+
+      socket.on('sendIceCandidate', data => {
+        new SendIceCandidateService(userMessagingRepository).execute(data)
       })
 
       socket.on('disconnect', () =>

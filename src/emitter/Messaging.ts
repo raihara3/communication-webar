@@ -1,30 +1,32 @@
 import { createMeshGroup, Data } from '../Mesh'
-import { createPeerOffer, createPeerAnswer, setPeerAnswer } from '../WebRTC'
+import { createPeerOffer, createPeerAnswer, setPeerAnswer, setIceCandidate } from '../WebRTC'
 
 export const receiveMessagingHandler = async(socket: SocketIOClient.Socket, scene: THREE.Scene) => {
-  socket.on('addUser', async(inviteUserID: string) => {
-    console.log(`join: ${inviteUserID}`)
-    const offer = await createPeerOffer(inviteUserID)
-    sendPeerOfferHandler(socket, inviteUserID, offer)
+  socket.on('addUser', async(newEntryID: string) => {
+    console.log(`join: ${newEntryID}`)
+    const offer = await createPeerOffer(socket, newEntryID)
+    sendPeerOfferHandler(socket, newEntryID, offer)
   })
 
   socket.on('getMesh', (data: Array<Data>) => {
-    console.log(data)
     try {
       createMeshGroup(scene, data)
     } catch (e) {
-      console.error('Faild to synchronize scene')
-      console.error(e)
+      console.error('Faild to synchronize scene', e)
     }
   })
 
   socket.on('getOffer', async ({senderID, sdp}) => {
-    const answer = await createPeerAnswer(senderID, sdp)
+    const answer = await createPeerAnswer(socket, senderID, sdp)
     sendPeerAnswerHandler(socket, senderID, answer)
   })
 
   socket.on('getAnswer', async ({senderID, sdp}) => {
     setPeerAnswer(senderID, sdp)
+  })
+
+  socket.on('getIceCandidate', ({senderID, ice}) => {
+    setIceCandidate(senderID, ice)
   })
 
   socket.on('disconnect', () => {
@@ -40,7 +42,7 @@ export const sendMeshHandler = (socket: SocketIOClient.Socket, data: Data) => {
   socket.emit('sendMesh', data)
 }
 
-export const sendPeerOfferHandler = async(socket: SocketIOClient.Socket, targetID: string, offer: RTCSessionDescriptionInit) => {
+export const sendPeerOfferHandler = (socket: SocketIOClient.Socket, targetID: string, offer: RTCSessionDescriptionInit) => {
   socket.emit('sendPeerOffer', {
     targetID: targetID,
     senderID: socket.id,
@@ -53,5 +55,13 @@ export const sendPeerAnswerHandler = async(socket: SocketIOClient.Socket, target
     targetID: targetID,
     senderID: socket.id,
     sdp: answer
+  })
+}
+
+export const sendIceCandidate = (socket: SocketIOClient.Socket, targetID: string, ice: any) => {
+  socket.emit('sendIceCandidate', {
+    targetID: targetID,
+    senderID: socket.id,
+    ice: ice
   })
 }
