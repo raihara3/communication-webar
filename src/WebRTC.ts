@@ -34,30 +34,23 @@ const createPeerConnection = async(sender: any, targetID: string): Promise<RTCPe
   return peerConnection
 }
 
-export const createPeerOffer = async(sender, targetID): Promise<RTCSessionDescriptionInit> => {
+export const createPeerSdp = async(sender: any, targetID: string, offerSdp?: any): Promise<RTCSessionDescriptionInit> => {
   const peerConnection = await createPeerConnection(sender, targetID)
-  const offer = await peerConnection.createOffer()
-  await peerConnection.setLocalDescription(offer)
+  const sdp = offerSdp
+    ? await peerConnection.createAnswer()
+    : await peerConnection.createOffer()
+  await peerConnection.setLocalDescription(sdp)
   peerStore(targetID).add(peerConnection)
-  return offer
+  return sdp
 }
 
-export const createPeerAnswer = async(sender, targetID, offerSdp): Promise<RTCSessionDescriptionInit> => {
-  const peerConnection = await createPeerConnection(sender, targetID)
-  peerConnection.setRemoteDescription(offerSdp)
-  const answer = await peerConnection.createAnswer()
-  peerConnection.setLocalDescription(answer)
-  peerStore(targetID).add(peerConnection)
-  return answer
-}
-
-export const setPeerAnswer = async(targetID, answerSdp) => {
+export const setPeerSdp = async(targetID: string, answerSdp: any) => {
   const peerConnection: RTCPeerConnection = peerStore(targetID).get()
   peerConnection.setRemoteDescription(answerSdp)
   peerStore(targetID).add(peerConnection)
 }
 
-export const setIceCandidate = async(targetID, ice) => {
+export const setIceCandidate = async(targetID: string, ice: any) => {
   const peerConnection: RTCPeerConnection = peerStore(targetID).get()
   await peerConnection?.addIceCandidate(new RTCIceCandidate(ice))
 }
