@@ -1,46 +1,63 @@
-const peerList = {}
+import { sendIceCandidate } from './emitter/Messaging'
 
-const createPeerConnection = async(): Promise<RTCPeerConnection> => {
+const peerList = {}
+const peerStore = (id: string) => {
+  return {
+    add: (data: any) => {
+      peerList[id] = data
+    },
+    get: () => {
+      return peerList[id]
+    },
+    del: () => {
+      delete peerList[id]
+    }
+  }
+}
+
+const createPeerConnection = async(sender: any, targetID: string): Promise<RTCPeerConnection> => {
   const peerConnection = new RTCPeerConnection({
     iceServers: [{ urls: 'stun:stun.l.test.com:19000' }]
   })
-  const stream = await navigator.mediaDevices.getUserMedia({
-    audio: true,
-  })
-  stream.getTracks().forEach(track => peerConnection.addTrack(
-    track,
-    stream,
-  ))
+  const stream = await navigator.mediaDevices.getUserMedia({audio: true})
+  stream.getTracks().forEach(track => peerConnection.addTrack(track, stream))
   peerConnection.ontrack = async(event) => {
-    console.log('ontrack!!!')
     // Code that needs to be improved ---->
     const video = document.getElementById('voice') as HTMLVideoElement
     video.srcObject = event.streams[0]
     // <---- Code that needs to be improved
     await video.play()
   }
+  peerConnection.onicecandidate = ({ candidate }) => {
+    candidate && sendIceCandidate(sender, targetID, candidate)
+  }
   return peerConnection
 }
 
-export const createPeerOffer = async(targetID) => {
-  const peerConnection = await createPeerConnection()
+export const createPeerOffer = async(sender, targetID): Promise<RTCSessionDescriptionInit> => {
+  const peerConnection = await createPeerConnection(sender, targetID)
   const offer = await peerConnection.createOffer()
   await peerConnection.setLocalDescription(offer)
-  peerList[targetID] = peerConnection
+  peerStore(targetID).add(peerConnection)
   return offer
 }
 
-export const createPeerAnswer = async(targetID, offerSdp) => {
-  const peerConnection = await createPeerConnection()
+export const createPeerAnswer = async(sender, targetID, offerSdp): Promise<RTCSessionDescriptionInit> => {
+  const peerConnection = await createPeerConnection(sender, targetID)
   peerConnection.setRemoteDescription(offerSdp)
   const answer = await peerConnection.createAnswer()
   peerConnection.setLocalDescription(answer)
-  peerList[targetID] = peerConnection
+  peerStore(targetID).add(peerConnection)
   return answer
 }
 
 export const setPeerAnswer = async(targetID, answerSdp) => {
-  const peerConnection: RTCPeerConnection = peerList[targetID]
+  const peerConnection: RTCPeerConnection = peerStore(targetID).get()
   peerConnection.setRemoteDescription(answerSdp)
-  peerList[targetID] = peerConnection
+  peerStore(targetID).add(peerConnection)
+}
+
+export const setIceCandidate = async(targetID, ice) => {
+  const peerConnection: RTCPeerConnection = peerStore(targetID).get()
+  await peerConnection?.addIceCandidate(new RTCIceCandidate(ice))
 }
