@@ -34,14 +34,21 @@ const createPeerConnection = async(sender: any, targetID: string): Promise<RTCPe
   return peerConnection
 }
 
-export const createPeerSdp = async(sender: any, targetID: string, offerSdp?: any): Promise<RTCSessionDescriptionInit> => {
+export const createPeerOffer = async(sender, targetID): Promise<RTCSessionDescriptionInit> => {
   const peerConnection = await createPeerConnection(sender, targetID)
-  const sdp = offerSdp
-    ? await peerConnection.createAnswer()
-    : await peerConnection.createOffer()
-  await peerConnection.setLocalDescription(sdp)
+  const offer = await peerConnection.createOffer()
+  await peerConnection.setLocalDescription(offer)
   peerStore(targetID).add(peerConnection)
-  return sdp
+  return offer
+}
+
+export const createPeerAnswer = async(sender, targetID, offerSdp): Promise<RTCSessionDescriptionInit> => {
+  const peerConnection = await createPeerConnection(sender, targetID)
+  peerConnection.setRemoteDescription(offerSdp)
+  const answer = await peerConnection.createAnswer()
+  peerConnection.setLocalDescription(answer)
+  peerStore(targetID).add(peerConnection)
+  return answer
 }
 
 export const setPeerSdp = async(targetID: string, answerSdp: any) => {
