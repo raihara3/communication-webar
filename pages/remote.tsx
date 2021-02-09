@@ -7,12 +7,19 @@ import { createMesh } from '../src/Mesh'
 
 const Remote = () => {
   const [isSupported, setIsSupported] = useState(false)
+  const [isAudioPermission, setIsAudioPermission] = useState(true)
 
   const onStartWebAR = async() => {
-    await window.navigator.mediaDevices.getUserMedia({
-      audio: true,
-      echoCancellationType: 'system'
-    })
+    try {
+      await window.navigator.mediaDevices.getUserMedia({
+        audio: true,
+        echoCancellationType: 'system'
+      })
+    } catch (error) {
+      console.error(error)
+      setIsAudioPermission(false)
+      return
+    }
     // const audioTracks = stream.getAudioTracks()
     // if(!audioTracks[0].enabled) return
 
@@ -49,13 +56,18 @@ const Remote = () => {
     <>
       <div>remote</div>
       {isSupported ? (
-        <Button
-          variant='outlined'
-          color='primary'
-          onClick={() => onStartWebAR()}
-        >
-          START AR
-        </Button>
+        <>
+          {!isAudioPermission && (
+            <div>Please allow the use of the microphone</div>
+          )}
+          <Button
+            variant='outlined'
+            color='primary'
+            onClick={() => onStartWebAR()}
+          >
+            START AR
+          </Button>
+        </>
       ) : (
         <a href='https://immersiveweb.dev/'>
           WebXR not available
