@@ -1,7 +1,6 @@
 import UserRepository from '../repository/user/UserRepository'
 import MeshRepository from '../repository/mesh/MeshRepository'
 import UserMessagingRepository from '../repository/user/UserMessagingRepository'
-import { RoomIDException } from '../exception/Exception'
 
 class LeaveUserService {
   userRepository: UserRepository
@@ -15,8 +14,6 @@ class LeaveUserService {
   }
 
   async execute(roomID: string, userID: string, hasMember: boolean) {
-    if(!roomID) throw RoomIDException()
-
     this.userRepository.remove(roomID, userID)
     this.userMessagingRepository.toOther('leaveUser', userID)
     if(!hasMember) {

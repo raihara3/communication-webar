@@ -10,6 +10,13 @@ const Remote = () => {
   const [isAudioPermission, setIsAudioPermission] = useState(true)
 
   const onStartWebAR = async() => {
+    const res = await fetch('api/room')
+    if(!res.ok) {
+      const json = await res.json()
+      console.error(new Error(json.message))
+      return
+    }
+
     try {
       await window.navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -23,11 +30,9 @@ const Remote = () => {
     // const audioTracks = stream.getAudioTracks()
     // if(!audioTracks[0].enabled) return
 
+    const socket = await io()
     const canvas = document.getElementById('webAR') as HTMLCanvasElement
     const webGL = new WebGL(canvas)
-
-    await fetch('api/room')
-    const socket = await io()
     receiveMessagingHandler(socket, webGL.scene)
 
     const session = await navigator['xr'].requestSession('immersive-ar', {
