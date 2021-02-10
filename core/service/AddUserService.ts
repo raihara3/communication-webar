@@ -13,11 +13,17 @@ class AddUserService {
     this.userMessagingRepository = userMessagingRepository
   }
 
-  async execute(roomID: string, userID: string) {
-    this.userMessagingRepository.toSender('join', userID)
-    this.userMessagingRepository.toOther('addUser', userID)
+  async execute(roomID: string, newEntryID: string, memberList: Array<string>) {
+    this.userMessagingRepository.toSender('join', {
+      myID: newEntryID,
+      memberList: memberList
+    })
+    this.userMessagingRepository.toOther('addUser', {
+      newEntryID: newEntryID,
+      memberList: memberList
+    })
 
-    this.userRepository.add(roomID, userID)
+    this.userRepository.add(roomID, newEntryID)
     const meshList: Array<string> = await this.meshRepository.list(roomID)
     this.userMessagingRepository.toSender('getMesh', meshList.map(mesh => JSON.parse(mesh)))
   }

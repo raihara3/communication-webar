@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import io from 'socket.io-client'
 import { Button } from '@material-ui/core'
+import Video from '../components/Video'
 import WebGL from '../src/WebGL'
 import { receiveMessagingHandler, sendMeshHandler } from '../src/emitter/Messaging'
 import { createMesh } from '../src/Mesh'
@@ -8,6 +9,7 @@ import { createMesh } from '../src/Mesh'
 const Remote = () => {
   const [isSupported, setIsSupported] = useState(false)
   const [isAudioPermission, setIsAudioPermission] = useState(true)
+  const [memberList, setMemberList] = useState<string[]>([])
 
   const onStartWebAR = async() => {
     const res = await fetch('api/room')
@@ -33,7 +35,7 @@ const Remote = () => {
     const socket = await io()
     const canvas = document.getElementById('webAR') as HTMLCanvasElement
     const webGL = new WebGL(canvas)
-    receiveMessagingHandler(socket, webGL.scene)
+    receiveMessagingHandler(socket, webGL.scene, (list) => setMemberList(list))
 
     const session = await navigator['xr'].requestSession('immersive-ar', {
       requiredFeatures: ['local', 'hit-test']
@@ -60,6 +62,9 @@ const Remote = () => {
   return (
     <>
       <div>remote</div>
+      {memberList.map(id => (
+        <Video id={id} key={id} />
+      ))}
       {isSupported ? (
         <>
           {!isAudioPermission && (
@@ -79,7 +84,6 @@ const Remote = () => {
         </a>
       )}
       <canvas id='webAR'></canvas>
-      <video id='voice' autoPlay></video>
     </>
   )
 }

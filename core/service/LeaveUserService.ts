@@ -13,10 +13,13 @@ class LeaveUserService {
     this.userMessagingRepository = userMessagingRepository
   }
 
-  async execute(roomID: string, userID: string, hasMember: boolean) {
+  async execute(roomID: string, userID: string, memberList: Array<string>) {
     this.userRepository.remove(roomID, userID)
-    this.userMessagingRepository.toOther('leaveUser', userID)
-    if(!hasMember) {
+    this.userMessagingRepository.toOther('leaveUser', {
+      userID: userID,
+      memberList: memberList
+    })
+    if(memberList.length === 0) {
       this.meshRepository.delete(roomID)
     }
   }

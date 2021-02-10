@@ -29,14 +29,16 @@ const roomHandler = (_, res) => {
     const io = new Server(res.socket.server)
 
     io.on('connect', socket => {
+      socket.join(roomID)
+
+      const memberList: Array<string> = []
+      io.sockets.adapter.rooms.get(roomID)?.forEach(id => memberList.push(id))
       const sender = (eventName, data, targetID) => {
         return targetID ? socket.to(targetID).emit(eventName, data) : socket.emit(eventName, data)
       }
       const broadcast = (eventName, data) => socket.broadcast.emit(eventName, data)
       const userMessagingRepository = new UserMessagingRepository(sender, broadcast)
-      new AddUserService(userRepository, meshRepository, userMessagingRepository).execute(roomID, socket.id)
-
-      socket.join(roomID)
+      new AddUserService(userRepository, meshRepository, userMessagingRepository).execute(roomID, socket.id, memberList)
 
       socket.on('sendMesh', data =>
         new SendMeshService(userRepository, meshRepository, userMessagingRepository).execute(roomID, data)
@@ -54,9 +56,11 @@ const roomHandler = (_, res) => {
         new SendIceCandidateService(userMessagingRepository).execute(data)
       })
 
-      socket.on('disconnect', () =>
-        new LeaveUserService(userRepository, meshRepository, userMessagingRepository).execute(roomID, socket.id, socket.adapter.rooms.has(roomID))
-      )
+      socket.on('disconnect', () =>{
+        const memberList: Array<string> = []
+        io.sockets.adapter.rooms.get(roomID)?.forEach(id => memberList.push(id))
+        new LeaveUserService(userRepository, meshRepository, userMessagingRepository).execute(roomID, socket.id, memberList)
+      })
     })
     res.socket.server.io = io
   }
