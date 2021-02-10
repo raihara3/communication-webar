@@ -22,10 +22,8 @@ const createPeerConnection = async(sender: any, targetID: string): Promise<RTCPe
   const stream = await navigator.mediaDevices.getUserMedia({audio: true})
   stream.getTracks().forEach(track => peerConnection.addTrack(track, stream))
   peerConnection.ontrack = async(event) => {
-    // Code that needs to be improved ---->
     const video = document.getElementById(targetID) as HTMLVideoElement
     video.srcObject = event.streams[0]
-    // <---- Code that needs to be improved
     await video.play()
   }
   peerConnection.onicecandidate = ({ candidate }) => {

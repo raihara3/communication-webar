@@ -10,7 +10,7 @@ const Video: React.FC<Props> = ({
   autoPlay = true
 }) => {
   return (
-    <video id={id} autoPlay={autoPlay} />
+    <video id={id} autoPlay={autoPlay} hidden />
   )
 }
 
