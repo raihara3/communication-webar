@@ -13,6 +13,7 @@ class UserRepository {
 
   add(roomID: string, userID: string) {
     this.inner.rpush(this.key(roomID), userID)
+    this.inner.expire(this.key(roomID), 60 * 60 * 24 * 3)
   }
 
   remove(roomID: string, userID: string) {

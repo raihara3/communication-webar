@@ -13,6 +13,7 @@ class MeshRepository {
 
   add(roomID: string, data: any) {
     this.inner.rpush(this.key(roomID), data)
+    this.inner.expire(this.key(roomID), 60 * 60 * 24 * 3)
   }
 
   list(roomID: string): any {
