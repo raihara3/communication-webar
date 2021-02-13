@@ -3,6 +3,7 @@ import redis from 'redis'
 import UserRepository from '../../core/repository/user/UserRepository'
 import MeshRepository from '../../core/repository/mesh/MeshRepository'
 import UserMessagingRepository from '../../core/repository/user/UserMessagingRepository'
+import RoomRepository from '../../core/repository/room/RoomRepository'
 import AddUserService from '../../core/service/AddUserService'
 import LeaveUserService from '../../core/service/LeaveUserService'
 import SendMeshService from '../../core/service/SendMeshService'
@@ -10,7 +11,8 @@ import SendPeerOfferService from '../../core/service/SendPeerOfferService'
 import SendPeerAnswerService from '../../core/service/SendPeerAnswerService'
 import SendIceCandidateService from '../../core/service/SendIceCandidateService'
 
-const roomHandler = (_, res) => {
+const roomHandler = async(_, res) => {
+  const client = redis.createClient()
   // TODO: change to the RoomID
   const roomID = 'testRoom'
   if(!roomID) {
@@ -18,11 +20,18 @@ const roomHandler = (_, res) => {
     res.end()
   }
 
+  const roomRepository = new RoomRepository(client)
+  const hasRoom = await roomRepository.get(roomID)
+  if(!hasRoom) {
+    console.log('404')
+    res.status(404).json({message: 'This RoomID does not exist.'})
+    res.end()
+  }
+
   if(res.socket.server.io) {
     console.log('socket.io already running')
   }else {
     console.log('*First use, starting socket.io')
-    const client = redis.createClient()
     const userRepository = new UserRepository(client)
     const meshRepository = new MeshRepository(client)
 
