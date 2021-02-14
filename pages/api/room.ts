@@ -10,6 +10,7 @@ import SendMeshService from '../../core/service/mesh/SendMeshService'
 import SendPeerOfferService from '../../core/service/peer/SendPeerOfferService'
 import SendPeerAnswerService from '../../core/service/peer/SendPeerAnswerService'
 import SendIceCandidateService from '../../core/service/peer/SendIceCandidateService'
+import GetRoomService from '../../core/service/room/GetRoomService'
 
 const roomHandler = async(_, res) => {
   const client = redis.createClient()
@@ -21,7 +22,7 @@ const roomHandler = async(_, res) => {
   }
 
   const roomRepository = new RoomRepository(client)
-  const hasRoom = await roomRepository.get(roomID)
+  const hasRoom = await new GetRoomService(roomRepository).execute(roomID)
   if(!hasRoom) {
     console.log('404')
     res.status(404).json({message: 'This RoomID does not exist.'})

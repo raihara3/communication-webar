@@ -12,7 +12,7 @@ const Call = () => {
   const [memberList, setMemberList] = useState<string[]>([])
 
   const onStartWebAR = async() => {
-    const res = await fetch('api/room')
+    const res = await fetch('../api/room')
     if(!res.ok) {
       const json = await res.json()
       console.error(new Error(json.message))
