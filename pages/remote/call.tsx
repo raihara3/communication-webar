@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from "react"
 import io from 'socket.io-client'
-import { Button } from '@material-ui/core'
+import { Button, Link } from '@material-ui/core'
 import Video from '../../components/Video'
 import WebGL from '../../src/WebGL'
 import { receiveMessagingHandler, sendMeshHandler } from '../../src/emitter/Messaging'
 import { createMesh } from '../../src/Mesh'
+import getUrlParams from '../../src/utils/getUrlParams'
 
 const Call = () => {
   const [isSupported, setIsSupported] = useState(false)
   const [isAudioPermission, setIsAudioPermission] = useState(true)
   const [memberList, setMemberList] = useState<string[]>([])
+  const [hasRoomID, setHasRoomID] = useState<boolean>()
 
   const onStartWebAR = async() => {
-    const res = await fetch('../api/room')
+    const res = await fetch('../api/call')
     if(!res.ok) {
       const json = await res.json()
       console.error(new Error(json.message))
+      setHasRoomID(false)
       return
     }
 
@@ -57,33 +60,49 @@ const Call = () => {
 
   useEffect(() => {
     setIsSupported('xr' in navigator)
+    const params: any = getUrlParams(window.location.href)
+    if(params.room) {
+      setHasRoomID(true)
+    }
   }, [])
 
   return (
     <>
       <div>remote call</div>
-      {memberList.map(id => (
-        <Video id={id} key={id} />
-      ))}
-      {isSupported ? (
+      {hasRoomID ? (
         <>
-          {!isAudioPermission && (
-            <div>Please allow the use of the microphone</div>
+          {memberList.map(id => (
+            <Video id={id} key={id} />
+          ))}
+          {isSupported ? (
+            <>
+              {!isAudioPermission && (
+                <div>Please allow the use of the microphone</div>
+              )}
+              <Button
+                variant='outlined'
+                color='primary'
+                onClick={() => onStartWebAR()}
+              >
+                START AR
+              </Button>
+            </>
+          ) : (
+            <a href='https://immersiveweb.dev/'>
+              WebXR not available
+            </a>
           )}
-          <Button
-            variant='outlined'
-            color='primary'
-            onClick={() => onStartWebAR()}
-          >
-            START AR
-          </Button>
+          <canvas id='webAR'></canvas>
         </>
       ) : (
-        <a href='https://immersiveweb.dev/'>
-          WebXR not available
-        </a>
+        <div>
+          The URL is incorrect.<br />
+          Do you want to create a new room?<br />
+          <Link href='../room'>
+            Create a Room
+          </Link>
+        </div>
       )}
-      <canvas id='webAR'></canvas>
     </>
   )
 }

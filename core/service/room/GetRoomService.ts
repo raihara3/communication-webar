@@ -8,7 +8,8 @@ class GetRoomService {
   }
 
   async execute(roomID: string) {
-    return await !!this.roomRepository.get(roomID)
+    const createDate = await this.roomRepository.get(roomID)
+    return !!createDate
   }
 }
 

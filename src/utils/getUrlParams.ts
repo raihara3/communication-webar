@@ -1,5 +1,5 @@
-const getUrlParams = () => {
-  const paramsList = window.location.search.substr(1).split('&')
+const getUrlParams = (url) => {
+  const paramsList = url.slice(url.indexOf('?')).substr(1).split('&')
   const params = {}
 
   paramsList.forEach(item => {
