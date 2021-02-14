@@ -1,4 +1,4 @@
-import UserMessagingRepository from '../repository/user/UserMessagingRepository'
+import UserMessagingRepository from '../../repository/user/UserMessagingRepository'
 
 class SendIceCandidateService {
   userMessagingRepository: UserMessagingRepository

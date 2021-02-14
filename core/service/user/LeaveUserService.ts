@@ -1,6 +1,6 @@
-import UserRepository from '../repository/user/UserRepository'
-import MeshRepository from '../repository/mesh/MeshRepository'
-import UserMessagingRepository from '../repository/user/UserMessagingRepository'
+import UserRepository from '../../repository/user/UserRepository'
+import MeshRepository from '../../repository/mesh/MeshRepository'
+import UserMessagingRepository from '../../repository/user/UserMessagingRepository'
 
 class LeaveUserService {
   userRepository: UserRepository

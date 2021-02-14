@@ -1,6 +1,6 @@
-import UserMessagingRepository from '../repository/user/UserMessagingRepository'
-import UserRepository from '../repository/user/UserRepository'
-import MeshRepository from '../repository/mesh/MeshRepository'
+import UserMessagingRepository from '../../repository/user/UserMessagingRepository'
+import UserRepository from '../../repository/user/UserRepository'
+import MeshRepository from '../../repository/mesh/MeshRepository'
 
 class SendMeshService {
   userRepository: UserRepository

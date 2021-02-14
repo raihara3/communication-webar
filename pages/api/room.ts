@@ -4,12 +4,12 @@ import UserRepository from '../../core/repository/user/UserRepository'
 import MeshRepository from '../../core/repository/mesh/MeshRepository'
 import UserMessagingRepository from '../../core/repository/user/UserMessagingRepository'
 import RoomRepository from '../../core/repository/room/RoomRepository'
-import AddUserService from '../../core/service/AddUserService'
-import LeaveUserService from '../../core/service/LeaveUserService'
-import SendMeshService from '../../core/service/SendMeshService'
-import SendPeerOfferService from '../../core/service/SendPeerOfferService'
-import SendPeerAnswerService from '../../core/service/SendPeerAnswerService'
-import SendIceCandidateService from '../../core/service/SendIceCandidateService'
+import AddUserService from '../../core/service/user/AddUserService'
+import LeaveUserService from '../../core/service/user/LeaveUserService'
+import SendMeshService from '../../core/service/mesh/SendMeshService'
+import SendPeerOfferService from '../../core/service/peer/SendPeerOfferService'
+import SendPeerAnswerService from '../../core/service/peer/SendPeerAnswerService'
+import SendIceCandidateService from '../../core/service/peer/SendIceCandidateService'
 
 const roomHandler = async(_, res) => {
   const client = redis.createClient()
