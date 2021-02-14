@@ -3,6 +3,8 @@ const getUrlParams = (url) => {
   const params = {}
 
   paramsList.forEach(item => {
+    if(item === '') return
+
     const param = item.split('=')
     params[param[0]] = param[1]
   })

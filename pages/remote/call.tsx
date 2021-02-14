@@ -5,13 +5,12 @@ import Video from '../../components/Video'
 import WebGL from '../../src/WebGL'
 import { receiveMessagingHandler, sendMeshHandler } from '../../src/emitter/Messaging'
 import { createMesh } from '../../src/Mesh'
-import getUrlParams from '../../src/utils/getUrlParams'
 
 const Call = () => {
   const [isSupported, setIsSupported] = useState(false)
   const [isAudioPermission, setIsAudioPermission] = useState(true)
   const [memberList, setMemberList] = useState<string[]>([])
-  const [hasRoomID, setHasRoomID] = useState<boolean>()
+  const [hasRoomID, setHasRoomID] = useState<boolean>(true)
 
   const onStartWebAR = async() => {
     const res = await fetch('../api/call')
@@ -59,11 +58,21 @@ const Call = () => {
   }
 
   useEffect(() => {
+    (async() => {
+      const res = await fetch('../api/getRoom')
+      if(!res.ok) {
+        const json = await res.json()
+        console.error(new Error(json.message))
+        setHasRoomID(false)
+      }
+    })()
+
     setIsSupported('xr' in navigator)
-    const params: any = getUrlParams(window.location.href)
-    if(params.room) {
-      setHasRoomID(true)
-    }
+
+    // const params: any = getUrlParams(window.location.href)
+    // if(params.room) {
+    //   setHasRoomID(true)
+    // }
   }, [])
 
   return (
