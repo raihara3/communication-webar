@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react'
 import { Button, IconButton, Link } from '@material-ui/core'
 import { FileCopy } from '@material-ui/icons'
+import styled from 'styled-components'
 
 const Remote = () => {
   const [roomID, setRoomID] = useState<string>('')
@@ -35,7 +36,7 @@ const Remote = () => {
           <Link
             href={`${window.location.href}/call?room=${roomID}`}
           >
-            <textarea
+            <Textarea
               ref={roomURL}
               value={`${window.location.href}/call?room=${roomID}`}
               readOnly
@@ -52,5 +53,19 @@ const Remote = () => {
     </>
   )
 }
+
+const Textarea = styled.textarea`
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  resize: none;
+  width: 100%;
+  height: 1.5rem;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: inherit;
+`
 
 export default Remote
