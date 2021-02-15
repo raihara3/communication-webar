@@ -15,7 +15,7 @@ import GetRoomService from '../../core/service/room/GetRoomService'
 
 const callHandler = async(req, res) => {
   const client = redis.createClient()
-  // TODO: change to the RoomID
+
   const params: any = getUrlParams(req.headers.referer)
   const roomID = params.room
   if(!roomID) {
@@ -26,7 +26,6 @@ const callHandler = async(req, res) => {
   const roomRepository = new RoomRepository(client)
   const hasRoom = await new GetRoomService(roomRepository).execute(roomID)
   if(!hasRoom) {
-    console.log('404')
     res.status(404).json({message: 'This RoomID does not exist.'})
     res.end()
   }
