@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react'
 import { Button, IconButton, Link } from '@material-ui/core'
 import { FileCopy } from '@material-ui/icons'
 import styled from 'styled-components'
+import Header from '../components/layout/Header'
 
 const Index = () => {
   const [roomID, setRoomID] = useState<string>('')
@@ -22,34 +23,39 @@ const Index = () => {
 
   return (
     <>
-      <h1>Create a Room</h1>
-      <Button
-        variant='contained'
-        color='primary'
-        disabled={!!roomID}
-        onClick={() => createRoom()}
-      >
-        CREATE
-      </Button>
-      {roomID && (
-        <>
-          <Link
-            href={`${window.location.href}remote/call?room=${roomID}`}
-          >
-            <Textarea
-              ref={roomURL}
-              value={`${window.location.href}remote/call?room=${roomID}`}
-              readOnly
-            />
-          </Link>
-          <IconButton
-            aria-label='FileCopy'
-            onClick={() => copyRoomID()}
-          >
-            <FileCopy />
-          </IconButton>
-        </>
-      )}
+      <Header />
+      <Wrap>
+        <div>
+          This is a service that allows multiple people to play with WebAR while talking on the phone.
+        </div>
+        <Button
+          variant='contained'
+          color='primary'
+          disabled={!!roomID}
+          onClick={() => createRoom()}
+        >
+          CREATE
+        </Button>
+        {roomID && (
+          <>
+            <Link
+              href={`${window.location.href}remote/call?room=${roomID}`}
+            >
+              <Textarea
+                ref={roomURL}
+                value={`${window.location.href}remote/call?room=${roomID}`}
+                readOnly
+              />
+            </Link>
+            <IconButton
+              aria-label='FileCopy'
+              onClick={() => copyRoomID()}
+            >
+              <FileCopy />
+            </IconButton>
+          </>
+        )}
+      </Wrap>
     </>
   )
 }
@@ -66,6 +72,11 @@ const Textarea = styled.textarea`
   outline: none;
   background: transparent;
   color: inherit;
+`
+
+const Wrap = styled.div`
+  width: 90%;
+  margin: auto;
 `
 
 export default Index

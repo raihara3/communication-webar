@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik&display=swap');
+
 /* Box sizing rules */
 *,
 *::before,
@@ -28,6 +30,10 @@ ol[role="list"] {
 /* Set core root defaults */
 html {
   scroll-behavior: smooth;
+  background-color: #1F1F1F;
+  color: #ffffff;
+  font-family: 'Rubik', sans-serif;
+  font-size: 14px;
 }
 
 /* Set core body defaults */
