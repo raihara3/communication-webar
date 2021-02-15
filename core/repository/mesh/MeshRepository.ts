@@ -4,7 +4,9 @@ class MeshRepository {
   inner: redis.RedisClient
 
   constructor(inner) {
+    // DB 2: mesh list
     this.inner = inner
+    this.inner.select(2)
   }
 
   private key(id: string) {
@@ -12,23 +14,18 @@ class MeshRepository {
   }
 
   add(roomID: string, data: any) {
-    // DB 2: mesh list
-    this.inner.select(2, () => {
-      this.inner.rpush(this.key(roomID), data)
-      this.inner.expire(this.key(roomID), 60 * 60 * 24 * 3)
-    })
+    this.inner.rpush(this.key(roomID), data)
+    this.inner.expire(this.key(roomID), 60 * 60 * 24 * 3)
   }
 
   list(roomID: string): any {
     return new Promise((resolve, reject) => {
-      this.inner.select(2, () => {
-        this.inner.lrange(this.key(roomID), 0, -1, (error, reply) => {
-          if(error) {
-            reject(error)
-            return
-          }
-          resolve(reply)
-        })
+      this.inner.lrange(this.key(roomID), 0, -1, (error, reply) => {
+        if(error) {
+          reject(error)
+          return
+        }
+        resolve(reply)
       })
     })
   }

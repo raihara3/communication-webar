@@ -4,7 +4,9 @@ class UserRepository {
   inner: redis.RedisClient
 
   constructor(inner) {
+    // DB 1: member list
     this.inner = inner
+    this.inner.select(1)
   }
 
   private key(id: string) {
@@ -12,17 +14,12 @@ class UserRepository {
   }
 
   add(roomID: string, userID: string) {
-    // DB 1: member list
-    this.inner.select(1, () => {
-      this.inner.rpush(this.key(roomID), userID)
-      this.inner.expire(this.key(roomID), 60 * 60 * 24 * 3)
-    })
+    this.inner.rpush(this.key(roomID), userID)
+    this.inner.expire(this.key(roomID), 60 * 60 * 24 * 3)
   }
 
   remove(roomID: string, userID: string) {
-    this.inner.select(1, () => {
-      this.inner.lrem(this.key(roomID), 0, userID)
-    })
+    this.inner.lrem(this.key(roomID), 0, userID)
   }
 }
 
