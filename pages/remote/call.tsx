@@ -107,7 +107,7 @@ const Call = () => {
         <div>
           The URL is incorrect.<br />
           Do you want to create a new room?<br />
-          <Link href='../remote'>
+          <Link href='/'>
             Create a Room
           </Link>
         </div>
