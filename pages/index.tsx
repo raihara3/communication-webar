@@ -2,14 +2,14 @@ import React, { useState, useRef } from 'react'
 import { Button } from '@material-ui/core'
 import { FileCopy } from '@material-ui/icons'
 import styled from 'styled-components'
-import colors from '../components/colors'
 import Header from '../components/layout/Header'
 import Footer from '../components/layout/Footer'
+import Card from '../components/molecules/Card'
 
 const Index = () => {
   const [roomID, setRoomID] = useState<string>('')
   const [roomURL, setRoomURL] = useState<string>('https://')
-  const roomURLBox = useRef<HTMLTextAreaElement>(null)
+  const roomURLBox = useRef<HTMLInputElement>(null)
 
   const createRoom = async() => {
     const res: any = await fetch('../api/createRoom')
@@ -20,9 +20,9 @@ const Index = () => {
   }
 
   const copyRoomID = () => {
+    roomURLBox.current?.focus()
     roomURLBox.current?.select()
     document.execCommand('copy')
-    roomURLBox.current?.blur()
   }
 
   return (
@@ -32,12 +32,10 @@ const Index = () => {
         <span>
           This is a service that allows multiple people to play with WebAR while talking on the phone.
         </span>
-        <Card>
-          <CardTitle>Step1. Create a Room</CardTitle>
-          <CardContents>
-            No account is required, just create a Room.<br />
-            It will expire in 3 days.
-          </CardContents>
+        <Card
+          title='Step1. Create a Room'
+          description='No account is required, just create a Room. It will expire in 3 days.'
+        >
           <Button
             variant='contained'
             color='primary'
@@ -47,12 +45,11 @@ const Index = () => {
             CREATE ROOM
           </Button>
         </Card>
-        <Card>
-          <CardTitle>Step2. Share</CardTitle>
-          <CardContents>
-            Copy the room URL and share it with your friends!
-          </CardContents>
-          <Textarea
+        <Card
+          title='Step2. Share'
+          description='Copy the room URL and share it with your friends!'
+        >
+          <URLBox
             ref={roomURLBox}
             value={roomURL}
             readOnly
@@ -67,11 +64,10 @@ const Index = () => {
             COPY URL
           </Button>
         </Card>
-        <Card>
-          <CardTitle>Step3. Let's play!</CardTitle>
-          <CardContents>
-            Let's access and play with the issued Room.
-          </CardContents>
+        <Card
+          title="Step3. Let's play!"
+          description="Let's access and play with the issued Room."
+        >
           <Button
             variant='contained'
             color='primary'
@@ -87,13 +83,14 @@ const Index = () => {
   )
 }
 
-const Textarea = styled.textarea`
+const URLBox = styled.input`
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
   resize: none;
   width: 100%;
   height: 1.5rem;
+  margin: 0 0 5px;
   padding: 0;
   border: 0;
   outline: none;
@@ -105,23 +102,6 @@ const Textarea = styled.textarea`
 const Wrap = styled.div`
   width: 90%;
   margin: auto;
-`
-
-const Card = styled.div`
-  margin: 10px 0 0;
-  padding: 10px 15px;
-  background-color: ${colors.gray};
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 4px;
-`
-
-const CardTitle = styled.h2`
-  font-size: 20px;
-  font-weight: normal;
-`
-
-const CardContents = styled.div`
-  margin: 10px 0;
 `
 
 export default Index
