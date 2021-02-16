@@ -4,6 +4,7 @@ import { FileCopy } from '@material-ui/icons'
 import styled from 'styled-components'
 import colors from '../components/colors'
 import Header from '../components/layout/Header'
+import Footer from '../components/layout/Footer'
 
 const Index = () => {
   const [roomID, setRoomID] = useState<string>('')
@@ -81,6 +82,7 @@ const Index = () => {
           </Button>
         </Card>
       </Wrap>
+      <Footer />
     </>
   )
 }
