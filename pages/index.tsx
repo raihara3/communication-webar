@@ -1,60 +1,85 @@
 import React, { useState, useRef } from 'react'
-import { Button, IconButton, Link } from '@material-ui/core'
+import { Button } from '@material-ui/core'
 import { FileCopy } from '@material-ui/icons'
 import styled from 'styled-components'
+import colors from '../components/colors'
 import Header from '../components/layout/Header'
 
 const Index = () => {
   const [roomID, setRoomID] = useState<string>('')
-  const roomURL = useRef<HTMLTextAreaElement>(null)
+  const [roomURL, setRoomURL] = useState<string>('https://')
+  const roomURLBox = useRef<HTMLTextAreaElement>(null)
 
   const createRoom = async() => {
     const res: any = await fetch('../api/createRoom')
     const json = await res.json()
     console.log(json.roomID)
     setRoomID(json.roomID)
+    setRoomURL(`${window.location.href}remote/call?room=${json.roomID}`)
   }
 
   const copyRoomID = () => {
-    roomURL.current?.select()
+    roomURLBox.current?.select()
     document.execCommand('copy')
-    roomURL.current?.blur()
+    roomURLBox.current?.blur()
   }
 
   return (
     <>
       <Header />
       <Wrap>
-        <div>
+        <span>
           This is a service that allows multiple people to play with WebAR while talking on the phone.
-        </div>
-        <Button
-          variant='contained'
-          color='primary'
-          disabled={!!roomID}
-          onClick={() => createRoom()}
-        >
-          CREATE
-        </Button>
-        {roomID && (
-          <>
-            <Link
-              href={`${window.location.href}remote/call?room=${roomID}`}
-            >
-              <Textarea
-                ref={roomURL}
-                value={`${window.location.href}remote/call?room=${roomID}`}
-                readOnly
-              />
-            </Link>
-            <IconButton
-              aria-label='FileCopy'
-              onClick={() => copyRoomID()}
-            >
-              <FileCopy />
-            </IconButton>
-          </>
-        )}
+        </span>
+        <Card>
+          <CardTitle>Step1. Create a Room</CardTitle>
+          <CardContents>
+            No account is required, just create a Room.<br />
+            It will expire in 3 days.
+          </CardContents>
+          <Button
+            variant='contained'
+            color='primary'
+            disabled={!!roomID}
+            onClick={() => createRoom()}
+          >
+            CREATE ROOM
+          </Button>
+        </Card>
+        <Card>
+          <CardTitle>Step2. Share</CardTitle>
+          <CardContents>
+            Copy the room URL and share it with your friends!
+          </CardContents>
+          <Textarea
+            ref={roomURLBox}
+            value={roomURL}
+            readOnly
+          />
+          <Button
+            variant='contained'
+            color='primary'
+            startIcon={<FileCopy />}
+            disabled={!roomID}
+            onClick={() => copyRoomID()}
+          >
+            COPY URL
+          </Button>
+        </Card>
+        <Card>
+          <CardTitle>Step3. Let's play!</CardTitle>
+          <CardContents>
+            Let's access and play with the issued Room.
+          </CardContents>
+          <Button
+            variant='contained'
+            color='primary'
+            href={roomURL}
+            disabled={!roomID}
+          >
+            Go to Room
+          </Button>
+        </Card>
       </Wrap>
     </>
   )
@@ -71,12 +96,30 @@ const Textarea = styled.textarea`
   border: 0;
   outline: none;
   background: transparent;
-  color: inherit;
+  color: rgba(255,255,255,0.3);
+  font-size: 10px;
 `
 
 const Wrap = styled.div`
   width: 90%;
   margin: auto;
+`
+
+const Card = styled.div`
+  margin: 10px 0 0;
+  padding: 10px 15px;
+  background-color: ${colors.gray};
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 4px;
+`
+
+const CardTitle = styled.h2`
+  font-size: 20px;
+  font-weight: normal;
+`
+
+const CardContents = styled.div`
+  margin: 10px 0;
 `
 
 export default Index

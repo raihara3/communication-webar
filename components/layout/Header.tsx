@@ -28,7 +28,7 @@ const ImageBox = styled.div`
   height: 45px;
 `
 
-const PageTitle = styled.div`
+const PageTitle = styled.h1`
   align-self: center;
   flex-grow: 1;
   padding: 0 45px 0 0;
