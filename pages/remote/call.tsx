@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react"
 import io from 'socket.io-client'
+import styled from 'styled-components'
 import { Button, Link } from '@material-ui/core'
+import { Alert } from '@material-ui/lab'
 import Video from '../../components/Video'
 import WebGL from '../../src/WebGL'
 import { receiveMessagingHandler, sendMeshHandler } from '../../src/emitter/Messaging'
 import { createMesh } from '../../src/Mesh'
+import Header from '../../components/layout/Header'
+import Footer from '../../components/layout/Footer'
 
 const Call = () => {
   const [isSupported, setIsSupported] = useState(false)
@@ -77,43 +81,55 @@ const Call = () => {
 
   return (
     <>
-      <div>remote call</div>
-      {hasRoomID ? (
-        <>
-          {memberList.map(id => (
-            <Video id={id} key={id} />
-          ))}
-          {isSupported ? (
-            <>
-              {!isAudioPermission && (
-                <div>Please allow the use of the microphone</div>
-              )}
-              <Button
-                variant='outlined'
-                color='primary'
-                onClick={() => onStartWebAR()}
-              >
-                START AR
-              </Button>
-            </>
-          ) : (
-            <a href='https://immersiveweb.dev/'>
-              WebXR not available
-            </a>
-          )}
-          <canvas id='webAR'></canvas>
-        </>
-      ) : (
-        <div>
-          The URL is incorrect.<br />
-          Do you want to create a new room?<br />
-          <Link href='/'>
-            Create a Room
-          </Link>
-        </div>
-      )}
+      <Header />
+      <Wrap>
+        {!hasRoomID && (
+          <ErrorBox>
+            <Alert severity="error">
+              The URL is incorrect.<br />
+              Do you want to create a new room?<br />
+              <Link href='/'>
+                Create a Room
+              </Link>
+            </Alert>
+          </ErrorBox>
+        )}
+        <span>Allow the use of the microphone and camera.</span>
+        {memberList.map(id => (
+          <Video id={id} key={id} />
+        ))}
+        {isSupported ? (
+          <>
+            {!isAudioPermission && (
+              <div>Please allow the use of the microphone</div>
+            )}
+            <Button
+              variant='contained'
+              color='primary'
+              onClick={() => onStartWebAR()}
+            >
+              START AR
+            </Button>
+          </>
+        ) : (
+          <a href='https://immersiveweb.dev/'>
+            WebXR not available
+          </a>
+        )}
+        <canvas id='webAR'></canvas>
+      </Wrap>
+      <Footer />
     </>
   )
 }
+
+const Wrap = styled.div`
+  width: 90%;
+  margin: auto;
+`
+
+const ErrorBox = styled.div`
+  margin: 0 0 10px 0;
+`
 
 export default Call
