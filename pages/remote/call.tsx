@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import io from 'socket.io-client'
 import styled from 'styled-components'
-import { Button, Link } from '@material-ui/core'
+import { Button, Link, Input, makeStyles } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import Video from '../../components/atoms/Video'
 import WebGL from '../../src/WebGL'
@@ -9,12 +9,28 @@ import { receiveMessagingHandler, sendMeshHandler } from '../../src/emitter/Mess
 import { createMesh } from '../../src/Mesh'
 import Header from '../../components/layout/Header'
 import Footer from '../../components/layout/Footer'
+import Card from '../../components/molecules/Card'
+
+const useStyles = makeStyles(() => ({
+  input: {
+    '& > *': {
+      color: '#ffffff',
+    },
+  },
+}))
 
 const Call = () => {
   const [isSupported, setIsSupported] = useState(false)
   const [isAudioPermission, setIsAudioPermission] = useState(true)
   const [memberList, setMemberList] = useState<string[]>([])
   const [hasRoomID, setHasRoomID] = useState<boolean>(true)
+  const [hasError, setHasError] = useState<boolean>(false)
+
+  const classes = useStyles()
+
+  useEffect(() => {
+    setHasError(!isSupported || !isAudioPermission || !hasRoomID)
+  }, [isSupported, isAudioPermission, hasRoomID])
 
   const onStartWebAR = async() => {
     const res = await fetch('../api/call')
@@ -94,28 +110,41 @@ const Call = () => {
             </Alert>
           </ErrorBox>
         )}
+        {!isAudioPermission && (
+          <ErrorBox>
+            <Alert severity="error">
+              Please allow the use of the microphone.
+            </Alert>
+          </ErrorBox>
+        )}
         <span>Allow the use of the microphone and camera.</span>
-        {memberList.map(id => (
-          <Video id={id} key={id} />
-        ))}
-        {isSupported ? (
-          <>
-            {!isAudioPermission && (
-              <div>Please allow the use of the microphone</div>
-            )}
+        <Card
+          title='Set your nickname.'
+        >
+          <InputBox>
+            <Input
+              className={classes.input}
+              placeholder='Nickname'
+            />
+          </InputBox>
+          {isSupported ? (
             <Button
               variant='contained'
               color='primary'
               onClick={() => onStartWebAR()}
+              disabled={hasError}
             >
               START AR
             </Button>
-          </>
-        ) : (
-          <a href='https://immersiveweb.dev/'>
-            WebXR not available
-          </a>
-        )}
+          ) : (
+            <a href='https://immersiveweb.dev/'>
+              WebXR not available
+            </a>
+          )}
+        </Card>
+        {memberList.map(id => (
+          <Video id={id} key={id} />
+        ))}
         <canvas id='webAR'></canvas>
       </Wrap>
       <Footer />
@@ -129,7 +158,11 @@ const Wrap = styled.div`
 `
 
 const ErrorBox = styled.div`
-  margin: 0 0 10px 0;
+  margin: 0 0 10px;
+`
+
+const InputBox = styled.div`
+  margin: 0 0 10px;
 `
 
 export default Call

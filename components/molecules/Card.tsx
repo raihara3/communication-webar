@@ -4,7 +4,7 @@ import colors from '../colors'
 
 interface Props {
   title: string
-  description: string
+  description?: string
   children: React.ReactNode
 }
 
