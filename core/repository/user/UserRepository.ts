@@ -8,17 +8,13 @@ class UserRepository {
     this.inner = redis.createClient({db: 1})
   }
 
-  private key(id: string) {
-    return `${id}_users`
-  }
-
   add(roomID: string, userID: string) {
-    this.inner.rpush(this.key(roomID), userID)
-    this.inner.expire(this.key(roomID), 60 * 60 * 24 * 3)
+    this.inner.rpush(roomID, userID)
+    this.inner.expire(roomID, 60 * 60 * 24 * 3)
   }
 
   remove(roomID: string, userID: string) {
-    this.inner.lrem(this.key(roomID), 0, userID)
+    this.inner.lrem(roomID, 0, userID)
   }
 }
 
