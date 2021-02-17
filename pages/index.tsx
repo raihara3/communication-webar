@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import Header from '../components/layout/Header'
 import Footer from '../components/layout/Footer'
 import Card from '../components/molecules/Card'
+import InputField from '../components/atoms/InputField'
 
 const Index = () => {
   const [roomID, setRoomID] = useState<string>('')
@@ -49,10 +50,10 @@ const Index = () => {
           title='Step2. Share'
           description='Copy the room URL and share it with your friends!'
         >
-          <URLBox
+          <InputField
             ref={roomURLBox}
-            value={roomURL}
-            readOnly
+            defaultValue={roomURL}
+            readonly={true}
           />
           <Button
             variant='outlined'
@@ -82,22 +83,6 @@ const Index = () => {
     </>
   )
 }
-
-const URLBox = styled.input`
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  resize: none;
-  width: 100%;
-  height: 1.5rem;
-  margin: 0 0 5px;
-  padding: 0;
-  border: 0;
-  outline: none;
-  background: transparent;
-  color: rgba(255,255,255,0.3);
-  font-size: 10px;
-`
 
 const Wrap = styled.div`
   width: 90%;

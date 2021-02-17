@@ -13,7 +13,7 @@ interface Props {
   defaultValue?: string
   hasError?: boolean
   errorMessage?: string
-  onChange: (e: any) => void
+  onChange?: (e: any) => void
 }
 
 const InputField: React.FC<Props> = ({
@@ -40,7 +40,9 @@ const InputField: React.FC<Props> = ({
         disabled={disabled}
         placeholder={placeholder}
         defaultValue={defaultValue}
-        onChange={(e) => onChange(e)}
+        onChange={(e) => {
+          onChange && onChange(e)
+        }}
       />
       {hasError && (
         <ErrorMessage>{errorMessage}</ErrorMessage>
@@ -70,6 +72,7 @@ const Input = styled.input<{readOnly: boolean}>`
   ${({readOnly}) => readOnly && `
     color: rgba(255,255,255,0.3);
     font-size: 10px;
+    border: none;
   `}
 `
 

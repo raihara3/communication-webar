@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import io from 'socket.io-client'
 import styled from 'styled-components'
-import { Button, Link, Input } from '@material-ui/core'
+import { Button, Link } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import Video from '../../components/atoms/Video'
 import WebGL from '../../src/WebGL'
@@ -10,6 +10,7 @@ import { createMesh } from '../../src/Mesh'
 import Header from '../../components/layout/Header'
 import Footer from '../../components/layout/Footer'
 import Card from '../../components/molecules/Card'
+import InputField from '../../components/atoms/InputField'
 
 const Call = () => {
   const [isSupported, setIsSupported] = useState(false)
@@ -17,10 +18,18 @@ const Call = () => {
   const [memberList, setMemberList] = useState<string[]>([])
   const [hasRoomID, setHasRoomID] = useState<boolean>(true)
   const [hasError, setHasError] = useState<boolean>(false)
+  const [nickname, setNickname] = useState<string>()
+  const [isOverCharLimit, setIsOverCharLimit] = useState<boolean>(false)
+
+  const onChangeNickname = (e) => {
+    const value = e.target.value
+    setIsOverCharLimit(value.length > 15)
+    setNickname(value)
+  }
 
   useEffect(() => {
-    setHasError(!isSupported || !isAudioPermission || !hasRoomID)
-  }, [isSupported, isAudioPermission, hasRoomID])
+    setHasError(!isSupported || !isAudioPermission || !hasRoomID || isOverCharLimit)
+  }, [isSupported, isAudioPermission, hasRoomID, isOverCharLimit])
 
   const onStartWebAR = async() => {
     const res = await fetch('../api/call')
@@ -111,17 +120,18 @@ const Call = () => {
         <Card
           title='Set your nickname.'
         >
-          <InputBox>
-            <Input
-              placeholder='Nickname'
-            />
-          </InputBox>
+          <InputField
+            placeholder='Nickname'
+            onChange={onChangeNickname}
+            hasError={isOverCharLimit}
+            errorMessage='Enter up to 15 characters.'
+          />
           {isSupported ? (
             <Button
               variant='outlined'
               color='primary'
               onClick={() => onStartWebAR()}
-              disabled={hasError}
+              disabled={hasError || !nickname}
             >
               START AR
             </Button>
@@ -147,10 +157,6 @@ const Wrap = styled.div`
 `
 
 const ErrorBox = styled.div`
-  margin: 0 0 10px;
-`
-
-const InputBox = styled.div`
   margin: 0 0 10px;
 `
 
