@@ -1,5 +1,6 @@
 import React, { memo } from 'react'
 import styled from 'styled-components'
+import colors from '../colors'
 
 interface Props {
   id?: string
@@ -10,6 +11,8 @@ interface Props {
   disabled?: boolean
   placeholder?: string
   defaultValue?: string
+  hasError?: boolean
+  errorMessage?: string
   onChange: (e: any) => void
 }
 
@@ -22,22 +25,33 @@ const InputField: React.FC<Props> = ({
   disabled = false,
   placeholder,
   defaultValue,
+  hasError = false,
+  errorMessage,
   onChange
 }) => {
   return (
-    <Input
-      id={id}
-      name={name}
-      ref={ref}
-      type={type}
-      readOnly={readonly}
-      disabled={disabled}
-      placeholder={placeholder}
-      defaultValue={defaultValue}
-      onChange={(e) => onChange(e)}
-    />
+    <InputBox>
+      <Input
+        id={id}
+        name={name}
+        ref={ref}
+        type={type}
+        readOnly={readonly}
+        disabled={disabled}
+        placeholder={placeholder}
+        defaultValue={defaultValue}
+        onChange={(e) => onChange(e)}
+      />
+      {hasError && (
+        <ErrorMessage>{errorMessage}</ErrorMessage>
+      )}
+    </InputBox>
   )
 }
+
+const InputBox = styled.div`
+  margin: 0 0 10px;
+`
 
 const Input = styled.input<{readOnly: boolean}>`
   -webkit-appearance: none;
@@ -46,7 +60,6 @@ const Input = styled.input<{readOnly: boolean}>`
   resize: none;
   width: 100%;
   height: 1.5rem;
-  margin: 0 0 10px;
   padding: 0 0 8px;
   border: 0;
   outline: none;
@@ -58,6 +71,13 @@ const Input = styled.input<{readOnly: boolean}>`
     color: rgba(255,255,255,0.3);
     font-size: 10px;
   `}
+`
+
+const ErrorMessage = styled.span`
+  display: block;
+  margin: 5px 0 0;
+  color: ${colors.red};
+  font-size: 10px;
 `
 
 export default memo(InputField)
