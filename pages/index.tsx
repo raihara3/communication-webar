@@ -37,7 +37,7 @@ const Index = () => {
           description='No account is required, just create a Room. It will expire in 3 days.'
         >
           <Button
-            variant='contained'
+            variant='outlined'
             color='primary'
             disabled={!!roomID}
             onClick={() => createRoom()}
@@ -55,7 +55,7 @@ const Index = () => {
             readOnly
           />
           <Button
-            variant='contained'
+            variant='outlined'
             color='primary'
             startIcon={<FileCopy />}
             disabled={!roomID}
@@ -69,7 +69,7 @@ const Index = () => {
           description="Let's access and play with the issued Room."
         >
           <Button
-            variant='contained'
+            variant='outlined'
             color='primary'
             href={roomURL}
             disabled={!roomID}

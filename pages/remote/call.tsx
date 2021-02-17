@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import io from 'socket.io-client'
 import styled from 'styled-components'
-import { Button, Link, Input, makeStyles } from '@material-ui/core'
+import { Button, Link, Input } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import Video from '../../components/atoms/Video'
 import WebGL from '../../src/WebGL'
@@ -11,22 +11,12 @@ import Header from '../../components/layout/Header'
 import Footer from '../../components/layout/Footer'
 import Card from '../../components/molecules/Card'
 
-const useStyles = makeStyles(() => ({
-  input: {
-    '& > *': {
-      color: '#ffffff',
-    },
-  },
-}))
-
 const Call = () => {
   const [isSupported, setIsSupported] = useState(false)
   const [isAudioPermission, setIsAudioPermission] = useState(true)
   const [memberList, setMemberList] = useState<string[]>([])
   const [hasRoomID, setHasRoomID] = useState<boolean>(true)
   const [hasError, setHasError] = useState<boolean>(false)
-
-  const classes = useStyles()
 
   useEffect(() => {
     setHasError(!isSupported || !isAudioPermission || !hasRoomID)
@@ -101,7 +91,7 @@ const Call = () => {
       <Wrap>
         {!hasRoomID && (
           <ErrorBox>
-            <Alert severity="error">
+            <Alert variant="filled" severity="error">
               The URL is incorrect.<br />
               Do you want to create a new room?<br />
               <Link href='/'>
@@ -112,7 +102,7 @@ const Call = () => {
         )}
         {!isAudioPermission && (
           <ErrorBox>
-            <Alert severity="error">
+            <Alert variant="filled" severity="error">
               Please allow the use of the microphone.
             </Alert>
           </ErrorBox>
@@ -123,13 +113,12 @@ const Call = () => {
         >
           <InputBox>
             <Input
-              className={classes.input}
               placeholder='Nickname'
             />
           </InputBox>
           {isSupported ? (
             <Button
-              variant='contained'
+              variant='outlined'
               color='primary'
               onClick={() => onStartWebAR()}
               disabled={hasError}
