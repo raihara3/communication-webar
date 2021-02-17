@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import Image from 'next/image'
 import styled from 'styled-components'
 
@@ -24,7 +24,7 @@ const ImageBox = styled.div`
 `
 
 const CopyRight = styled.small`
-  color: rgba(255,255,255,0.3)
+  color: rgba(255,255,255,0.3);
 `
 
-export default Footer
+export default memo(Footer)

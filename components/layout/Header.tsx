@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import Image from 'next/image'
 import styled from 'styled-components'
 import colors from '../colors'
@@ -36,4 +36,4 @@ const PageTitle = styled.h1`
   text-align: center;
 `
 
-export default Header
+export default memo(Header)
