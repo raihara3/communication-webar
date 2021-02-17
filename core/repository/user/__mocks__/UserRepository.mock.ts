@@ -1,4 +1,4 @@
-import UserRepository from '../UserRepository'
+import UserRepository from '../MemberRepository'
 
 jest.mock('../UserRepository')
 const UserRepositoryMock = UserRepository as jest.Mock

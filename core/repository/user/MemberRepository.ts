@@ -1,6 +1,6 @@
 import redis from 'redis'
 
-class UserRepository {
+class MemberRepository {
   inner: redis.RedisClient
 
   constructor() {
@@ -18,4 +18,4 @@ class UserRepository {
   }
 }
 
-export default UserRepository
+export default MemberRepository

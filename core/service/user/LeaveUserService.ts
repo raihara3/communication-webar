@@ -1,4 +1,4 @@
-import UserRepository from '../../repository/user/UserRepository'
+import UserRepository from '../../repository/user/MemberRepository'
 import MeshRepository from '../../repository/mesh/MeshRepository'
 import UserMessagingRepository from '../../repository/user/UserMessagingRepository'
 import UserNameRepository from '../../repository/user/UserNameRepository'

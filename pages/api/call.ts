@@ -1,6 +1,6 @@
 import { Server } from 'socket.io'
 import getUrlParams from '../../src/utils/getUrlParams'
-import UserRepository from '../../core/repository/user/UserRepository'
+import UserRepository from '../../core/repository/user/MemberRepository'
 import UserNameRepository from '../../core/repository/user/UserNameRepository'
 import MeshRepository from '../../core/repository/mesh/MeshRepository'
 import UserMessagingRepository from '../../core/repository/user/UserMessagingRepository'
