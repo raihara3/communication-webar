@@ -9,7 +9,7 @@ class UserNameRepository {
   }
 
   add(userID: string, userName: string) {
-    this.inner.set(userID, userName)
+    this.inner.setex(userID, 60 * 60 * 24 * 3, userName)
   }
 
   remove(userID: string) {
