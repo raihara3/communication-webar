@@ -5,7 +5,7 @@ import colors from '../colors'
 interface Props {
   id?: string
   name?: string
-  ref?: React.RefObject<HTMLInputElement>
+  inputRef?: React.RefObject<HTMLInputElement>
   type?: 'text' | 'number' | 'password'
   readonly?: boolean
   disabled?: boolean
@@ -19,7 +19,7 @@ interface Props {
 const InputField: React.FC<Props> = ({
   id,
   name,
-  ref,
+  inputRef,
   type = 'text',
   readonly = false,
   disabled = false,
@@ -34,7 +34,7 @@ const InputField: React.FC<Props> = ({
       <Input
         id={id}
         name={name}
-        ref={ref}
+        ref={inputRef}
         type={type}
         readOnly={readonly}
         disabled={disabled}
