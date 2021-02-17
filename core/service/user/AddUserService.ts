@@ -1,25 +1,32 @@
 import UserMessagingRepository from '../../repository/user/UserMessagingRepository'
 import UserRepository from '../../repository/user/UserRepository'
 import MeshRepository from '../../repository/mesh/MeshRepository'
+import UserNameRepository from '../../repository/user/UserNameRepository'
 
 class AddUserService {
   userRepository: UserRepository
+  userNameRepository: UserNameRepository
   meshRepository: MeshRepository
   userMessagingRepository: UserMessagingRepository
 
-  constructor(ur, mr, userMessagingRepository) {
+  constructor(ur, userNameRepository, mr, userMessagingRepository) {
     this.userRepository = ur
+    this.userNameRepository = userNameRepository
     this.meshRepository = mr
     this.userMessagingRepository = userMessagingRepository
   }
 
-  async execute(roomID: string, newEntryID: string, memberList: Array<string>) {
+  async execute(roomID: string, newEntryID: string, userName: string, memberList: Array<string>) {
+    this.userNameRepository.add(newEntryID, userName)
+
     this.userMessagingRepository.toSender('join', {
       myID: newEntryID,
+      userName: userName,
       memberList: memberList
     })
     this.userMessagingRepository.toOther('addUser', {
       newEntryID: newEntryID,
+      userName: userName,
       memberList: memberList
     })
 

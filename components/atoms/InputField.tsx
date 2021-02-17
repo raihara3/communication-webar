@@ -5,7 +5,7 @@ import colors from '../colors'
 interface Props {
   id?: string
   name?: string
-  ref?: any
+  ref?: React.RefObject<HTMLInputElement>
   type?: 'text' | 'number' | 'password'
   readonly?: boolean
   disabled?: boolean

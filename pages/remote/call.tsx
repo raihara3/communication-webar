@@ -18,7 +18,7 @@ const Call = () => {
   const [memberList, setMemberList] = useState<string[]>([])
   const [hasRoomID, setHasRoomID] = useState<boolean>(true)
   const [hasError, setHasError] = useState<boolean>(false)
-  const [nickname, setNickname] = useState<string>()
+  const [nickname, setNickname] = useState<string>('')
   const [isOverCharLimit, setIsOverCharLimit] = useState<boolean>(false)
 
   const onChangeNickname = (e) => {
@@ -32,7 +32,7 @@ const Call = () => {
   }, [isSupported, isAudioPermission, hasRoomID, isOverCharLimit])
 
   const onStartWebAR = async() => {
-    const res = await fetch('../api/call')
+    const res = await fetch(`../api/call?name=${nickname}`)
     if(!res.ok) {
       const json = await res.json()
       console.error(new Error(json.message))
@@ -98,6 +98,9 @@ const Call = () => {
     <>
       <Header />
       <Wrap>
+        {memberList.map(id => (
+          <Video id={id} key={id} />
+        ))}
         {!hasRoomID && (
           <ErrorBox>
             <Alert variant="filled" severity="error">
@@ -141,9 +144,6 @@ const Call = () => {
             </a>
           )}
         </Card>
-        {memberList.map(id => (
-          <Video id={id} key={id} />
-        ))}
         <canvas id='webAR'></canvas>
       </Wrap>
       <Footer />

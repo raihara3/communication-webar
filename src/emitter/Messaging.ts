@@ -2,16 +2,16 @@ import { createMeshGroup, Data } from '../Mesh'
 import { createPeerOffer, createPeerAnswer, setPeerSdp, setIceCandidate, leavePeerConnection } from '../WebRTC'
 
 export const receiveMessagingHandler = async(socket: SocketIOClient.Socket, scene: THREE.Scene, setMemberList: (list: any) => void) => {
-  socket.on('addUser', async({ newEntryID, memberList }) => {
-    console.log(`join: ${newEntryID}`)
+  socket.on('addUser', async({ newEntryID, userName, memberList }) => {
+    console.log(`join: ${newEntryID}, userName: ${userName}`)
     setMemberList(memberList)
     const offer = await createPeerOffer(socket, newEntryID)
     sendPeerOfferHandler(socket, newEntryID, offer)
   })
 
-  socket.on('join', ({ myID, memberList }) => {
+  socket.on('join', ({ myID, userName, memberList }) => {
     setMemberList(memberList)
-    console.log(`myID: ${myID}`)
+    console.log(`myID: ${myID}, userName: ${userName}`)
   })
 
   socket.on('getMesh', (data: Array<Data>) => {
