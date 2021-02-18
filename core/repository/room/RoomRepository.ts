@@ -25,6 +25,18 @@ class RoomRepository {
       })
     })
   }
+
+  getExpire(roomID: string): Promise<number> {
+    return new Promise((resolve, reject) => {
+      this.inner.ttl(roomID, (error, reply) => {
+        if(error) {
+          reject(error)
+          return
+        }
+        resolve(reply)
+      })
+    })
+  }
 }
 
 export default RoomRepository

@@ -18,6 +18,7 @@ const Call = () => {
   const [memberList, setMemberList] = useState<string[]>([])
   const [hasRoomID, setHasRoomID] = useState<boolean>(true)
   const [hasError, setHasError] = useState<boolean>(false)
+  const [expire, setExpire] = useState<number>(0)
   const [nickname, setNickname] = useState<string>('')
   const [isOverCharLimit, setIsOverCharLimit] = useState<boolean>(false)
 
@@ -79,11 +80,13 @@ const Call = () => {
   useEffect(() => {
     (async() => {
       const res = await fetch('../api/getRoom')
+      const json = await res.json()
       if(!res.ok) {
-        const json = await res.json()
         console.error(new Error(json.message))
         setHasRoomID(false)
+        return
       }
+      setExpire(Math.floor(json.data.remainingTime))
     })()
 
     setIsSupported('xr' in navigator)
@@ -101,6 +104,16 @@ const Call = () => {
         {memberList.map(id => (
           <Video id={id} key={id} />
         ))}
+        {(expire > 0 && expire <= 24) && (
+          <ErrorBox>
+            <Alert variant="filled" severity="warning">
+              This Room has 24 hours left to expire.<br />
+              <Link href='/'>
+                Create a new Room
+              </Link>
+            </Alert>
+          </ErrorBox>
+        )}
         {!hasRoomID && (
           <ErrorBox>
             <Alert variant="filled" severity="error">
