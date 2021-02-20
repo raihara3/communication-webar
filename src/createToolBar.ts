@@ -1,7 +1,29 @@
 import * as THREE from 'three'
 import { Color } from 'three'
 
-const buttonList = [
+export const onClickButton = (button) => {
+  switch(button.name) {
+    case 'mic':
+      onClickMic(button)
+      break
+    case 'exit':
+      location.reload()
+      break
+  }
+}
+
+const onClickMic = (mesh) => {
+  mesh.scale.z = 0.5
+  mesh.position.z = mesh.position.z - (buttonSize.depth/2)
+}
+
+interface ButtonInfo {
+  name: string
+  color: string
+  imgSrc: string
+}
+
+const buttonList: Array<ButtonInfo> = [
   {
     name: 'mic',
     color: '#004E9C',

@@ -5,6 +5,7 @@ import { Button, Link } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 import Video from '../../components/atoms/Video'
 import WebGL from '../../src/WebGL'
+import { createToolBar, onClickButton } from '../../src/createToolBar'
 import { receiveMessagingHandler, sendMeshHandler } from '../../src/emitter/Messaging'
 import { createMesh } from '../../src/Mesh'
 import Header from '../../components/layout/Header'
@@ -57,6 +58,7 @@ const Call = () => {
     const socket = await io()
     const canvas = document.getElementById('webAR') as HTMLCanvasElement
     const webGL = new WebGL(canvas)
+    createToolBar(webGL.scene)
     receiveMessagingHandler(socket, webGL.scene, (list) => setMemberList(list))
 
     const session = await navigator['xr'].requestSession('immersive-ar', {
@@ -65,9 +67,17 @@ const Call = () => {
     await webGL.context.makeXRCompatible()
     webGL.renderer.xr.setReferenceSpaceType('local')
     webGL.renderer.xr.setSession(session)
+    session.addEventListener('end', () => location.reload())
 
     const controller = webGL.renderer.xr.getController(0)
     controller.addEventListener('selectend', () => {
+      webGL.raycaster.setFromCamera(webGL.mouse, webGL.camera)
+      const intersects = webGL.raycaster.intersectObjects(webGL.scene.children)
+      if(intersects.length && intersects[0].object.name) {
+        onClickButton(intersects[0].object)
+        return
+      }
+
       const mesh = createMesh(controller.position)
       webGL.scene.add(mesh)
       sendMeshHandler(socket, {
@@ -157,7 +167,7 @@ const Call = () => {
             </a>
           )}
         </Card>
-        <canvas id='webAR'></canvas>
+        <canvas id='webAR' hidden></canvas>
       </Wrap>
       <Footer />
     </>
