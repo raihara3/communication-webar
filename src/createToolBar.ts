@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { Color } from 'three'
+import { switchAudio } from './AudioTrack'
 
 export const onClickButton = (button) => {
   switch(button.name) {
@@ -13,8 +14,14 @@ export const onClickButton = (button) => {
 }
 
 const onClickMic = (mesh) => {
-  mesh.scale.z = 0.5
-  mesh.position.z = mesh.position.z - (buttonSize.depth/2)
+  const enabled = switchAudio()
+  if(enabled) {
+    mesh.scale.z = 1
+    mesh.position.z = basePosition.z + (buttonSize.depth / 2)
+  }else {
+    mesh.scale.z = 0.5
+    mesh.position.z = mesh.position.z - (buttonSize.depth/2)
+  }
 }
 
 interface ButtonInfo {

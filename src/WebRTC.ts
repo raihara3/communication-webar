@@ -1,12 +1,12 @@
 import { sendIceCandidate } from './emitter/Messaging'
 import peerStore from './store/peer'
+import { setAudioTrack } from './AudioTrack'
 
 const createPeerConnection = async(sender: any, targetID: string): Promise<RTCPeerConnection> => {
   const peerConnection = new RTCPeerConnection({
     iceServers: [{ urls: 'stun:stun.l.test.com:19000' }]
   })
-  const stream = await navigator.mediaDevices.getUserMedia({audio: true})
-  stream.getTracks().forEach(track => peerConnection.addTrack(track, stream))
+  await setAudioTrack(peerConnection)
   peerConnection.ontrack = async(event) => {
     const video = document.getElementById(targetID) as HTMLVideoElement
     video.srcObject = event.streams[0]

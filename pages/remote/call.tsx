@@ -52,8 +52,6 @@ const Call = () => {
       setIsAudioPermission(false)
       return
     }
-    // const audioTracks = stream.getAudioTracks()
-    // if(!audioTracks[0].enabled) return
 
     const socket = await io()
     const canvas = document.getElementById('webAR') as HTMLCanvasElement
