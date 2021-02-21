@@ -1,19 +1,5 @@
 import { sendIceCandidate } from './emitter/Messaging'
-
-const peerList = {}
-const peerStore = (id: string) => {
-  return {
-    add: (data: any) => {
-      peerList[id] = data
-    },
-    get: () => {
-      return peerList[id]
-    },
-    del: () => {
-      delete peerList[id]
-    }
-  }
-}
+import peerStore from './store/peer'
 
 const createPeerConnection = async(sender: any, targetID: string): Promise<RTCPeerConnection> => {
   const peerConnection = new RTCPeerConnection({
@@ -36,7 +22,7 @@ export const createPeerOffer = async(sender, targetID): Promise<RTCSessionDescri
   const peerConnection = await createPeerConnection(sender, targetID)
   const offer = await peerConnection.createOffer()
   await peerConnection.setLocalDescription(offer)
-  peerStore(targetID).add(peerConnection)
+  peerStore().add(targetID, peerConnection)
   return offer
 }
 
@@ -45,21 +31,21 @@ export const createPeerAnswer = async(sender, targetID, offerSdp): Promise<RTCSe
   peerConnection.setRemoteDescription(offerSdp)
   const answer = await peerConnection.createAnswer()
   peerConnection.setLocalDescription(answer)
-  peerStore(targetID).add(peerConnection)
+  peerStore().add(targetID, peerConnection)
   return answer
 }
 
 export const setPeerSdp = async(targetID: string, answerSdp: any) => {
-  const peerConnection: RTCPeerConnection = peerStore(targetID).get()
+  const peerConnection: RTCPeerConnection = peerStore().get(targetID)
   peerConnection.setRemoteDescription(answerSdp)
-  peerStore(targetID).add(peerConnection)
+  peerStore().add(targetID, peerConnection)
 }
 
 export const setIceCandidate = async(targetID: string, ice: any) => {
-  const peerConnection: RTCPeerConnection = peerStore(targetID).get()
+  const peerConnection: RTCPeerConnection = peerStore().get(targetID)
   await peerConnection?.addIceCandidate(new RTCIceCandidate(ice))
 }
 
 export const leavePeerConnection = (id: string) => {
-  peerStore(id).del()
+  peerStore().del(id)
 }
