@@ -36,6 +36,7 @@
     "@types/socket.io": "^2.1.12",
     "@types/socket.io-client": "^1.4.34",
     "@types/styled-components": "^5.1.7",
+    "@types/three": "^0.125.3",
     "apollo-datasource-rest": "^0.9.5",
     "apollo-server-micro": "^2.19.0",
     "autoprefixer": "^9.8.6",
@@ -56,7 +57,7 @@
     "socket.io-client": "^3.0.4",
     "styled-components": "^5.2.1",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.2",
-    "three": "^0.124.0",
+    "three": "^0.125.2",
     "ts-jest": "^26.5.0",
     "typescript": "^4.1.3",
     "typescript-styled-plugin": "^0.15.0"
