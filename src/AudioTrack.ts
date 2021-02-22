@@ -1,7 +1,12 @@
 let stream: MediaStream
 
+export const getAudio = async () => {
+  stream = await window.navigator.mediaDevices.getUserMedia({
+    audio: true,
+  })
+}
+
 export const setAudioTrack = async(peerConnection: RTCPeerConnection) => {
-  stream = await navigator.mediaDevices.getUserMedia({audio: true})
   const track = stream.getAudioTracks()[0]
   peerConnection.addTrack(track, stream)
 }

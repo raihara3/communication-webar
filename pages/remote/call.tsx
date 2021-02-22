@@ -12,6 +12,7 @@ import Header from '../../components/layout/Header'
 import Footer from '../../components/layout/Footer'
 import Card from '../../components/molecules/Card'
 import InputField from '../../components/atoms/InputField'
+import { getAudio } from '../../src/AudioTrack'
 
 const Call = () => {
   const [isSupported, setIsSupported] = useState(false)
@@ -43,10 +44,7 @@ const Call = () => {
     }
 
     try {
-      await window.navigator.mediaDevices.getUserMedia({
-        audio: true,
-        echoCancellationType: 'system'
-      })
+      await getAudio()
     } catch (error) {
       console.error(error)
       setIsAudioPermission(false)
