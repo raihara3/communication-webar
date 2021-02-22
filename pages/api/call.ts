@@ -38,7 +38,7 @@ const callHandler = async(req, res) => {
     const meshRepository = new MeshRepository()
 
     const io = new Server(res.socket.server)
-    const pubClient = new RedisClient({ host: 'localhost', port: 6379 })
+    const pubClient = new RedisClient({ host: process.env.HOST_NAME, port: 6379 })
     const subClient = pubClient.duplicate()
     io.adapter(createAdapter({ pubClient, subClient }))
 
