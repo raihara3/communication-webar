@@ -7,15 +7,18 @@ RUN npm install
 
 COPY next.config.js ./
 COPY .env.* ./
-COPY pages/ pages/
 COPY components/ components/
+COPY core/ core/
+COPY pages/ pages/
+COPY public/ public/
+COPY src/ src/
 COPY styles/ styles/
-COPY utils/ utils/
+COPY threeComponents/ threeComponents/
 
 COPY apollo/ apollo/
 
 RUN npm run build
 
-EXPOSE 3000
-ENTRYPOINT [ "npm", "run" ]
+EXPOSE 3000 3001
+ENTRYPOINT [ "npm", "run"]
 CMD [ "start" ]
