@@ -1,4 +1,6 @@
 import { Server } from 'socket.io'
+import { createAdapter } from 'socket.io-redis'
+import { RedisClient } from 'redis'
 import getUrlParams from '../../src/utils/getUrlParams'
 import UserRepository from '../../core/repository/user/MemberRepository'
 import UserNameRepository from '../../core/repository/user/UserNameRepository'
@@ -35,13 +37,11 @@ const callHandler = async(req, res) => {
     const userNameRepository = new UserNameRepository()
     const meshRepository = new MeshRepository()
 
-    const getMemberList = () => {
-      const memberList: Array<string> = []
-      io.sockets.adapter.rooms.get(roomID)?.forEach(id => memberList.push(id))
-      return memberList
-    }
-
     const io = new Server(res.socket.server)
+    const pubClient = new RedisClient({ host: 'localhost', port: 6379 })
+    const subClient = pubClient.duplicate()
+    io.adapter(createAdapter({ pubClient, subClient }))
+
     const userName = req.query.name
     io.on('connect', socket => {
       socket.join(roomID)
@@ -51,13 +51,12 @@ const callHandler = async(req, res) => {
       }
       const broadcast = (eventName, data) => socket.broadcast.emit(eventName, data)
       const userMessagingRepository = new UserMessagingRepository(sender, broadcast)
-      const memberList = getMemberList()
       new AddUserService(
         userRepository,
         userNameRepository,
         meshRepository,
         userMessagingRepository
-      ).execute(roomID, socket.id, userName, memberList)
+      ).execute(roomID, socket.id, userName)
 
       socket.on('sendMesh', data =>
         new SendMeshService(userRepository, meshRepository, userMessagingRepository).execute(roomID, data)
@@ -75,14 +74,13 @@ const callHandler = async(req, res) => {
         new SendIceCandidateService(userMessagingRepository).execute(data)
       })
 
-      socket.on('disconnect', () =>{
-        const memberList = getMemberList()
+      socket.on('disconnect', async() =>{
         new LeaveUserService(
           userRepository,
           userNameRepository,
           meshRepository,
           userMessagingRepository
-        ).execute(roomID, socket.id, memberList)
+        ).execute(roomID, socket.id)
       })
     })
     res.socket.server.io = io

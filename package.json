@@ -55,6 +55,7 @@
     "redis": "^3.0.2",
     "socket.io": "^3.0.4",
     "socket.io-client": "^3.0.4",
+    "socket.io-redis": "^6.0.1",
     "styled-components": "^5.2.1",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.2",
     "three": "^0.125.2",
