@@ -60,7 +60,8 @@ const Call = () => {
     const session = await navigator['xr'].requestSession('immersive-ar', {
       requiredFeatures: ['local', 'hit-test']
     })
-    await webGL.context.makeXRCompatible()
+    const context: any = webGL.context
+    await context.makeXRCompatible()
     webGL.renderer.xr.setReferenceSpaceType('local')
     webGL.renderer.xr.setSession(session)
     session.addEventListener('end', () => location.reload())
