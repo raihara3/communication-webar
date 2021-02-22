@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { Color } from 'three'
-import { switchAudio } from './AudioTrack'
+import { switchAudio } from '../../src/AudioTrack'
+import Button from '../atoms/Button'
 
 export const onClickButton = (button) => {
   switch(button.name) {
@@ -62,29 +63,6 @@ const centeringAdjustment = buttonList.length === 1
   ? 0
   : ((buttonSize.width + originalMargin)/2) * (buttonList.length - 1)
 
-
-const createButton = ({name, color, imgSrc}, index) => {
-  const margin = index === 0 ? 0 : index * originalMargin
-  const geometry = new THREE.BoxGeometry(buttonSize.width, buttonSize.height, buttonSize.depth)
-  const colorTexture = new THREE.MeshBasicMaterial({color: new Color(color)})
-  const material = [
-    colorTexture,
-    colorTexture,
-    colorTexture,
-    colorTexture,
-    new THREE.MeshBasicMaterial({map: new THREE.TextureLoader().load(imgSrc)}),
-    colorTexture,
-  ]
-  const mesh = new THREE.Mesh(geometry, material)
-  mesh.position.set(
-    basePosition.x + (index * buttonSize.width) + margin - centeringAdjustment,
-    basePosition.y,
-    basePosition.z + (buttonSize.depth / 2)
-  )
-  mesh.name = name
-  return mesh
-}
-
 export const createToolBar = (scene: THREE.Scene) => {
   if(!buttonList.length) return
 
@@ -106,7 +84,13 @@ export const createToolBar = (scene: THREE.Scene) => {
   scene.add(panel)
 
   buttonList.forEach((item, index) => {
-    const button = createButton(item, index)
+    const margin = index === 0 ? 0 : index * originalMargin
+    const button = new Button(item.name, item.color, item.imgSrc, buttonSize).execute()
+    button.position.set(
+      basePosition.x + (index * buttonSize.width) + margin - centeringAdjustment,
+      basePosition.y,
+      basePosition.z + (buttonSize.depth / 2)
+    )
     scene.add(button)
   })
 }

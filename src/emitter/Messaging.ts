@@ -1,4 +1,4 @@
-import { createMeshGroup, Data } from '../Mesh'
+import { createMeshGroup, Data } from '../../threeComponents/Mesh'
 import { createPeerOffer, createPeerAnswer, setPeerSdp, setIceCandidate, leavePeerConnection } from '../WebRTC'
 
 export const receiveMessagingHandler = async(socket: SocketIOClient.Socket, scene: THREE.Scene, setMemberList: (list: any) => void) => {
