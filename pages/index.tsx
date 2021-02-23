@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react'
 import { Button } from '@material-ui/core'
+import { Alert } from '@material-ui/lab'
 import { FileCopy } from '@material-ui/icons'
 import styled from 'styled-components'
 import Header from '../components/layout/Header'
@@ -8,15 +9,20 @@ import Card from '../components/molecules/Card'
 import InputField from '../components/atoms/InputField'
 
 const Index = () => {
-  const [roomID, setRoomID] = useState<string>('')
-  const [roomURL, setRoomURL] = useState<string>('https://')
+  const [roomURL, setRoomURL] = useState<string>('')
+  const [hasError, setHasError] = useState<boolean>(false)
+  const [isClickedButton, setIsClickedButton] = useState<boolean>(false)
   const roomURLBox = useRef<HTMLInputElement>(null)
 
   const createRoom = async() => {
+    setIsClickedButton(true)
     const res: any = await fetch('../api/createRoom')
     const json = await res.json()
-    console.log(json.roomID)
-    setRoomID(json.roomID)
+    if(!res.ok) {
+      console.error(new Error(json.message))
+      setHasError(true)
+      return
+    }
     setRoomURL(`${window.location.href}remote/call?room=${json.roomID}`)
   }
 
@@ -30,6 +36,13 @@ const Index = () => {
     <>
       <Header />
       <Wrap>
+        {hasError && (
+          <ErrorBox>
+            <Alert variant="filled" severity="error">
+              Server error. Please try again after a while.
+            </Alert>
+          </ErrorBox>
+        )}
         <span>
           This is a service that allows multiple people to play with WebAR while talking on the phone.
         </span>
@@ -40,7 +53,7 @@ const Index = () => {
           <Button
             variant='outlined'
             color='primary'
-            disabled={!!roomID}
+            disabled={isClickedButton}
             onClick={() => createRoom()}
           >
             CREATE ROOM
@@ -59,7 +72,7 @@ const Index = () => {
             variant='outlined'
             color='primary'
             startIcon={<FileCopy />}
-            disabled={!roomID}
+            disabled={!roomURL || hasError}
             onClick={() => copyRoomID()}
           >
             COPY URL
@@ -73,7 +86,7 @@ const Index = () => {
             variant='outlined'
             color='primary'
             href={roomURL}
-            disabled={!roomID}
+            disabled={!roomURL || hasError}
           >
             Go to Room
           </Button>
@@ -87,6 +100,10 @@ const Index = () => {
 const Wrap = styled.div`
   width: 90%;
   margin: auto;
+`
+
+const ErrorBox = styled.div`
+  margin: 0 0 10px;
 `
 
 export default Index

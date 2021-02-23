@@ -1,3 +1,4 @@
+import redis from 'redis'
 import { Server } from 'socket.io'
 import { createAdapter } from 'socket.io-redis'
 import { RedisClient } from 'redis'
@@ -23,7 +24,8 @@ const callHandler = async(req, res) => {
     res.end()
   }
 
-  const hasRoom = await new GetRoomService(new RoomRepository()).execute(roomID)
+  const roomStorage = redis.createClient({db: 0})
+  const hasRoom = await new GetRoomService(new RoomRepository(roomStorage)).execute(roomID)
   if(!hasRoom) {
     res.status(404).json({message: 'This RoomID does not exist.'})
     res.end()

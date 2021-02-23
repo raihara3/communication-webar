@@ -1,3 +1,4 @@
+import redis from 'redis'
 import getUrlParams from '../../src/utils/getUrlParams'
 import RoomRepository from '../../core/repository/room/RoomRepository'
 import GetRoomService from '../../core/service/room/GetRoomService'
@@ -13,7 +14,8 @@ const getRoomHandler = async(req, res) => {
     return
   }
 
-  const roomRepository = new RoomRepository()
+  const roomStorage = redis.createClient({db: 0})
+  const roomRepository = new RoomRepository(roomStorage)
   const { hasRoom, remainingTime } = await new GetRoomService(roomRepository).execute(roomID)
   if(!hasRoom) {
     console.log('404')
