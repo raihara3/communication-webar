@@ -1,9 +1,9 @@
 import RoomRepository from '../../core/repository/room/RoomRepository'
-import createRoomService from '../../core/service/room/CreateRoomService'
+import CreateRoomService from '../../core/service/room/CreateRoomService'
 
 const createRoomHandler = async(_, res) => {
   const roomRepository = new RoomRepository()
-  const roomID = new createRoomService(roomRepository).execute()
+  const roomID = new CreateRoomService(roomRepository).execute()
 
   res.status(200).json({roomID: roomID})
   res.end()

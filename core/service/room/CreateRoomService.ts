@@ -1,6 +1,6 @@
 import RoomRepository from '../../repository/room/RoomRepository'
 
-class GetRoomService {
+class CreateRoomService {
   roomRepository: RoomRepository
 
   constructor(roomRepository) {
@@ -14,4 +14,4 @@ class GetRoomService {
   }
 }
 
-export default GetRoomService
+export default CreateRoomService
