@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import io from 'socket.io-client'
 import styled from 'styled-components'
 import { Button, Link } from '@material-ui/core'
@@ -18,28 +18,23 @@ const Call = () => {
   const [isSupported, setIsSupported] = useState(false)
   const [isAudioPermission, setIsAudioPermission] = useState(true)
   const [memberList, setMemberList] = useState<string[]>([])
-  const [hasRoomID, setHasRoomID] = useState<boolean>(true)
+  const [roomStatus, setRoomStatus] = useState<number>()
   const [hasError, setHasError] = useState<boolean>(false)
   const [expire, setExpire] = useState<number>(0)
-  const [nickname, setNickname] = useState<string>('')
-  const [isOverCharLimit, setIsOverCharLimit] = useState<boolean>(false)
+  const [isCharLengthInRange, setIsCharLengthInRange] = useState<boolean>(false)
+  const nameInput = useRef<HTMLInputElement>(null)
 
   const onChangeNickname = (e) => {
     const value = e.target.value
-    setIsOverCharLimit(value.length > 15)
-    setNickname(value)
+    setIsCharLengthInRange(value.length > 0 && value.length < 15)
   }
 
-  useEffect(() => {
-    setHasError(!isSupported || !isAudioPermission || !hasRoomID || isOverCharLimit)
-  }, [isSupported, isAudioPermission, hasRoomID, isOverCharLimit])
-
   const onStartWebAR = async() => {
-    const res = await fetch(`../api/call?name=${nickname}`)
+    const res = await fetch(`../api/call?name=${nameInput.current?.value}`)
+    setRoomStatus(res.status)
     if(!res.ok) {
       const json = await res.json()
       console.error(new Error(json.message))
-      setHasRoomID(false)
       return
     }
 
@@ -88,21 +83,19 @@ const Call = () => {
     (async() => {
       const res = await fetch('../api/getRoom')
       const json = await res.json()
+      setRoomStatus(res.status)
       if(!res.ok) {
         console.error(new Error(json.message))
-        setHasRoomID(false)
         return
       }
-      setExpire(Math.floor(json.data.remainingTime))
+      setExpire(json.data.remainingTime)
     })()
-
     setIsSupported('xr' in navigator)
-
-    // const params: any = getUrlParams(window.location.href)
-    // if(params.room) {
-    //   setHasRoomID(true)
-    // }
   }, [])
+
+  useEffect(() => {
+    setHasError(!isAudioPermission || roomStatus !== 200 || !isCharLengthInRange)
+  }, [isAudioPermission, roomStatus, isCharLengthInRange])
 
   return (
     <>
@@ -121,16 +114,26 @@ const Call = () => {
             </Alert>
           </ErrorBox>
         )}
-        {!hasRoomID && (
-          <ErrorBox>
-            <Alert variant="filled" severity="error">
-              The URL is incorrect.<br />
-              Do you want to create a new room?<br />
-              <Link href='/'>
-                Create a Room
-              </Link>
-            </Alert>
-          </ErrorBox>
+        {roomStatus !== 200 && (
+          <>
+            {roomStatus === 500 ? (
+              <ErrorBox>
+                <Alert variant="filled" severity="error">
+                  Server error. Please try again after a while.
+                </Alert>
+              </ErrorBox>
+            ) : (
+              <ErrorBox>
+                <Alert variant="filled" severity="error">
+                  The URL is incorrect.<br />
+                  Do you want to create a new room?<br />
+                  <Link href='/'>
+                    Create a Room
+                  </Link>
+                </Alert>
+              </ErrorBox>
+            )}
+          </>
         )}
         {!isAudioPermission && (
           <ErrorBox>
@@ -144,9 +147,10 @@ const Call = () => {
           title='Set your nickname.'
         >
           <InputField
+            inputRef={nameInput}
             placeholder='Nickname'
             onChange={onChangeNickname}
-            hasError={isOverCharLimit}
+            hasError={!!nameInput.current?.value && !isCharLengthInRange}
             errorMessage='Enter up to 15 characters.'
           />
           {isSupported ? (
@@ -154,7 +158,7 @@ const Call = () => {
               variant='outlined'
               color='primary'
               onClick={() => onStartWebAR()}
-              disabled={hasError || !nickname}
+              disabled={hasError || !isCharLengthInRange}
             >
               START AR
             </Button>

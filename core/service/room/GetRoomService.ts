@@ -15,7 +15,7 @@ class GetRoomService {
       : expire
     return {
       hasRoom: !!createDate,
-      remainingTime: remainingTime
+      remainingTime: Math.floor(remainingTime)
     }
   }
 }
