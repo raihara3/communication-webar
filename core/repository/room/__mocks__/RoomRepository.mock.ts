@@ -17,10 +17,12 @@ RoomRepositoryMock.mockImplementationOnce(() => {
       )
     },
 
-    get: (roomID: string): Promise<string> => {
-      return new Promise((resolve, _) => {
-        resolve(roomStorage.getItem(roomID))
-      })
+    get: (_: string) => {
+      return RoomRepositoryMock.mockReturnValueOnce(
+        new Date().toLocaleString("ja-JP", {
+          timeZone: "Asia/Tokyo"
+        }).toString()
+      ).mockReturnValueOnce(undefined)
     },
 
     getExpire: (_: string): Promise<number> => {
