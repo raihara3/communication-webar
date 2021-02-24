@@ -3,7 +3,7 @@ import { Server } from 'socket.io'
 import { createAdapter } from 'socket.io-redis'
 import { RedisClient } from 'redis'
 import getUrlParams from '../../src/utils/getUrlParams'
-import UserRepository from '../../core/repository/user/MemberRepository'
+import MemberRepository from '../../core/repository/user/MemberRepository'
 import UserNameRepository from '../../core/repository/user/UserNameRepository'
 import MeshRepository from '../../core/repository/mesh/MeshRepository'
 import UserMessagingRepository from '../../core/repository/user/UserMessagingRepository'
@@ -17,6 +17,13 @@ import SendIceCandidateService from '../../core/service/peer/SendIceCandidateSer
 import GetRoomService from '../../core/service/room/GetRoomService'
 
 const callHandler = async(req, res) => {
+  if(res.socket.server.io) {
+    console.log('socket.io already running')
+    res.end()
+    return
+  }
+  console.log('*First use, starting socket.io')
+
   const params: any = getUrlParams(req.headers.referer)
   const roomID = params.room
   if(!roomID) {
@@ -24,18 +31,23 @@ const callHandler = async(req, res) => {
     res.end()
   }
 
-  const roomStorage = redis.createClient({db: 0})
-  const hasRoom = await new GetRoomService(new RoomRepository(roomStorage)).execute(roomID)
-  if(!hasRoom) {
-    res.status(404).json({message: 'This RoomID does not exist.'})
+  const storage = redis.createClient()
+  const timeout = setTimeout(() => {
+    storage.quit()
+    res.status(500).json({message: 'Database connection error'})
     res.end()
-  }
+  }, 2000)
+  timeout
 
-  if(res.socket.server.io) {
-    console.log('socket.io already running')
-  }else {
-    console.log('*First use, starting socket.io')
-    const userRepository = new UserRepository()
+  storage.on('connect', async() => {
+    clearTimeout(timeout)
+    const hasRoom = await new GetRoomService(new RoomRepository()).execute(roomID)
+    if(!hasRoom) {
+      res.status(404).json({message: 'This RoomID does not exist.'})
+      res.end()
+    }
+
+    const memberRepository = new MemberRepository()
     const userNameRepository = new UserNameRepository()
     const meshRepository = new MeshRepository()
 
@@ -54,14 +66,14 @@ const callHandler = async(req, res) => {
       const broadcast = (eventName, data) => socket.broadcast.emit(eventName, data)
       const userMessagingRepository = new UserMessagingRepository(sender, broadcast)
       new AddUserService(
-        userRepository,
+        memberRepository,
         userNameRepository,
         meshRepository,
         userMessagingRepository
       ).execute(roomID, socket.id, userName)
 
       socket.on('sendMesh', data =>
-        new SendMeshService(userRepository, meshRepository, userMessagingRepository).execute(roomID, data)
+        new SendMeshService(memberRepository, meshRepository, userMessagingRepository).execute(roomID, data)
       )
 
       socket.on('sendPeerOffer', data => {
@@ -78,7 +90,7 @@ const callHandler = async(req, res) => {
 
       socket.on('disconnect', async() =>{
         new LeaveUserService(
-          userRepository,
+          memberRepository,
           userNameRepository,
           meshRepository,
           userMessagingRepository
@@ -86,8 +98,10 @@ const callHandler = async(req, res) => {
       })
     })
     res.socket.server.io = io
-  }
-  res.end()
+    res.end()
+  })
+
+  storage.on('error', (e) => console.log(e))
 }
 
 export const config = {

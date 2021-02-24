@@ -3,7 +3,7 @@ import RoomRepository from '../../core/repository/room/RoomRepository'
 import CreateRoomService from '../../core/service/room/CreateRoomService'
 
 const createRoomHandler = async(_, res) => {
-  const roomStorage = redis.createClient({db: 0})
+  const roomStorage = redis.createClient()
 
   const timeout = setTimeout(() => {
     roomStorage.quit()
@@ -14,8 +14,7 @@ const createRoomHandler = async(_, res) => {
 
   roomStorage.on('connect', () => {
     clearTimeout(timeout)
-    const roomRepository = new RoomRepository(roomStorage)
-    const roomID = new CreateRoomService(roomRepository).execute()
+    const roomID = new CreateRoomService(new RoomRepository()).execute()
     roomStorage.quit()
     res.status(200).json({roomID: roomID})
     res.end()

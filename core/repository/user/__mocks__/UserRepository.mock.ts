@@ -1,9 +1,9 @@
-import UserRepository from '../MemberRepository'
+import MemberRepository from '../MemberRepository'
 
-jest.mock('../UserRepository')
-const UserRepositoryMock = UserRepository as jest.Mock
+jest.mock('../MemberRepository')
+const MemberRepositoryMock = MemberRepository as jest.Mock
 
-UserRepositoryMock.mockImplementationOnce(() => {
+MemberRepositoryMock.mockImplementationOnce(() => {
   const userList: Array<string> = []
 
   return {
@@ -16,4 +16,4 @@ UserRepositoryMock.mockImplementationOnce(() => {
   }
 })
 
-export default UserRepositoryMock
+export default MemberRepositoryMock

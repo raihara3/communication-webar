@@ -15,8 +15,7 @@ createRoomHandlerMock
 })
 .mockImplementation(() => {
   const { res } = createMocks()
-  const roomRepositoryMock = new RoomRepositoryMock()
-  const roomID = new CreateRoomService(roomRepositoryMock).execute()
+  const roomID = new CreateRoomService(new RoomRepositoryMock()).execute()
   res.status(200).json({roomID: roomID})
   res.end()
   return res

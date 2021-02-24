@@ -18,7 +18,7 @@ const Call = () => {
   const [isSupported, setIsSupported] = useState(false)
   const [isAudioPermission, setIsAudioPermission] = useState(true)
   const [memberList, setMemberList] = useState<string[]>([])
-  const [roomStatus, setRoomStatus] = useState<number>()
+  const [roomStatus, setRoomStatus] = useState<number>(200)
   const [hasError, setHasError] = useState<boolean>(false)
   const [expire, setExpire] = useState<number>(0)
   const [isCharLengthInRange, setIsCharLengthInRange] = useState<boolean>(false)

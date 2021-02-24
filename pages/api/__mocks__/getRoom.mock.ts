@@ -22,8 +22,7 @@ getRoomMock
     return res
   }
 
-  const roomRepository = new RoomRepositoryMock()
-  const { hasRoom, remainingTime } = await new GetRoomService(roomRepository).execute(roomID)
+  const { hasRoom, remainingTime } = await new GetRoomService(new RoomRepositoryMock()).execute(roomID)
   if(!hasRoom) {
     res.status(404).json({message: 'This RoomID does not exist.'})
     res.end()
