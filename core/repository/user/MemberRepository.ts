@@ -9,8 +9,15 @@ class MemberRepository {
   }
 
   add(roomID: string, userID: string) {
-    this.inner.rpush(roomID, userID)
-    this.inner.expire(roomID, 60 * 60 * 24 * 3)
+    return new Promise((resolve, reject) => {
+      this.inner.rpush(roomID, userID)
+      this.inner.expire(roomID, 60 * 60 * 24 * 3, (error, reply) => {
+        if(error) {
+          reject(error)
+        }
+        resolve(reply)
+      })
+    })
   }
 
   list(roomID: string): Promise<Array<string>> {
@@ -18,7 +25,6 @@ class MemberRepository {
       this.inner.lrange(roomID, 0, -1, (error, reply) => {
         if(error) {
           reject(error)
-          return
         }
         resolve(reply)
       })
@@ -26,7 +32,14 @@ class MemberRepository {
   }
 
   remove(roomID: string, userID: string) {
-    this.inner.lrem(roomID, 0, userID)
+    return new Promise((resolve, reject) => {
+      this.inner.lrem(roomID, 0, userID, (error, reply) => {
+        if(error) {
+          reject(error)
+        }
+        resolve(reply)
+      })
+    })
   }
 }
 
