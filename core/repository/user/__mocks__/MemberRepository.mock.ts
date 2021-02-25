@@ -1,17 +1,16 @@
-import MemberRepository from '../MemberRepository'
-
-jest.mock('../MemberRepository')
-const MemberRepositoryMock = MemberRepository as jest.Mock
-
-MemberRepositoryMock.mockImplementationOnce(() => {
-  const userList: Array<string> = []
-
+const MemberRepositoryMock = jest.fn((memberStorage) => {
   return {
-    add: async(_: string, socketID: string) => {
-      userList.push(socketID)
+    add: (roomID: string, socketID: string) => {
+      memberStorage[roomID] = Object.keys(memberStorage).length
+        ? [...memberStorage[roomID], socketID]
+        : [socketID]
     },
-    remove: (_: string, socketID: string) => {
-      userList.splice(userList.indexOf(socketID), 1)
+    list: (roomID: string) => {
+      return memberStorage[roomID]
+    },
+    remove: (roomID: string, socketID: string) => {
+      const memberList = memberStorage[roomID]
+      memberStorage[roomID] = memberList.splice(memberList.indexOf(socketID), 1)
     }
   }
 })
