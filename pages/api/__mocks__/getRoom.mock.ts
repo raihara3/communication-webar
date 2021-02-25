@@ -1,5 +1,5 @@
-import { createMocks } from 'node-mocks-http'
 import getRoom from '../getRoom'
+import getUrlParams from '../../../src/utils/getUrlParams'
 import RoomRepositoryMock from '../../../core/repository/room/__mocks__/RoomRepository.mock'
 import GetRoomService from '../../../core/service/room/GetRoomService'
 
@@ -7,14 +7,9 @@ jest.mock('../getRoom')
 const getRoomMock = getRoom as jest.Mock
 
 getRoomMock
-.mockImplementationOnce(async() => {
-  const { res } = createMocks()
-  res.status(500).json({message: 'Database connection error'})
-  res.end()
-  return res
-})
-.mockImplementation(async(roomID) => {
-  const { res } = createMocks()
+.mockImplementation(async(req, res) => {
+  const params: any = getUrlParams(req.headers.referer)
+  const roomID = params.room
 
   if(!roomID) {
     res.status(400).json({message: 'The roomID is not specified.'})
