@@ -1,19 +1,10 @@
-import UserNameRepository from '../UserNameRepository'
-import MemoryStorage from 'memorystorage'
-
-jest.mock('../UserNameRepository')
-const UserNameRepositoryMock = UserNameRepository as jest.Mock
-
-const userNameStorage = new MemoryStorage('db3')
-
-UserNameRepositoryMock.mockImplementationOnce(() => {
+const UserNameRepositoryMock = jest.fn((storage) => {
   return {
     add: (userID: string, userName: string) => {
-      userNameStorage.setItem(userID, userName)
+      storage[userID] = userName
     },
-
     remove: (userID: string) => {
-      userNameStorage.removeItem(userID)
+      delete storage[userID]
     }
   }
 })

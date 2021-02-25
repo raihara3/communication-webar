@@ -1,16 +1,16 @@
-const MemberRepositoryMock = jest.fn((memberStorage) => {
+const MemberRepositoryMock = jest.fn((storage) => {
   return {
     add: (roomID: string, socketID: string) => {
-      memberStorage[roomID] = Object.keys(memberStorage).length
-        ? [...memberStorage[roomID], socketID]
+      storage[roomID] = Object.keys(storage).length
+        ? [...storage[roomID], socketID]
         : [socketID]
     },
     list: (roomID: string) => {
-      return memberStorage[roomID]
+      return storage[roomID]
     },
     remove: (roomID: string, socketID: string) => {
-      const memberList = memberStorage[roomID]
-      memberStorage[roomID] = memberList.splice(memberList.indexOf(socketID), 1)
+      const memberList = storage[roomID]
+      storage[roomID] = memberList.splice(memberList.indexOf(socketID), 1)
     }
   }
 })

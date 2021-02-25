@@ -3,14 +3,14 @@ import redis from 'redis-mock'
 import AddUserService from '../AddUserService'
 import UserMessagingRepository from '../../../repository/user/UserMessagingRepository'
 import MemberRepositoryMock from '../../../repository/user/__mocks__/MemberRepository.mock'
+import UserNameRepositoryMock from '../../../repository/user/__mocks__/UserNameRepository.mock'
 import MeshRepository from '../../../repository/mesh/MeshRepository'
-import UserNameRepository from '../../../repository/user/UserNameRepository'
 
 const memberStorage: any = {}
-const userNameStorage = redis.createClient({db: 3})
+const userNameStorage: any = {}
 const meshStorage = redis.createClient({db: 2})
 const memberRepositoryMock = new MemberRepositoryMock(memberStorage)
-const userNameRepository = new UserNameRepository(userNameStorage)
+const userNameRepositoryMock = new UserNameRepositoryMock(userNameStorage)
 const meshRepository = new MeshRepository(meshStorage)
 
 const setUpSocket = (userID, userName, memberList) => {
@@ -54,15 +54,12 @@ describe.each([
 
     await new AddUserService(
       memberRepositoryMock,
-      userNameRepository,
+      userNameRepositoryMock,
       meshRepository,
       userMessagingRepository
     ).execute(roomID, userID, userName)
 
     expect(memberRepositoryMock.add.call.length).toBe(1)
-
-    // userNameStorage.get(userID, (_, reply) => {
-    //   expect(reply).toEqual(userName)
-    // })
+    expect(userNameRepositoryMock.add.call.length).toBe(1)
   })
 })
