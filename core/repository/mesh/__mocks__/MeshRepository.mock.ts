@@ -1,22 +1,15 @@
-import MeshRepository from '../MeshRepository'
-
-jest.mock('../MeshRepository')
-const MeshRepositoryMock = MeshRepository as jest.Mock
-
-MeshRepositoryMock.mockImplementationOnce(() => {
-  const meshArray: Array<string> = []
+const MeshRepositoryMock = jest.fn((storage) => {
   return {
-    add: (_: string, data: any) => {
-      meshArray.push(data)
+    add: (roomID: string, data: any) => {
+      storage[roomID] = Object.keys(storage).length
+        ? [...storage[roomID], data]
+        : [data]
     },
-    list: (_: string): any => {
-      new Promise((resolve, _) => {
-        resolve(meshArray)
-      })
+    list: (roomID: string) => {
+      return Object.keys(storage).length ? storage[roomID] : []
     },
-    delete: (_: string) => {
-      console.log('0 users')
-      meshArray.splice(0)
+    delete: (roomID: string) => {
+      delete storage[roomID]
     }
   }
 })
