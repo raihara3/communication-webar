@@ -1,9 +1,8 @@
 import redis from 'redis-mock'
 import RoomRepository from '../RoomRepository'
 
-const roomID = 'testRoom'
-
 describe('RoomRepository', () => {
+  const roomID = 'testRoom'
   const roomRepository = new RoomRepository(redis.createClient())
 
   test('add', async() => {
@@ -17,8 +16,20 @@ describe('RoomRepository', () => {
     expect(res).toBe(date)
   })
 
+  test('get by non-existent key', async() => {
+    const notExistRoomID = 'notExist'
+    const res = await roomRepository.get(notExistRoomID)
+    expect(res).toBe(null)
+  })
+
   test('getExpire', async() => {
     const res = await roomRepository.getExpire(roomID)
     expect(Math.floor(res / (60*60))).toBe(71)
+  })
+
+  test('getExpire by non-existent key', async() => {
+    const notExistRoomID = 'notExist'
+    const res = await roomRepository.get(notExistRoomID)
+    expect(res).toBe(null)
   })
 })
