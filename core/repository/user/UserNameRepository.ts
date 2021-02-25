@@ -3,9 +3,9 @@ import redis from 'redis'
 class UserNameRepository {
   inner: redis.RedisClient
 
-  constructor() {
+  constructor(inner) {
     // DB 3: member list
-    this.inner = redis.createClient({db: 3})
+    this.inner = inner
   }
 
   add(userID: string, userName: string) {

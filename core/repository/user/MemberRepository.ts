@@ -3,9 +3,9 @@ import redis from 'redis'
 class MemberRepository {
   inner: redis.RedisClient
 
-  constructor() {
+  constructor(inner) {
     // DB 1: member list
-    this.inner = redis.createClient({db: 1})
+    this.inner = inner
   }
 
   add(roomID: string, userID: string) {

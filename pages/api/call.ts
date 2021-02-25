@@ -1,7 +1,6 @@
-import redis from 'redis'
+import redis, { RedisClient } from 'redis'
 import { Server } from 'socket.io'
 import { createAdapter } from 'socket.io-redis'
-import { RedisClient } from 'redis'
 import getUrlParams from '../../src/utils/getUrlParams'
 import MemberRepository from '../../core/repository/user/MemberRepository'
 import UserNameRepository from '../../core/repository/user/UserNameRepository'
@@ -47,9 +46,9 @@ const callHandler = async(req, res) => {
       res.end()
     }
 
-    const memberRepository = new MemberRepository()
-    const userNameRepository = new UserNameRepository()
-    const meshRepository = new MeshRepository()
+    const memberRepository = new MemberRepository(redis.createClient({db: 1}))
+    const meshRepository = new MeshRepository(redis.createClient({db: 2}))
+    const userNameRepository = new UserNameRepository(redis.createClient({db: 3}))
 
     const io = new Server(res.socket.server)
     const pubClient = new RedisClient({ host: process.env.HOST_NAME, port: 6379 })

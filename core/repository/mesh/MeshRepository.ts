@@ -3,9 +3,9 @@ import redis from 'redis'
 class MeshRepository {
   inner: redis.RedisClient
 
-  constructor() {
+  constructor(inner) {
     // DB 2: mesh list
-    this.inner = redis.createClient({db: 2})
+    this.inner = inner
   }
 
   add(roomID: string, data: any) {
