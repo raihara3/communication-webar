@@ -40,7 +40,8 @@ const callHandler = async(req, res) => {
 
   storage.on('connect', async() => {
     clearTimeout(timeout)
-    const hasRoom = await new GetRoomService(new RoomRepository()).execute(roomID)
+    const roomRepository = new RoomRepository(redis.createClient({db: 0}))
+    const hasRoom = await new GetRoomService(roomRepository).execute(roomID)
     if(!hasRoom) {
       res.status(404).json({message: 'This RoomID does not exist.'})
       res.end()

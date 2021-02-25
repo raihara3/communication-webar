@@ -14,7 +14,8 @@ const createRoomHandler = async(_, res) => {
 
   roomStorage.on('connect', async() => {
     clearTimeout(timeout)
-    const roomID = await new CreateRoomService(new RoomRepository()).execute()
+    const roomRepository = new RoomRepository(redis.createClient({db: 0}))
+    const roomID = await new CreateRoomService(roomRepository).execute()
     roomStorage.quit()
 
     if(!roomID) {
