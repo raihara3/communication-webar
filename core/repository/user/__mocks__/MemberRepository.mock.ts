@@ -1,7 +1,7 @@
 const MemberRepositoryMock = jest.fn((storage) => {
   return {
     add: (roomID: string, socketID: string) => {
-      storage[roomID] = Object.keys(storage).length
+      storage[roomID] = storage[roomID]
         ? [...storage[roomID], socketID]
         : [socketID]
     },

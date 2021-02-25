@@ -1,9 +1,9 @@
 import SocketMock from 'socket.io-mock'
-import AddUserService from '../AddUserService'
-import UserMessagingRepository from '../../../repository/user/UserMessagingRepository'
-import MemberRepositoryMock from '../../../repository/user/__mocks__/MemberRepository.mock'
-import UserNameRepositoryMock from '../../../repository/user/__mocks__/UserNameRepository.mock'
-import MeshRepositoryMock from '../../../repository/mesh/__mocks__/MeshRepository.mock'
+import AddUserService from '../../AddUserService'
+import UserMessagingRepository from '../../../../repository/user/UserMessagingRepository'
+import MemberRepositoryMock from '../../../../repository/user/__mocks__/MemberRepository.mock'
+import UserNameRepositoryMock from '../../../../repository/user/__mocks__/UserNameRepository.mock'
+import MeshRepositoryMock from '../../../../repository/mesh/__mocks__/MeshRepository.mock'
 
 const memberStorage: any = {}
 const userNameStorage: any = {}
@@ -46,8 +46,8 @@ describe.each([
       memberList: ['user1_id', 'user2_id']
     }
   }
-])('Multiple participants in the same Room. (%o)', ({roomID, userID, userName, response}) => {
-  test('Add user', async() => {
+])('AddUserService. (%o)', ({roomID, userID, userName, response}) => {
+  test('Enter the same Room', async() => {
     const sender = setUpSocket(userID, userName, response.memberList)
     const userMessagingRepository = new UserMessagingRepository(sender, sender)
 

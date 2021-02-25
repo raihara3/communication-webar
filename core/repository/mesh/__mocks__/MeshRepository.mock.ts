@@ -1,7 +1,7 @@
 const MeshRepositoryMock = jest.fn((storage) => {
   return {
     add: (roomID: string, data: any) => {
-      storage[roomID] = Object.keys(storage).length
+      storage[roomID] = storage[roomID]
         ? [...storage[roomID], data]
         : [data]
     },
