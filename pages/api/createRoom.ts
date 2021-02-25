@@ -12,10 +12,16 @@ const createRoomHandler = async(_, res) => {
   }, 2000)
   timeout
 
-  roomStorage.on('connect', () => {
+  roomStorage.on('connect', async() => {
     clearTimeout(timeout)
-    const roomID = new CreateRoomService(new RoomRepository()).execute()
+    const roomID = await new CreateRoomService(new RoomRepository()).execute()
     roomStorage.quit()
+
+    if(!roomID) {
+      res.status(500).json({message: 'Database connection error'})
+      res.end()
+      return
+    }
     res.status(200).json({roomID: roomID})
     res.end()
   })

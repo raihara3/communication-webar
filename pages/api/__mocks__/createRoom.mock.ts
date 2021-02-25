@@ -7,15 +7,14 @@ jest.mock('../createRoom')
 const createRoomHandlerMock = createRoomHandler as jest.Mock
 
 createRoomHandlerMock
-.mockImplementationOnce(() => {
+.mockImplementation(async() => {
   const { res } = createMocks()
-  res.status(500).json({message: 'Database connection error'})
-  res.end()
-  return res
-})
-.mockImplementation(() => {
-  const { res } = createMocks()
-  const roomID = new CreateRoomService(new RoomRepositoryMock()).execute()
+  const roomID = await new CreateRoomService(new RoomRepositoryMock()).execute()
+  if(!roomID) {
+    res.status(500).json({message: 'Database connection error'})
+    res.end()
+    return res
+  }
   res.status(200).json({roomID: roomID})
   res.end()
   return res

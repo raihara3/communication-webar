@@ -9,9 +9,21 @@ class RoomRepository {
   }
 
   add(roomID: string) {
-    this.inner.setex(roomID, 60 * 60 * 24 * 3, new Date().toLocaleString("ja-JP", {
-      timeZone: "Asia/Tokyo"
-    }))
+    return new Promise((resolve, reject) => {
+      this.inner.setex(
+        roomID,
+        60 * 60 * 24 * 3,
+        new Date().toLocaleString("ja-JP", {
+          timeZone: "Asia/Tokyo"
+        }),
+        (error, reply) => {
+          if(error) {
+            reject(error)
+          }
+          resolve(reply)
+        }
+      )
+    })
   }
 
   get(roomID: string) {

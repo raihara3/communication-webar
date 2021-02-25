@@ -9,12 +9,15 @@ const roomStorage = new MemoryStorage('db0')
 RoomRepositoryMock.mockImplementationOnce(() => {
   return {
     add: (roomID: string) => {
-      roomStorage.setItem(
-        roomID,
-        new Date().toLocaleString("ja-JP", {
-          timeZone: "Asia/Tokyo"
-        }).toString()
-      )
+      return new Promise((resolve, _) => {
+        roomStorage.setItem(
+          roomID,
+          new Date().toLocaleString("ja-JP", {
+            timeZone: "Asia/Tokyo"
+          }).toString()
+        )
+        resolve('OK')
+      })
     },
 
     get: (_: string) => {
