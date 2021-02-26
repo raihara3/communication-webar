@@ -9,8 +9,15 @@ class MeshRepository {
   }
 
   add(roomID: string, data: any) {
-    this.inner.rpush(roomID, data)
-    this.inner.expire(roomID, 60 * 60 * 24 * 3)
+    return new Promise((resolve, reject) => {
+      this.inner.rpush(roomID, data)
+      this.inner.expire(roomID, 60 * 60 * 24 * 3, (error, reply) => {
+        if(error) {
+          reject(error)
+        }
+        resolve(reply)
+      })
+    })
   }
 
   list(roomID: string): any {
@@ -26,7 +33,14 @@ class MeshRepository {
   }
 
   delete(roomID: string) {
-    this.inner.del(roomID)
+    return new Promise((resolve, reject) => {
+      this.inner.del(roomID, (error, reply) => {
+        if(error) {
+          reject(error)
+        }
+        resolve(reply)
+      })
+    })
   }
 }
 
