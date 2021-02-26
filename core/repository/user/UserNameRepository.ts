@@ -9,11 +9,25 @@ class UserNameRepository {
   }
 
   add(userID: string, userName: string) {
-    this.inner.setex(userID, 60 * 60 * 24 * 3, userName)
+    return new Promise((resolve, reject) => {
+      this.inner.setex(userID, 60 * 60 * 24 * 3, userName, (error, reply) => {
+        if(error) {
+          reject(error)
+        }
+        resolve(reply)
+      })
+    })
   }
 
   remove(userID: string) {
-    this.inner.del(userID)
+    return new Promise((resolve, reject) => {
+      this.inner.del(userID, (error, reply) => {
+        if(error) {
+          reject(error)
+        }
+        resolve(reply)
+      })
+    })
   }
 }
 

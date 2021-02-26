@@ -17,7 +17,7 @@ class AddUserService {
   }
 
   async execute(roomID: string, newEntryID: string, userName: string) {
-    this.userNameRepository.add(newEntryID, userName)
+    await this.userNameRepository.add(newEntryID, userName)
     await this.memberRepository.add(roomID, newEntryID)
     const memberList = await this.memberRepository.list(roomID)
 

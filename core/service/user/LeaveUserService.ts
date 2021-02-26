@@ -17,7 +17,7 @@ class LeaveUserService {
   }
 
   async execute(roomID: string, userID: string) {
-    this.userNameRepository.remove(userID)
+    await this.userNameRepository.remove(userID)
     await this.memberRepository.remove(roomID, userID)
     const memberList = await this.memberRepository.list(roomID)
     this.userMessagingRepository.toOther('leaveUser', {
