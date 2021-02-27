@@ -5,8 +5,8 @@ class SendMeshService {
   meshRepository: MeshRepository
   userMessagingRepository: UserMessagingRepository
 
-  constructor(mr, userMessagingRepository) {
-    this.meshRepository = mr
+  constructor(meshRepository, userMessagingRepository) {
+    this.meshRepository = meshRepository
     this.userMessagingRepository = userMessagingRepository
   }
 

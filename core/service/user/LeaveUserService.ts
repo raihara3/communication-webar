@@ -9,10 +9,10 @@ class LeaveUserService {
   meshRepository: MeshRepository
   userMessagingRepository: UserMessagingRepository
 
-  constructor(memberRepository, userNameRepository, mr, userMessagingRepository) {
+  constructor(memberRepository, userNameRepository, meshRepository, userMessagingRepository) {
     this.memberRepository = memberRepository
     this.userNameRepository = userNameRepository
-    this.meshRepository = mr
+    this.meshRepository = meshRepository
     this.userMessagingRepository = userMessagingRepository
   }
 
