@@ -73,7 +73,7 @@ const callHandler = async(req, res) => {
       ).execute(roomID, socket.id, userName)
 
       socket.on('sendMesh', data =>
-        new SendMeshService(memberRepository, meshRepository, userMessagingRepository).execute(roomID, data)
+        new SendMeshService(meshRepository, userMessagingRepository).execute(roomID, data)
       )
 
       socket.on('sendPeerOffer', data => {
