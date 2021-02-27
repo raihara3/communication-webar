@@ -1,14 +1,14 @@
 import io from 'socket.io-client'
 import http from 'http'
-import { Server } from 'socket.io'
+import { Server, Socket } from 'socket.io'
 import UserMessagingRepository from '../UserMessagingRepository'
 
-let httpServer
-let httpServerAddress
+let httpServer: any
+let httpServerAddress: any
 let ioServer: Server
-let ioClient1
-let ioClient2
-let socket
+let otherClient: SocketIOClient.Socket
+let myClient: SocketIOClient.Socket
+let socket: Socket
 const memberList: Array<string> = []
 
 beforeAll((done) => {
@@ -18,8 +18,6 @@ beforeAll((done) => {
   ioServer.on('connect', (iosocket) => {
     socket = iosocket
     memberList.push(iosocket.id)
-    // ioServer.sockets.adapter.rooms.get(roomID)?.forEach(id => memberList.push(id))
-    console.log(memberList)
   })
   done()
 })
@@ -31,28 +29,29 @@ afterAll((done) => {
 })
 
 beforeEach((done) => {
+  const uri = `http://[${httpServerAddress.address}]:${httpServerAddress.port}`
   const option = {
     forceNew: true,
     transports: ['websocket'],
   }
   memberList.length = 0
-  ioClient1 = io(`http://[${httpServerAddress.address}]:${httpServerAddress.port}`, option)
-  ioClient2 = io(`http://[${httpServerAddress.address}]:${httpServerAddress.port}`, option)
-  ioClient1.on('connect', () => done())
-  ioClient2.on('connect', () => done())
+  otherClient = io(uri, option)
+  otherClient.on('connect', () => done())
+  myClient = io(uri, option)
+  myClient.on('connect', () => done())
 })
 
 afterEach((done) => {
-  if (ioClient1.connected) {
-    ioClient1.disconnect()
+  if (otherClient.connected) {
+    otherClient.disconnect()
   }
-  if (ioClient2.connected) {
-    ioClient2.disconnect()
+  if (myClient.connected) {
+    myClient.disconnect()
   }
   done()
 })
 
-describe('socket.io test', () => {
+describe('UserMessagingRepository', () => {
   const sender = (eventName, data, targetID) => {
     return targetID ? socket.to(targetID).emit(eventName, data) : socket.emit(eventName, data)
   }
@@ -60,23 +59,22 @@ describe('socket.io test', () => {
   const userMessagingRepository = new UserMessagingRepository(sender, broadcast)
 
   test('toAll', (done) => {
-    userMessagingRepository.toAll('toAll', 'messaging')
+    userMessagingRepository.toAll('toAll', 'toAll')
 
-    ioClient1.on('toAll', (data) => {
-      // broadcast
-      expect(data).toBe('messaging')
+    otherClient.on('toAll', (data) => {
+      expect(data).toBe('toAll')
     })
-    ioClient2.on('toAll', (data) => {
-      expect(data).toBe('messaging')
+    myClient.on('toAll', (data) => {
+      expect(data).toBe('toAll')
       done()
     })
   })
 
   test('toOther', (done) => {
-    userMessagingRepository.toOther('toOther', 'messaging')
+    userMessagingRepository.toOther('toOther', 'toOther')
 
-    ioClient1.on('toOther', (data) => {
-      expect(data).toBe('messaging')
+    otherClient.on('toOther', (data) => {
+      expect(data).toBe('toOther')
       done()
     })
   })
@@ -84,19 +82,17 @@ describe('socket.io test', () => {
   test('toSender', (done) => {
     userMessagingRepository.toSender('toSender', 'messaging')
 
-    ioClient2.on('toSender', (data) => {
-      console.log('sender')
+    myClient.on('toSender', (data) => {
       expect(data).toBe('messaging')
       done()
     })
   })
 
   test('toTarget', (done) => {
-    userMessagingRepository.to('toTarget', 'messaging', memberList[0])
+    userMessagingRepository.to('toTarget', 'toTarget', memberList[0])
 
-    ioClient1.on('toTarget', (data) => {
-      console.log('toTarget')
-      expect(data).toBe('messaging')
+    otherClient.on('toTarget', (data) => {
+      expect(data).toBe('toTarget')
       done()
     })
   })
