@@ -1,5 +1,11 @@
 import UserMessagingRepository from '../../repository/user/UserMessagingRepository'
 
+interface PeerIceData {
+  targetID: string
+  senderID: string
+  ice: any
+}
+
 class SendIceCandidateService {
   userMessagingRepository: UserMessagingRepository
 
@@ -7,7 +13,8 @@ class SendIceCandidateService {
     this.userMessagingRepository = userMessagingRepository
   }
 
-  async execute(data: {targetID: string, senderID: string, ice: any}) {
+  async execute(data: PeerIceData) {
+    if(!Object.keys(data).length) return
     this.userMessagingRepository.to('getIceCandidate', {
       senderID: data.senderID,
       ice: data.ice
