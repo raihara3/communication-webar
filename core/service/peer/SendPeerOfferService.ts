@@ -1,5 +1,11 @@
 import UserMessagingRepository from '../../repository/user/UserMessagingRepository'
 
+interface PeerOfferData {
+  targetID: string
+  senderID: string
+  sdp: any
+}
+
 class SendPeerOfferService {
   userMessagingRepository: UserMessagingRepository
 
@@ -7,7 +13,7 @@ class SendPeerOfferService {
     this.userMessagingRepository = userMessagingRepository
   }
 
-  async execute(data: {targetID: string, senderID: string, sdp: any}) {
+  async execute(data: PeerOfferData) {
     if(!Object.keys(data).length) return
     this.userMessagingRepository.to('getOffer', {
       senderID: data.senderID,
