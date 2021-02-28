@@ -12,7 +12,7 @@ import Header from '../../components/layout/Header'
 import Footer from '../../components/layout/Footer'
 import Card from '../../components/molecules/Card'
 import InputField from '../../components/atoms/InputField'
-import { getAudio } from '../../src/AudioTrack'
+import AudioMedia from '../../src/AudioMedia'
 
 const Call = () => {
   const [isSupported, setIsSupported] = useState(false)
@@ -23,6 +23,8 @@ const Call = () => {
   const [expire, setExpire] = useState<number>(0)
   const [isCharLengthInRange, setIsCharLengthInRange] = useState<boolean>(false)
   const nameInput = useRef<HTMLInputElement>(null)
+
+  const audioMedia = new AudioMedia()
 
   const onChangeNickname = (e) => {
     const value = e.target.value
@@ -39,7 +41,7 @@ const Call = () => {
     }
 
     try {
-      await getAudio()
+      await audioMedia.get()
     } catch (error) {
       console.error(error)
       setIsAudioPermission(false)
@@ -50,7 +52,7 @@ const Call = () => {
     const canvas = document.getElementById('webAR') as HTMLCanvasElement
     const webGL = new WebGL(canvas)
     createToolBar(webGL.scene)
-    receiveMessagingHandler(socket, webGL.scene, (list) => setMemberList(list))
+    receiveMessagingHandler(socket, webGL.scene, audioMedia, (list) => setMemberList(list))
 
     const session = await navigator['xr'].requestSession('immersive-ar', {
       requiredFeatures: ['local', 'hit-test']
@@ -66,7 +68,7 @@ const Call = () => {
       webGL.raycaster.setFromCamera(webGL.mouse, webGL.camera)
       const intersects = webGL.raycaster.intersectObjects(webGL.scene.children)
       if(intersects.length && intersects[0].object.name) {
-        onClickButton(intersects[0].object)
+        onClickButton(intersects[0].object, audioMedia)
         return
       }
 

@@ -1,17 +1,20 @@
 import { createMeshGroup, Data } from '../../threeComponents/Mesh'
-import { setAudioTrack } from '../AudioTrack'
+import AudioMedia from '../AudioMedia'
 
-export const receiveMessagingHandler = async(socket: SocketIOClient.Socket, scene: THREE.Scene, setMemberList: (list: any) => void) => {
+export const receiveMessagingHandler = async(socket: SocketIOClient.Socket, scene: THREE.Scene, audioMedia: AudioMedia, setMemberList: (list: any) => void) => {
   const peerList = {}
 
   socket.on('addUser', async({ newEntryID, userName, memberList }) => {
     console.log(`join: ${newEntryID}, userName: ${userName}`)
     setMemberList(memberList)
 
+    if(!audioMedia.stream) return
     const peerConnection = new RTCPeerConnection({
       iceServers: [{ urls: 'stun:stun.l.test.com:19000' }]
     })
-    await setAudioTrack(peerConnection)
+    const audioTrack = audioMedia.getTrack
+    if(!audioTrack) return
+    peerConnection.addTrack(audioTrack, audioMedia.stream)
     peerConnection.ontrack = async(event) => {
       const video = document.getElementById(newEntryID) as HTMLVideoElement
       video.srcObject = event.streams[0]
@@ -41,10 +44,13 @@ export const receiveMessagingHandler = async(socket: SocketIOClient.Socket, scen
   })
 
   socket.on('getOffer', async ({senderID, sdp}) => {
+    if(!audioMedia.stream) return
     const peerConnection = new RTCPeerConnection({
       iceServers: [{ urls: 'stun:stun.l.test.com:19000' }]
     })
-    await setAudioTrack(peerConnection)
+    const audioTrack = audioMedia.getTrack
+    if(!audioTrack) return
+    peerConnection.addTrack(audioTrack, audioMedia.stream)
     peerConnection.ontrack = async(event) => {
       const video = document.getElementById(senderID) as HTMLVideoElement
       video.srcObject = event.streams[0]

@@ -1,12 +1,12 @@
 import * as THREE from 'three'
-import { Color } from 'three'
-import { switchAudio } from '../../src/AudioTrack'
+import { Color, Object3D } from 'three'
 import Button from '../atoms/Button'
+import AudioMedia from '../../src/AudioMedia'
 
-export const onClickButton = (button) => {
+export const onClickButton = (button: Object3D, audioMedia: AudioMedia) => {
   switch(button.name) {
     case 'mic':
-      onClickMic(button)
+      onClickMic(button, audioMedia)
       break
     case 'exit':
       location.reload()
@@ -14,8 +14,8 @@ export const onClickButton = (button) => {
   }
 }
 
-const onClickMic = (mesh) => {
-  const enabled = switchAudio()
+const onClickMic = (mesh: Object3D, audioMedia: AudioMedia) => {
+  const enabled = audioMedia.switching()
   if(enabled) {
     mesh.scale.z = 1
     mesh.position.z = basePosition.z + (buttonSize.depth / 2)
