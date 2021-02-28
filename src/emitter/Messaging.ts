@@ -1,11 +1,29 @@
 import { createMeshGroup, Data } from '../../threeComponents/Mesh'
-import { createPeerOffer, createPeerAnswer, setPeerSdp, setIceCandidate, leavePeerConnection } from '../WebRTC'
+import { setAudioTrack } from '../AudioTrack'
 
 export const receiveMessagingHandler = async(socket: SocketIOClient.Socket, scene: THREE.Scene, setMemberList: (list: any) => void) => {
+  const peerList = {}
+
   socket.on('addUser', async({ newEntryID, userName, memberList }) => {
     console.log(`join: ${newEntryID}, userName: ${userName}`)
     setMemberList(memberList)
-    const offer = await createPeerOffer(socket, newEntryID)
+
+    const peerConnection = new RTCPeerConnection({
+      iceServers: [{ urls: 'stun:stun.l.test.com:19000' }]
+    })
+    await setAudioTrack(peerConnection)
+    peerConnection.ontrack = async(event) => {
+      const video = document.getElementById(newEntryID) as HTMLVideoElement
+      video.srcObject = event.streams[0]
+      await video.play()
+    }
+    peerConnection.onicecandidate = ({candidate}) => {
+      if(!candidate) return
+      sendIceCandidate(socket, newEntryID, candidate)
+    }
+    const offer = await peerConnection.createOffer()
+    await peerConnection.setLocalDescription(offer)
+    peerList[newEntryID] = peerConnection
     sendPeerOfferHandler(socket, newEntryID, offer)
   })
 
@@ -23,21 +41,41 @@ export const receiveMessagingHandler = async(socket: SocketIOClient.Socket, scen
   })
 
   socket.on('getOffer', async ({senderID, sdp}) => {
-    const answer = await createPeerAnswer(socket, senderID, sdp)
+    const peerConnection = new RTCPeerConnection({
+      iceServers: [{ urls: 'stun:stun.l.test.com:19000' }]
+    })
+    await setAudioTrack(peerConnection)
+    peerConnection.ontrack = async(event) => {
+      const video = document.getElementById(senderID) as HTMLVideoElement
+      video.srcObject = event.streams[0]
+      await video.play()
+    }
+    peerConnection.onicecandidate = ({candidate}) => {
+      if(!candidate) return
+      sendIceCandidate(socket, senderID, candidate)
+    }
+    peerConnection.setRemoteDescription(sdp)
+    const answer = await peerConnection.createAnswer()
+    peerConnection.setLocalDescription(answer)
+    peerList[senderID] = peerConnection
+
     sendPeerAnswerHandler(socket, senderID, answer)
   })
 
   socket.on('getAnswer', async ({senderID, sdp}) => {
-    setPeerSdp(senderID, sdp)
+    const peerConnection: RTCPeerConnection = peerList[senderID]
+    peerConnection.setRemoteDescription(sdp)
+    peerList[senderID] = peerConnection
   })
 
-  socket.on('getIceCandidate', ({senderID, ice}) => {
-    setIceCandidate(senderID, ice)
+  socket.on('getIceCandidate', async({senderID, ice}) => {
+    const peerConnection: RTCPeerConnection = peerList[senderID]
+    await peerConnection?.addIceCandidate(new RTCIceCandidate(ice))
   })
 
   socket.on('leaveUser', ({ id, memberList}) => {
     setMemberList(memberList)
-    leavePeerConnection(id)
+    delete peerList[id]
   })
 
   socket.on('disconnect', () => {
