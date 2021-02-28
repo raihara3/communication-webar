@@ -18,7 +18,7 @@ const Call = () => {
   const [isSupported, setIsSupported] = useState(false)
   const [isAudioPermission, setIsAudioPermission] = useState(true)
   const [memberList, setMemberList] = useState<string[]>([])
-  const [roomStatus, setRoomStatus] = useState<number>(200)
+  const [roomStatus, setRoomStatus] = useState<number>()
   const [hasError, setHasError] = useState<boolean>(false)
   const [expire, setExpire] = useState<number>(0)
   const [isCharLengthInRange, setIsCharLengthInRange] = useState<boolean>(false)
@@ -116,7 +116,7 @@ const Call = () => {
             </Alert>
           </ErrorBox>
         )}
-        {roomStatus !== 200 && (
+        {roomStatus && roomStatus !== 200 && (
           <>
             {roomStatus === 500 ? (
               <ErrorBox>
@@ -160,7 +160,7 @@ const Call = () => {
               variant='outlined'
               color='primary'
               onClick={() => onStartWebAR()}
-              disabled={hasError || !isCharLengthInRange}
+              disabled={hasError || !isCharLengthInRange || !roomStatus}
             >
               START AR
             </Button>
