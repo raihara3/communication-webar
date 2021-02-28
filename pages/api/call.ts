@@ -37,16 +37,6 @@ const callHandler = async(req, res) => {
   }, 2000)
   timeout
 
-  const roomRepository = new RoomRepository(redis.createClient({db: 0}))
-  const memberRepository = new MemberRepository(redis.createClient({db: 1}))
-  const meshRepository = new MeshRepository(redis.createClient({db: 2}))
-  const userNameRepository = new UserNameRepository(redis.createClient({db: 3}))
-  const hasRoom = await new GetRoomService(roomRepository).execute(roomID)
-  if(!hasRoom) {
-    res.status(404).json({message: 'This RoomID does not exist.'})
-    res.end()
-  }
-
   const io = new Server(res.socket.server)
   const pubClient = new RedisClient({ host: process.env.HOST_NAME, port: 6379 })
   const subClient = pubClient.duplicate()
@@ -54,6 +44,16 @@ const callHandler = async(req, res) => {
 
   storage.on('connect', async() => {
     clearTimeout(timeout)
+
+    const roomRepository = new RoomRepository(redis.createClient({db: 0}))
+    const memberRepository = new MemberRepository(redis.createClient({db: 1}))
+    const meshRepository = new MeshRepository(redis.createClient({db: 2}))
+    const userNameRepository = new UserNameRepository(redis.createClient({db: 3}))
+    const hasRoom = await new GetRoomService(roomRepository).execute(roomID)
+    if(!hasRoom) {
+      res.status(404).json({message: 'This RoomID does not exist.'})
+      res.end()
+    }
 
     const userName = req.query.name
     io.on('connect', socket => {
