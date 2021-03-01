@@ -61,8 +61,8 @@ const Input = styled.input<{readOnly: boolean}>`
   appearance: none;
   resize: none;
   width: 100%;
-  height: 1.5rem;
-  padding: 0 0 8px;
+  height: 2rem;
+  padding: 0;
   border: 0;
   outline: none;
   background: transparent;
