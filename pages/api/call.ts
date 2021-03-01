@@ -29,78 +29,79 @@ const callHandler = async(req, res) => {
     res.end()
   }
 
-  const storage = redis.createClient()
-  const timeout = setTimeout(() => {
-    storage.quit()
-    res.status(500).json({message: 'Database connection error'})
-    res.end()
-  }, 2000)
-  timeout
+  const roomStorage = redis.createClient({db: 0})
+  const memberStorage = redis.createClient({db: 1})
+  const meshStorage = redis.createClient({db: 2})
+  const userNameStorage = redis.createClient({db: 3})
 
   const io = new Server(res.socket.server)
   const pubClient = new RedisClient({ host: process.env.HOST_NAME, port: 6379 })
   const subClient = pubClient.duplicate()
   io.adapter(createAdapter({ pubClient, subClient }))
+  pubClient.on('error', () => {})
+  subClient.on('error', () => {})
+  io.of('/').adapter.on('error', (e) => {
+    console.error('Redis error.', e)
+  })
 
-  storage.on('connect', async() => {
-    clearTimeout(timeout)
+  const roomRepository = new RoomRepository(roomStorage)
+  const memberRepository = new MemberRepository(memberStorage)
+  const meshRepository = new MeshRepository(meshStorage)
+  const userNameRepository = new UserNameRepository(userNameStorage)
+  const hasRoom = await new GetRoomService(roomRepository).execute(roomID)
+  if(!hasRoom) {
+    res.status(404).json({message: 'This RoomID does not exist.'})
+    res.end()
+  }
 
-    const roomRepository = new RoomRepository(redis.createClient({db: 0}))
-    const memberRepository = new MemberRepository(redis.createClient({db: 1}))
-    const meshRepository = new MeshRepository(redis.createClient({db: 2}))
-    const userNameRepository = new UserNameRepository(redis.createClient({db: 3}))
-    const hasRoom = await new GetRoomService(roomRepository).execute(roomID)
-    if(!hasRoom) {
-      res.status(404).json({message: 'This RoomID does not exist.'})
-      res.end()
+  const userName = req.query.name
+  io.on('connect', socket => {
+    socket.join(roomID)
+
+    const sender = (eventName, data, targetID) => {
+      return targetID ? socket.to(targetID).emit(eventName, data) : socket.emit(eventName, data)
     }
+    const broadcast = (eventName, data) => socket.broadcast.emit(eventName, data)
+    const userMessagingRepository = new UserMessagingRepository(sender, broadcast)
+    new AddUserService(
+      memberRepository,
+      userNameRepository,
+      meshRepository,
+      userMessagingRepository
+    ).execute(roomID, socket.id, userName)
 
-    const userName = req.query.name
-    io.on('connect', socket => {
-      socket.join(roomID)
+    socket.on('sendMesh', data =>
+      new SendMeshService(meshRepository, userMessagingRepository).execute(roomID, data)
+    )
 
-      const sender = (eventName, data, targetID) => {
-        return targetID ? socket.to(targetID).emit(eventName, data) : socket.emit(eventName, data)
-      }
-      const broadcast = (eventName, data) => socket.broadcast.emit(eventName, data)
-      const userMessagingRepository = new UserMessagingRepository(sender, broadcast)
-      new AddUserService(
+    socket.on('sendPeerOffer', data => {
+      new SendPeerOfferService(userMessagingRepository).execute(data)
+    })
+
+    socket.on('sendPeerAnswer', data => {
+      new SendPeerAnswerService(userMessagingRepository).execute(data)
+    })
+
+    socket.on('sendIceCandidate', data => {
+      new SendIceCandidateService(userMessagingRepository).execute(data)
+    })
+
+    socket.on('disconnect', async() =>{
+      new LeaveUserService(
         memberRepository,
         userNameRepository,
         meshRepository,
         userMessagingRepository
-      ).execute(roomID, socket.id, userName)
-
-      socket.on('sendMesh', data =>
-        new SendMeshService(meshRepository, userMessagingRepository).execute(roomID, data)
-      )
-
-      socket.on('sendPeerOffer', data => {
-        new SendPeerOfferService(userMessagingRepository).execute(data)
-      })
-
-      socket.on('sendPeerAnswer', data => {
-        new SendPeerAnswerService(userMessagingRepository).execute(data)
-      })
-
-      socket.on('sendIceCandidate', data => {
-        new SendIceCandidateService(userMessagingRepository).execute(data)
-      })
-
-      socket.on('disconnect', async() =>{
-        new LeaveUserService(
-          memberRepository,
-          userNameRepository,
-          meshRepository,
-          userMessagingRepository
-        ).execute(roomID, socket.id)
-      })
+      ).execute(roomID, socket.id)
     })
-    res.socket.server.io = io
-    res.end()
   })
+  res.socket.server.io = io
+  res.end()
 
-  storage.on('error', (e) => console.log(e))
+  roomStorage.on('error', () => {})
+  memberStorage.on('error', () => {})
+  meshStorage.on('error', () => {})
+  userNameStorage.on('error', () => {})
 }
 
 export const config = {
