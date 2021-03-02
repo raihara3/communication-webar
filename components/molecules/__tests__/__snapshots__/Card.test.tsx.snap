@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`has contents 1`] = `
+<div
+  className="Card__Box-sc-1ny7isr-0 gGynXX"
+>
+  <h2
+    className="Card__Title-sc-1ny7isr-1 lkVTBY"
+  >
+    Has contents
+  </h2>
+  <div
+    className="Card__Contents-sc-1ny7isr-2 kuYfTj"
+  >
+    This is card item.
+  </div>
+  <button>
+    button
+  </button>
+</div>
+`;
+
+exports[`normal 1`] = `
+<div
+  className="Card__Box-sc-1ny7isr-0 gGynXX"
+>
+  <h2
+    className="Card__Title-sc-1ny7isr-1 lkVTBY"
+  >
+    normal
+  </h2>
+  <div
+    className="Card__Contents-sc-1ny7isr-2 kuYfTj"
+  >
+    This is card item.
+  </div>
+</div>
+`;

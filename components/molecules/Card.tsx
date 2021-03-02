@@ -5,7 +5,7 @@ import colors from '../colors'
 interface Props {
   title: string
   description?: string
-  children: React.ReactNode
+  children?: React.ReactNode
 }
 
 const Card: React.FC<Props> = ({
