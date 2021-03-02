@@ -1,4 +1,4 @@
-import { SuccessAlert, ErrorAlert, WarningAlert, InfoAlert } from "./Alert";
+import { SuccessAlert, ErrorAlert, WarningAlert, InfoAlert } from "../Alert";
 
 export const SuccessAlertSample = (args) => <SuccessAlert{ ...args } />;
 SuccessAlertSample.args = {
