@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "test": "jest --config=jest.babel.config.js --silent=false",
+    "snapshot": "jest --updateSnapshot",
     "dev": "next dev",
     "build": "next build",
     "start": "next start -p 3000",

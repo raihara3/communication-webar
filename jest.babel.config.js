@@ -7,5 +7,5 @@ module.exports = {
     '@babel/preset-react',
     '@babel/preset-typescript',
   ],
-  transform: {"\\.ts$": ['ts-jest']}
+  transform: {"\\.(ts|tsx)$": ['babel-jest']},
 }
