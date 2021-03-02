@@ -104,7 +104,7 @@ const Call = () => {
       <Header />
       <Wrap>
         {memberList.map(id => (
-          <Video id={id} key={id} />
+          <Video id={id} key={id} hidden={true} />
         ))}
         {(expire > 0 && expire <= 24) && (
           <ErrorBox>
