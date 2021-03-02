@@ -1,9 +1,9 @@
 /* Color palette */
 
 const colors = {
-  black: '#323232',
-  gray: '#424242',
-  red: '#d32f2f'
+  black01: '#323232',
+  black02: '#424242',
+  red01: '#d32f2f'
 } as const
 
 export default colors

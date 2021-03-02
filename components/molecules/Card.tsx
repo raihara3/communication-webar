@@ -27,7 +27,7 @@ const Card: React.FC<Props> = ({
 const Box = styled.div`
   margin: 10px 0 0;
   padding: 10px 15px;
-  background-color: ${colors.gray};
+  background-color: ${colors.black02};
   border: 1px solid rgba(255,255,255,0.12);
   border-radius: 4px;
 `

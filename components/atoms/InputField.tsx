@@ -79,7 +79,7 @@ const Input = styled.input<{readOnly: boolean}>`
 const ErrorMessage = styled.span`
   display: block;
   margin: 5px 0 0;
-  color: ${colors.red};
+  color: ${colors.red01};
   font-size: 10px;
 `
 

@@ -1,0 +1,19 @@
+import { Meta, ColorPalette, ColorItem } from '@storybook/addon-docs/blocks'
+import colors from './colors'
+
+<Meta title="Colors" />
+
+# Colors
+
+<ColorPalette>
+  <ColorItem
+    title="BLACK"
+    subtitle="background etc."
+    colors={[colors.black01, colors.black02]}
+  />
+  <ColorItem
+    title="RED"
+    subtitle="error etc."
+    colors={[colors.red01]}
+  />
+</ColorPalette>

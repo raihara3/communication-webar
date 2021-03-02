@@ -19,7 +19,7 @@ const HeacerContainer = styled.header`
   height: 60px;
   margin: 0 0 20px 0;
   padding: 0 15px;
-  background-color: ${colors.black};
+  background-color: ${colors.black01};
 `
 
 const ImageBox = styled.div`
