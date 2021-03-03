@@ -17,11 +17,11 @@ export const onClickButton = (button: Object3D, audioMedia: AudioMedia) => {
 const onClickMic = (mesh: Object3D, audioMedia: AudioMedia) => {
   const enabled = audioMedia.switching()
   if(enabled) {
-    mesh.scale.z = 1
-    mesh.position.z = basePosition.z + (buttonSize.depth / 2)
-  }else {
     mesh.scale.z = 0.5
     mesh.position.z = mesh.position.z - (buttonSize.depth/2)
+  }else {
+    mesh.scale.z = 1
+    mesh.position.z = basePosition.z + (buttonSize.depth / 2)
   }
 }
 
@@ -29,18 +29,21 @@ interface ButtonInfo {
   name: string
   color: string
   imgSrc: string
+  isSelected: boolean
 }
 
 const buttonList: Array<ButtonInfo> = [
   {
     name: 'mic',
     color: '#004E9C',
-    imgSrc: '/textures/mic.png'
+    imgSrc: '/textures/mic.png',
+    isSelected: true
   },
   {
     name: 'exit',
     color: '#9C0000',
-    imgSrc: '/textures/exit.png'
+    imgSrc: '/textures/exit.png',
+    isSelected: false
   },
 ]
 
@@ -83,14 +86,15 @@ export const createToolBar = (scene: THREE.Scene) => {
   )
   scene.add(panel)
 
-  buttonList.forEach((item, index) => {
+  buttonList.forEach(({name, color, imgSrc, isSelected}, index) => {
     const margin = index === 0 ? 0 : index * originalMargin
-    const button = new Button(item.name, item.color, item.imgSrc, buttonSize).execute()
+    const button = new Button(name, color, imgSrc, buttonSize).execute()
     button.position.set(
       basePosition.x + (index * buttonSize.width) + margin - centeringAdjustment,
       basePosition.y,
-      basePosition.z + (buttonSize.depth / 2)
+      isSelected ? basePosition.z : basePosition.z + (buttonSize.depth / 2)
     )
+    isSelected && (button.scale.z = 0.5)
     scene.add(button)
   })
 }
