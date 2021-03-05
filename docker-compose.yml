@@ -8,7 +8,7 @@ services:
     volumes:
       - /redis-data:/data
 
-  nextjs-first:
+  nextjs:
     ports:
       - "3000:3000"
     build:
@@ -16,14 +16,4 @@ services:
       dockerfile: Dockerfile
     volumes:
       - .:/build
-
-  nextjs-second:
-    ports:
-      - "3001:3001"
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - .:/build
-    command:
-      - start-second
+      - /build/node_modules
