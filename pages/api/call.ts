@@ -1,4 +1,4 @@
-import redis, { RedisClient } from 'redis'
+import redis from 'redis'
 import { Server } from 'socket.io'
 import { createAdapter } from 'socket.io-redis'
 import getUrlParams from '../../src/utils/getUrlParams'
@@ -29,13 +29,13 @@ const callHandler = async(req, res) => {
     res.end()
   }
 
-  const roomStorage = redis.createClient({db: 0})
-  const memberStorage = redis.createClient({db: 1})
-  const meshStorage = redis.createClient({db: 2})
-  const userNameStorage = redis.createClient({db: 3})
+  const roomStorage = redis.createClient({host: process.env.REDIS_HOST, db: 0})
+  const memberStorage = redis.createClient({host: process.env.REDIS_HOST, db: 1})
+  const meshStorage = redis.createClient({host: process.env.REDIS_HOST, db: 2})
+  const userNameStorage = redis.createClient({host: process.env.REDIS_HOST, db: 3})
 
   const io = new Server(res.socket.server)
-  const pubClient = new RedisClient({ host: process.env.HOST_NAME, port: 6379 })
+  const pubClient = redis.createClient({host: process.env.REDIS_HOST})
   const subClient = pubClient.duplicate()
   io.adapter(createAdapter({ pubClient, subClient }))
   pubClient.on('error', () => {})

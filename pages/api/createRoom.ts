@@ -3,7 +3,7 @@ import RoomRepository from '../../core/repository/room/RoomRepository'
 import CreateRoomService from '../../core/service/room/CreateRoomService'
 
 const createRoomHandler = async(_, res) => {
-  const roomStorage = redis.createClient({db: 0})
+  const roomStorage = redis.createClient({host: process.env.REDIS_HOST, db: 0})
 
   const timeout = setTimeout(() => {
     roomStorage.quit()

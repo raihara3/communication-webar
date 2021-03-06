@@ -12,7 +12,7 @@ const getRoomHandler = async(req, res) => {
     return
   }
 
-  const roomStorage = redis.createClient({db: 0})
+  const roomStorage = redis.createClient({host: process.env.REDIS_HOST, db: 0})
 
   const timeout = setTimeout(() => {
     roomStorage.quit()
@@ -35,7 +35,7 @@ const getRoomHandler = async(req, res) => {
     res.end()
   })
 
-  roomStorage.on('error', (e) => console.log(e))
+  roomStorage.on('error', (e) => console.error(e))
 
 }
 
