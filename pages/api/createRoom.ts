@@ -3,31 +3,37 @@ import RoomRepository from '../../core/repository/room/RoomRepository'
 import CreateRoomService from '../../core/service/room/CreateRoomService'
 
 const createRoomHandler = async(_, res) => {
-  const roomStorage = redis.createClient({host: process.env.REDIS_HOST, db: 0})
-
-  const timeout = setTimeout(() => {
-    roomStorage.quit()
-    res.status(500).json({message: 'Database connection error'})
-    res.end()
-  }, 2000)
-  timeout
+  const roomStorage = redis.createClient({
+    host: process.env.REDIS_HOST,
+    db: 0,
+    retry_strategy: options => {
+      if(options.total_retry_time > 1000) {
+        res.status(503).json({message: 'Service Unavailable'})
+        res.end()
+        return
+      }
+      return 1000
+    }
+  })
 
   roomStorage.on('connect', async() => {
-    clearTimeout(timeout)
     const roomRepository = new RoomRepository(roomStorage)
     const roomID = await new CreateRoomService(roomRepository).execute()
     roomStorage.quit()
 
     if(!roomID) {
-      res.status(500).json({message: 'Database connection error'})
+      res.status(503).json({message: 'Service Unavailable'})
       res.end()
       return
     }
-    res.status(200).json({roomID: roomID})
+    res.status(200).json({
+      message: 'OK',
+      data: {roomID: roomID}
+    })
     res.end()
   })
 
-  roomStorage.on('error', (e) => console.log(e))
+  roomStorage.on('error', (e) => console.error(e))
 
 }
 

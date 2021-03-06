@@ -23,7 +23,7 @@ const Index = () => {
       setHasError(true)
       return
     }
-    setRoomURL(`${window.location.href}remote/call?room=${json.roomID}`)
+    setRoomURL(`${window.location.href}remote/call?room=${json.data.roomID}`)
   }
 
   const copyRoomID = () => {
