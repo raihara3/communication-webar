@@ -25,7 +25,7 @@ const callHandler = async(req, res) => {
   const params: any = getUrlParams(req.headers.referer)
   const roomID = params.room
   if(!roomID) {
-    res.status(400).json({message: 'The roomID is not specified.'})
+    res.status(400).json({message: 'Bad Request'})
     res.end()
   }
 
@@ -38,11 +38,9 @@ const callHandler = async(req, res) => {
   const pubClient = redis.createClient({host: process.env.REDIS_HOST})
   const subClient = pubClient.duplicate()
   io.adapter(createAdapter({ pubClient, subClient }))
-  pubClient.on('error', () => {})
-  subClient.on('error', () => {})
-  io.of('/').adapter.on('error', (e) => {
-    console.error('Redis error.', e)
-  })
+  pubClient.on('error', (e) => console.error(e))
+  subClient.on('error', (e) => console.error(e))
+  io.of('/').adapter.on('error', (e) => console.error(e))
 
   const roomRepository = new RoomRepository(roomStorage)
   const memberRepository = new MemberRepository(memberStorage)
@@ -50,7 +48,7 @@ const callHandler = async(req, res) => {
   const userNameRepository = new UserNameRepository(userNameStorage)
   const hasRoom = await new GetRoomService(roomRepository).execute(roomID)
   if(!hasRoom) {
-    res.status(404).json({message: 'This RoomID does not exist.'})
+    res.status(404).json({message: 'Not Found'})
     res.end()
   }
 
@@ -98,10 +96,10 @@ const callHandler = async(req, res) => {
   res.socket.server.io = io
   res.end()
 
-  roomStorage.on('error', () => {})
-  memberStorage.on('error', () => {})
-  meshStorage.on('error', () => {})
-  userNameStorage.on('error', () => {})
+  roomStorage.on('error', (e) => console.error(e))
+  memberStorage.on('error', (e) => console.error(e))
+  meshStorage.on('error', (e) => console.error(e))
+  userNameStorage.on('error', (e) => console.error(e))
 }
 
 export const config = {

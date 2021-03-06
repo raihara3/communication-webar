@@ -26,7 +26,6 @@
     "@typescript-eslint"
   ],
   "rules": {
-    "@typescript-eslint/no-empty-function": "off",
     "semi": ["error", "never", {"beforeStatementContinuationChars": "never"}],
     "semi-spacing": ["error", {"after": true, "before": false}],
     "semi-style": ["error", "first"],
