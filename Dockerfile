@@ -19,6 +19,6 @@ COPY apollo/ apollo/
 
 RUN npm run build
 
-EXPOSE 3000 3001
+EXPOSE 3000
 ENTRYPOINT [ "npm", "run"]
 CMD [ "start" ]
