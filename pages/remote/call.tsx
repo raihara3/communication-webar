@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react"
+import * as THREE from 'three'
 import io from 'socket.io-client'
 import styled from 'styled-components'
 import { Button, Link } from '@material-ui/core'
@@ -7,18 +8,18 @@ import Video from '../../components/atoms/Video'
 import WebGL from '../../src/WebGL'
 import { createToolBar, onClickButton } from '../../threeComponents/molecules/createToolBar'
 import { receiveMessagingHandler, sendMeshHandler } from '../../src/emitter/Messaging'
-import { createMesh } from '../../threeComponents/Mesh'
 import Header from '../../components/layout/Header'
 import Footer from '../../components/layout/Footer'
 import Card from '../../components/molecules/Card'
 import InputField from '../../components/atoms/InputField'
 import AudioMedia from '../../src/AudioMedia'
+import { Color } from "three"
 
 const Call = () => {
   const [isSupported, setIsSupported] = useState(false)
   const [isAudioPermission, setIsAudioPermission] = useState(true)
   const [memberList, setMemberList] = useState<string[]>([])
-  const [roomStatus, setRoomStatus] = useState<number>()
+  const [responseStatus, setResponseStatus] = useState<number>()
   const [hasError, setHasError] = useState<boolean>(false)
   const [expire, setExpire] = useState<number>(0)
   const [isCharLengthInRange, setIsCharLengthInRange] = useState<boolean>(false)
@@ -33,7 +34,7 @@ const Call = () => {
 
   const onStartWebAR = async() => {
     const res = await fetch(`../api/call?name=${nameInput.current?.value}`)
-    setRoomStatus(res.status)
+    setResponseStatus(res.status)
     if(!res.ok) {
       const json = await res.json()
       console.error(new Error(json.message))
@@ -72,7 +73,14 @@ const Call = () => {
         return
       }
 
-      const mesh = createMesh(controller.position)
+      const geometry = new THREE.BoxGeometry(0.01, 0.01, 0.01)
+      const material = new THREE.MeshBasicMaterial({color: new Color('#ffffff')})
+      const mesh = new THREE.Mesh(geometry, material)
+      mesh.position.set(
+        controller.position.x,
+        controller.position.y,
+        controller.position.z
+      )
       webGL.scene.add(mesh)
       sendMeshHandler(socket, {
         json: mesh.toJSON(),
@@ -85,7 +93,7 @@ const Call = () => {
     (async() => {
       const res = await fetch('../api/getRoom')
       const json = await res.json()
-      setRoomStatus(res.status)
+      setResponseStatus(res.status)
       if(!res.ok) {
         console.error(new Error(json.message))
         return
@@ -96,8 +104,8 @@ const Call = () => {
   }, [])
 
   useEffect(() => {
-    setHasError(!isAudioPermission || roomStatus !== 200 || !isCharLengthInRange)
-  }, [isAudioPermission, roomStatus, isCharLengthInRange])
+    setHasError(!isAudioPermission || responseStatus !== 200 || !isCharLengthInRange)
+  }, [isAudioPermission, responseStatus, isCharLengthInRange])
 
   return (
     <>
@@ -116,9 +124,9 @@ const Call = () => {
             </Alert>
           </ErrorBox>
         )}
-        {roomStatus && roomStatus !== 200 && (
+        {responseStatus && responseStatus !== 200 && (
           <>
-            {roomStatus === 500 ? (
+            {responseStatus === 500 ? (
               <ErrorBox>
                 <Alert variant="filled" severity="error">
                   Server error. Please try again after a while.
@@ -160,7 +168,7 @@ const Call = () => {
               variant='outlined'
               color='primary'
               onClick={() => onStartWebAR()}
-              disabled={hasError || !isCharLengthInRange || !roomStatus}
+              disabled={hasError || !responseStatus}
             >
               START AR
             </Button>

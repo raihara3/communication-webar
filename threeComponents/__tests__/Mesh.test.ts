@@ -1,20 +1,9 @@
 import * as THREE from 'three'
-import { createMesh, parseMesh } from '../Mesh'
+import { parseMesh } from '../Mesh'
 
 const geometry = new THREE.BoxGeometry(0.01, 0.01, 0.01)
 const material = new THREE.MeshBasicMaterial({color: 0x00ff00})
 const mesh = new THREE.Mesh(geometry, material)
-
-describe('createMesh test', () => {
-  test('normal', () => {
-    const position = {
-      x: 1,
-      y: 0,
-      z: -1
-    }
-    expect(createMesh(position).type).toEqual(mesh.type)
-  })
-})
 
 describe('parseMesh test', () => {
   test('normal', () => {

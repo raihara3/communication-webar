@@ -11,7 +11,7 @@ class Button {
     depth: number
   }
 
-  constructor(name, color, imgSrc, size) {
+  constructor(name: string, color: string, imgSrc: string, size: any) {
     this.name = name
     this.color = color
     this.imgSrc = imgSrc

@@ -28,6 +28,11 @@ const callHandler = async(req, res) => {
     res.status(400).json({message: 'Bad Request'})
     res.end()
   }
+  const userName = req.query.name
+  if(!userName) {
+    res.status(400).json({message: 'Bad Request'})
+    res.end()
+  }
 
   const roomStorage = redis.createClient({host: process.env.REDIS_HOST, db: 0})
   const memberStorage = redis.createClient({host: process.env.REDIS_HOST, db: 1})
@@ -46,13 +51,12 @@ const callHandler = async(req, res) => {
   const memberRepository = new MemberRepository(memberStorage)
   const meshRepository = new MeshRepository(meshStorage)
   const userNameRepository = new UserNameRepository(userNameStorage)
-  const hasRoom = await new GetRoomService(roomRepository).execute(roomID)
+  const hasRoom = await new GetRoomService(roomRepository).get(roomID)
   if(!hasRoom) {
     res.status(404).json({message: 'Not Found'})
     res.end()
   }
 
-  const userName = req.query.name
   io.on('connect', socket => {
     socket.join(roomID)
 

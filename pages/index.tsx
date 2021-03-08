@@ -11,11 +11,11 @@ import InputField from '../components/atoms/InputField'
 const Index = () => {
   const [roomURL, setRoomURL] = useState<string>('')
   const [hasError, setHasError] = useState<boolean>(false)
-  const [isClickedButton, setIsClickedButton] = useState<boolean>(false)
+  const [isClickedCreateButton, setIsClickedCreateButton] = useState<boolean>(false)
   const roomURLBox = useRef<HTMLInputElement>(null)
 
   const createRoom = async() => {
-    setIsClickedButton(true)
+    setIsClickedCreateButton(true)
     const res: any = await fetch('../api/createRoom')
     const json = await res.json()
     if(!res.ok) {
@@ -53,7 +53,7 @@ const Index = () => {
           <Button
             variant='outlined'
             color='primary'
-            disabled={isClickedButton}
+            disabled={isClickedCreateButton}
             onClick={() => createRoom()}
           >
             CREATE ROOM
