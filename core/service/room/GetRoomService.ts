@@ -7,16 +7,13 @@ class GetRoomService {
     this.roomRepository = roomRepository
   }
 
-  async execute(roomID: string) {
-    const createDate = await this.roomRepository.get(roomID)
-    const expire = await this.roomRepository.getExpire(roomID)
-    const remainingTime = expire > 0
-      ? expire / (60 * 60)
-      : expire
-    return {
-      hasRoom: !!createDate,
-      remainingTime: Math.floor(remainingTime)
-    }
+  async get(roomID: string) {
+    return await this.roomRepository.get(roomID)
+  }
+
+  async getRemainingTime(roomID: string) {
+    const res = await this.roomRepository.getExpire(roomID)
+    return res > 0 ? Math.floor(res / (60*60)) : res
   }
 }
 

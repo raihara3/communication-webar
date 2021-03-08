@@ -26,14 +26,16 @@ const getRoomHandler = async(req, res) => {
   })
 
   roomStorage.on('connect', async() => {
-    const roomRepository = new RoomRepository(roomStorage)
-    const { hasRoom, remainingTime } = await new GetRoomService(roomRepository).execute(roomID)
-    roomStorage.quit()
+    const getRoomService = new GetRoomService(new RoomRepository(roomStorage))
+    const hasRoom = await getRoomService.get(roomID)
     if(!hasRoom) {
+      roomStorage.quit()
       res.status(404).json({message: 'Not Found'})
       res.end()
       return
     }
+    const remainingTime = await getRoomService.getRemainingTime(roomID)
+    roomStorage.quit()
     res.status(200).json({
       message: 'OK',
       data: {remainingTime: remainingTime}
