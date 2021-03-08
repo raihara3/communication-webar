@@ -18,17 +18,17 @@ const createRoomHandler = async(_, res) => {
 
   roomStorage.on('connect', async() => {
     const roomRepository = new RoomRepository(roomStorage)
-    const roomID = await new CreateRoomService(roomRepository).execute()
+    const room = await new CreateRoomService(roomRepository).execute()
     roomStorage.quit()
 
-    if(!roomID) {
+    if(room instanceof Error) {
       res.status(503).json({message: 'Service Unavailable'})
       res.end()
       return
     }
     res.status(200).json({
       message: 'OK',
-      data: {roomID: roomID}
+      data: {roomID: room}
     })
     res.end()
   })

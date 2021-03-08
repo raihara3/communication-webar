@@ -13,8 +13,8 @@ class CreateRoomService {
       await this.roomRepository.add(roomID)
       return roomID
     } catch (error) {
-      console.log(error)
-      return null
+      console.error(error)
+      return error
     }
   }
 }
