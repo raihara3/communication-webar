@@ -5,6 +5,8 @@ services:
     ports:
       - "6379:6379"
     image: ghcr.io/raihara3/redis:6.0.10
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
 
   nextjs:
     ports:
