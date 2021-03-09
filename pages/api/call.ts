@@ -24,12 +24,8 @@ const callHandler = async(req, res) => {
 
   const params: any = getUrlParams(req.headers.referer)
   const roomID = params.room
-  if(!roomID) {
-    res.status(400).json({message: 'Bad Request'})
-    res.end()
-  }
   const userName = req.query.name
-  if(!userName) {
+  if(!roomID || !userName) {
     res.status(400).json({message: 'Bad Request'})
     res.end()
   }
