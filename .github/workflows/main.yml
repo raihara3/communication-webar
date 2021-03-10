@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,4 +19,7 @@ jobs:
         run: yarn
         
       - name: Run ESLint
-        run: eslint .eslintrc.json
+        run: yarn run lint
+        
+      - name: Run Jest
+        run: yarn test
