@@ -28,6 +28,7 @@ jobs:
         run: yarn test
         
   publish:
+    needs: test
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: communication-webar
@@ -52,7 +53,7 @@ jobs:
           docker push $IMAGE_PATH:$TAG
 
   slackNotification:
-    needs: test
+    needs: publish
     runs-on: ubuntu-latest
 
     steps:
