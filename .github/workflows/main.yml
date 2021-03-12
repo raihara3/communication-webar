@@ -10,6 +10,7 @@ on:
   
 env:
   OWNER: raihara3
+  REDIS_HOST: ${{ secrets.REDIS_HOST }}
 
 jobs:
   test:
@@ -17,6 +18,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      
+      - name: set environment
+        run: echo REDIS_HOST =${{ secrets.REDIS_HOST }} >> .env.production
 
       - name: Install modules
         run: yarn
