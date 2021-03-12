@@ -9,6 +9,7 @@ import Card from '../components/molecules/Card'
 import InputField from '../components/atoms/InputField'
 
 const Index = () => {
+  console.log(process.env.REDIS_HOST)
   const [roomURL, setRoomURL] = useState<string>('')
   const [hasError, setHasError] = useState<boolean>(false)
   const [isClickedCreateButton, setIsClickedCreateButton] = useState<boolean>(false)
