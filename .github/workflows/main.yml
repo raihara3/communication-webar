@@ -7,10 +7,11 @@ on:
     branches: [ master ]
 
   workflow_dispatch:
-  
+
 env:
   OWNER: raihara3
   REDIS_HOST: ${{ secrets.REDIS_HOST }}
+  REDIS_PASS: ${{ secrets.REDIS_PASS }}
 
 jobs:
   test:
@@ -18,19 +19,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: set environment
         run: echo REDIS_HOST =${{ secrets.REDIS_HOST }} >> .env.production
 
       - name: Install modules
         run: yarn
-        
+
       - name: Run ESLint
         run: yarn run lint
-        
+
       - name: Run Jest
         run: yarn test
-        
+
   publish:
     needs: test
     runs-on: ubuntu-latest
