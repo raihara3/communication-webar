@@ -7,7 +7,7 @@ const createRoomHandler = async(_, res) => {
     host: process.env.REDIS_HOST,
     // db: 0,
     password: process.env.REDIS_PASS,
-    port: 30176,
+    port: Number(process.env.REDIS_PORT),
     retry_strategy: options => {
       if(options.total_retry_time > 1000) {
         res.status(503).json({message: 'Service Unavailable'})
