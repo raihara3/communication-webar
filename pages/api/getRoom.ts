@@ -36,6 +36,7 @@ const getRoomHandler = async(req, res) => {
       if(!hasRoom) {
         roomStorage.quit()
         reject()
+        return
       }
       const remainingTime = await getRoomService.getRemainingTime(roomID)
       roomStorage.quit()
